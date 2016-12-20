@@ -1,0 +1,101 @@
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head><!--?xml version="1.0" encoding="UTF-8"?-->
+    <script src={% static "js/jquery-1.10.2.min.js" %}></script>
+    <!--<script src={% static "bootstrap/js/bootstrap.min.js" %}></script>-->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>sumpfork's Dominion Tab Generator</title>
+    <!--<link rel="stylesheet" href={% static "bootstrap/css/bootstrap.min.css" %}>-->
+    <link rel="stylesheet" href={% static "css/domtabs.css" %}>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-2291281-4']);
+  _gaq.push(['_setDomainName', 'sandflea.org']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+          <div class="page-header">
+            <h2>Sumpfork's Dominion Tabbed Divider Generator</h2>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Generation Options</h3>
+          {% crispy form %}
+        </div>
+        <div class="col-md-6">
+          <div class="well">
+	    <ul class="nav nav-tabs" role="tablist">
+	      <li class="active"><a href="#about" role="tab" data-toggle="tab">About</a></li>
+	      <li><a href="#changes" role="tab" data-toggle="tab">Changelog</a></li>
+	    </ul>
+
+	    <div class="tab-content">
+	      <div class="tab-pane active" id="about">
+		<h4>Welcome to my Dominion tab generator.</h4>
+		<p>Quite a while ago, I converted my base Dominion box into a <a href="http://boardgamegeek.com/thread/576889/original-box-modded-for-base-intrigue-seaside-pros">storage solution for the base game + 3 expansions plus extra materials</a>. In the process, I wrote a Python script (<a href="https://github.com/sumpfork/dominiontabs">get the source here</a>) to generate pdfs of the dividers that I used. I then published those pdfs to <a href="http://boardgamegeek.com">BoardGameGeek</a> and since then have improved them due to feedback <a href="http://boardgamegeek.com/filepage/59848/sumpforks-double-sided-dominion-tabs-for-all-expan">numerous times.</a> However, people keep putting in requests for special versions (with cropmarks, for different sets, etc.) and the file I publish keeps getting bigger and bigger due to including all version. So, instead of growing the number of versions, I've decided to try putting the script behind the web form on the left so those interested can generate their own versions. Others have also taken my source and <a href="http://boardgamegeek.com/filepage/61406/improved-sumpfork-double-sided-dominion-tabs-for-a">changed it</a> if you are looking for different things.</p>
+		<p>Initially, I am only exposing some of the options, and only accepting predefined values for those that actually take continuous values (like divider size). If there is interest, I can work on adding custom value options for some of these, and on exposing more options (e.g. back page offset).</p>
+		<p>Please note issues on <a href="https://github.com/sumpfork/dominiontabs/issues">github</a>, leave feedback and requests <a href="http://boardgamegeek.com/article/11291217">in this thread</a>, or contact <a href="http://boardgamegeek.com/user/sumpfork">me</a> via <a href="http://boardgamegeek.com/geekmail/compose?touser=sumpfork">BGG mail</a>. You can also thumb the thread or the <a href="http://boardgamegeek.com/filepage/59848/sumpforks-double-sided-dominion-tabs-for-all-expan">original file thread</a> if you like these dividers, or even better post pictures of how you used them - I'm always curious.</p>
+		<p>If you would like to contribute, the <a href="https://github.com/sumpfork/dominiontabs">code for the generator</a> is available on github.</p>
+	      </div>
+	      <div class="tab-pane" id="changes">
+		      <ul>
+			<li>Nov 14, 2016, git v2.3: Sauna/Avanto Promo. Preliminary release of v2 cards (better options to mix these in coming soon.) Various fixes to counts, spellings. </li>
+			<li>Sep 22, 2016: Options to include # of cards on dividers and to generate slipcases instead of dividers. Add centre-aligned tab option. Fix to Shelters colour. </li>
+			      <li>July 2, 2016: Make Events exclusion apply to landmarks, too (github https://github.com/sumpfork/dominiontabs/issues/67 and https://github.com/sumpfork/dominiontabs/issues/66)</li>
+			      <li>June 19, 2016: Empires improvements and fixes - v2.2 of generation code.</li>
+			      <li>June 11, 2016: Full Empires expansion support, thanks to the great contributors at github.</li>
+			      <li>May 24, 2016: Expose option to group some special card groups, like Prizes.</li>
+		        <li>Mar 17, 2016: Improvements to German translations.</li>
+			      <li>Dec 1, 2015: Avery label fixes. More options for card texts; German translation.</li>
+			      <li>Oct 19, 2015: Expose recent changes/updates: some updated card texts, more comprehensive no-footer, card name and tab alignments options.</li>
+		        <li>June 19, 2015: Update to get latest fixes from github, expose no text on dividers option.</li>
+		        <li>May 4, 2015: Updated tab images for Adventures. Single tab for Prizes, second tab for Possession, fix for Scavenger.</li>
+		        <li>Apr 21, 2015: Add optional individual event dividers and cumulative single event divider.</li>
+		        <li>Apr 20, 2015: Add Dominion: Adventures with lots of help from community. No events yet.</li>
+		        <li>Dec 11, 2014: Start of Italian translation; some card text cleanup.</li>
+		        <li>Jul 4, 2014: Added Prince Promo Card</li>
+		        <li>Mar 5, 2014: Added new back text for Walled Village and Governor</li>
+		        <li>Jan 31, 2014: Fixed Avery Labels, some missing coin images</li>
+		        <li>Jan 30, 2014: Back text for Hinterland cards.</li>
+		        <li>Jan 8, 2014: Fix alternating/same side tabs options.</li>
+		      </ul>
+	      </div>
+	    </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+	<div class="span12">
+	  <div class="pull-right">
+	    Hosted on <a href="http://webfaction.com?affiliate=pgorniak"><img src={% static "images/webfaction.png" %}></img> Webfaction</a>.
+	  </div>
+	</div>
+      </div>
+    </div>
+  </body>
+</html>
+

@@ -105,7 +105,7 @@ def checkout_and_install_libs():
                 run('git pull')
 
                 with virtualenv(VENV_DIR):
-                    run_venv('pip install .')
+                    run_venv('pip install -U .')
 
 
 @task

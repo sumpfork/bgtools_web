@@ -1,11 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django import forms
-import domdiv
+import domdiv.main
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div
 from crispy_forms.bootstrap import FormActions
-#from chitboxes.chitboxes import ChitBoxGenerator
+# from chitboxes.chitboxes import ChitBoxGenerator
 import os
 
 
@@ -61,10 +61,7 @@ class TabGenerationOptionsForm(forms.Form):
     pagesize = forms.ChoiceField(choices=zip(choices, choices), label='Page Size', initial='Letter', required=True)
     choices = ['Sleeved', 'Unsleeved']
     cardsize = forms.ChoiceField(choices=zip(choices, choices), label='Card Size', initial='Unsleeved', required=True)
-    choices = [
-        'Base', 'Dominion', 'Empires', 'Adventures', 'Intrigue', 'Alchemy', 'Seaside', 'Prosperity', 'Cornucopia',
-        'Hinterlands', 'Dark Ages', 'Guilds', 'Promo'
-    ]
+    choices = domdiv.main.EXPANSION_CHOICES
     expansions = forms.MultipleChoiceField(
         choices=zip(choices, choices),
         label='Expansions to Include',
@@ -73,21 +70,21 @@ class TabGenerationOptionsForm(forms.Form):
     cropmarks = forms.BooleanField(label="Cropmarks Instead of Outlines", initial=False, required=False)
     wrappers = forms.BooleanField(label="Slipcases Instead of Dividers", initial=False, required=False)
     counts = forms.BooleanField(label="Show # of Cards per Divider", initial=False, required=False)
-    tab_name_align = forms.ChoiceField(choices=zip(domdiv.NAME_ALIGN_CHOICES, domdiv.NAME_ALIGN_CHOICES))
-    tab_side = forms.ChoiceField(choices=zip(domdiv.TAB_SIDE_CHOICES, domdiv.TAB_SIDE_CHOICES))
+    tab_name_align = forms.ChoiceField(choices=zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES))
+    tab_side = forms.ChoiceField(choices=zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES))
     samesidelabels = forms.BooleanField(label="Same Side Labels", initial=False, required=False)
     groupsets = forms.BooleanField(label="Group by Expansion", initial=True, required=False)
     group_special = forms.BooleanField(label="Group Special Cards (e.g. Prizes)", initial=True, required=False)
     expansion_dividers = forms.BooleanField(label="Extra Expansion Dividers", initial=False, required=False)
     tabsonly = forms.BooleanField(label="Avery 5167/8867 Tab Label Sheets (beta)", initial=False, required=False)
     set_icon = forms.ChoiceField(
-        choices=zip(domdiv.LOCATION_CHOICES, domdiv.LOCATION_CHOICES),
+        choices=zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES),
         label="Set Icon Location",
         initial="tab",
         required=False
     )
     cost_icon = forms.ChoiceField(
-        choices=zip(domdiv.LOCATION_CHOICES, domdiv.LOCATION_CHOICES),
+        choices=zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES),
         label="Cost Icon Location",
         initial="tab",
         required=False
@@ -100,12 +97,12 @@ class TabGenerationOptionsForm(forms.Form):
     )
     events = forms.BooleanField(label="Exclude Individual Events & Landmarks", initial=False, required=False)
     divider_front_text = forms.ChoiceField(label='Front Text',
-                                           choices=zip(domdiv.TEXT_CHOICES, domdiv.TEXT_CHOICES),
+                                           choices=zip(domdiv.main.TEXT_CHOICES, domdiv.main.TEXT_CHOICES),
                                            initial='card',
                                            required=False)
     divider_back_text = forms.ChoiceField(
         label='Back Text',
-        choices=zip(domdiv.TEXT_CHOICES + ['none'], domdiv.TEXT_CHOICES + ['no back page']),
+        choices=zip(domdiv.main.TEXT_CHOICES + ['none'], domdiv.main.TEXT_CHOICES + ['no back page']),
         initial='rules',
         required=False
     )
@@ -133,7 +130,7 @@ def index(request):
         form = TabGenerationOptionsForm(request.POST)
         if form.is_valid():
             # generate default options
-            options = domdiv.parse_opts([])
+            options = domdiv.main.parse_opts([])
             data = form.cleaned_data
             options.orientation = data['orientation'].lower()
             options.size = data['cardsize'].lower()
@@ -164,12 +161,12 @@ def index(request):
             response['Content-Disposition'] = 'attachment; filename="sumpfork_dominion_tabs.pdf"'
             options.outfile = response
 
-            domdiv.generate(options, os.path.dirname(os.path.dirname(domdiv.__file__)))
+            domdiv.main.generate(options)
             return response
     else:
         form = TabGenerationOptionsForm()
 
-    return render(request, 'domtabs/index.html', {'form': form})
+    return render(request, 'dominion_dividers/index.html', {'form': form})
 
 
 # def chitbox(request):
