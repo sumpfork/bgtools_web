@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
-from private_settings import SECRET_KEY, ALLOWED_HOSTS, DEBUG  # noqa
+from private_settings import (SECRET_KEY,  # noqa: F401
+                              ALLOWED_HOSTS,
+                              DEBUG,
+                              STATIC_ROOT)
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -32,6 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dominion_dividers',
+    'crispy_forms'
 ]
 
 MIDDLEWARE = [

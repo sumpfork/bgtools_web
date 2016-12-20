@@ -4,10 +4,10 @@ import posixpath
 from fabric.api import env, run, cd, task, local
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
-from fabric.context_managers import cd, lcd, settings, hide
+from fabric.context_managers import settings
 import psutil
 
-from fabsettings import (USER, HOST, DJANGO_APP_NAME,
+from fabsettings import (USER, HOST, DJANGO_APP_NAME,  # noqa: F401
                          DJANGO_APPS_DIR, LOGS_ROOT_DIR,
                          APP_PORT, GUNICORN_WORKERS, DJANGO_PROJECT_NAME)
 
@@ -29,6 +29,7 @@ GUNICORN_LOGFILE = posixpath.join(LOGS_ROOT_DIR, 'gunicorn_{}.log'.format(DJANGO
 
 SRC_DIR = posixpath.join(DJANGO_APP_ROOT, DJANGO_PROJECT_NAME)
 VENV_DIR = posixpath.join(DJANGO_APP_ROOT, VENV_SUBDIR)
+CHECKOUT_DIR = posixpath.join(DJANGO_APP_ROOT, 'checkouts')
 
 WSGI_MODULE = '{}.wsgi'.format(DJANGO_PROJECT_NAME)
 
@@ -58,7 +59,7 @@ def install_dependencies():
 
 
 def ensure_virtualenv():
-    ensure_src_dir()
+    ensure_dir(SRC_DIR)
     if exists(VENV_DIR):
         return
 
@@ -69,11 +70,11 @@ def ensure_virtualenv():
             SRC_DIR, VENV_SUBDIR, PYTHON_BIN))
 
 
-def ensure_src_dir():
-    if not exists(SRC_DIR):
+def ensure_dir(d):
+    if not exists(d):
         # note that the parent directory needs to already exist, usually by making a custom app
         # with the correct name in the webfaction control panel
-        run("mkdir -p {}".format(SRC_DIR))
+        run("mkdir -p {}".format(d))
 
 
 def rsync_source():
@@ -81,6 +82,30 @@ def rsync_source():
     rsync the source over to the server
     """
     rsync_project(local_dir=DJANGO_PROJECT_NAME, remote_dir=DJANGO_APP_ROOT)
+
+
+def checkout_and_install_libs():
+    libs = {
+        'domdiv': {
+            'owner': 'sumpfork',
+            'repo': 'dominiontabs',
+            'method': 'branch',
+            'branch': 'master'
+        }
+    }
+    ensure_dir(CHECKOUT_DIR)
+    with cd(CHECKOUT_DIR):
+        for lib, params in libs.iteritems():
+            libdir = params['repo']
+            if not exists(libdir):
+                run('git clone https://github.com/{}/{}.git'.format(params['owner'], params['repo']))
+            with cd(libdir):
+                run('git fetch origin')
+                run('git checkout {}'.format(params['branch']))
+                run('git pull')
+
+                with virtualenv(VENV_DIR):
+                    run_venv('pip install .')
 
 
 @task
@@ -122,7 +147,7 @@ def webserver_restart():
     """
     try:
         run("kill -HUP $(cat {})".format(GUNICORN_PIDFILE))
-    except:
+    finally:
         webserver_start()
 
 
@@ -146,3 +171,10 @@ def local_webserver_start():
     """
     if not _is_webserver_running():
         local(_webserver_command())
+
+
+@task
+def deploy():
+    install_dependencies()
+    checkout_and_install_libs()
+    webserver_restart()
