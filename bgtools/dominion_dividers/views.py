@@ -4,9 +4,8 @@ from django import forms
 import domdiv.main
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div
-from crispy_forms.bootstrap import FormActions
+from crispy_forms.bootstrap import FormActions, Accordion, AccordionGroup
 # from chitboxes.chitboxes import ChitBoxGenerator
-import os
 
 
 class TabGenerationOptionsForm(forms.Form):
@@ -16,29 +15,35 @@ class TabGenerationOptionsForm(forms.Form):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    'orientation',
-                    'pagesize',
-                    'cardsize',
-                    'tab_side',
-                    'tab_name_align',
-                    'set_icon',
-                    'cost_icon',
-                    css_class='col-md-6'
-                ),
-                Div(
-                    'expansions',
-                    'cropmarks',
-                    'wrappers',
-                    'counts',
-                    'groupsets',
-                    'group_special',
-                    'expansion_dividers',
-                    'tabsonly',
-                    'events',
-                    'no_footer',
-                    'divider_front_text',
-                    'divider_back_text',
-                    'language',
+                    Accordion(
+                        AccordionGroup('Expansion Selection',
+                                       'expansions',
+                                       'edition'),
+                        AccordionGroup('Global Style',
+                                       'cropmarks',
+                                       'wrappers',
+                                       'tabsonly',
+                                       'no_footer'),
+                        AccordionGroup('Sizes and Orientation',
+                                       'orientation',
+                                       'pagesize',
+                                       'cardsize'),
+                        AccordionGroup('Divider Layout',
+                                       'tab_side',
+                                       'tab_name_align',
+                                       'set_icon',
+                                       'cost_icon',
+                                       'counts'),
+                        AccordionGroup('Text Options',
+                                       'divider_front_text',
+                                       'divider_back_text',
+                                       'language'),
+                        AccordionGroup('Order and Groups',
+                                       'groupsets',
+                                       'group_special',
+                                       'expansion_dividers'),
+
+                    ),
                     css_class='col-md-6'
                 ),
                 css_class='row'
@@ -61,12 +66,30 @@ class TabGenerationOptionsForm(forms.Form):
     pagesize = forms.ChoiceField(choices=zip(choices, choices), label='Page Size', initial='Letter', required=True)
     choices = ['Sleeved', 'Unsleeved']
     cardsize = forms.ChoiceField(choices=zip(choices, choices), label='Card Size', initial='Unsleeved', required=True)
-    choices = domdiv.main.EXPANSION_CHOICES
+    choices = set(domdiv.main.EXPANSION_CHOICES)
+    # for the form, simplify the choices a little
+    common = set()
+    remove = set()
+    for choice in choices:
+        try:
+            index = choice.lower().index('edition')
+        except ValueError:
+            continue
+        if index == len(choice) - 7:
+            remove.add(choice)
+            common.add(choice.lower()[:index - 3])
+    choices -= remove
+    choices |= common
+    choices = sorted(choices)
+
     expansions = forms.MultipleChoiceField(
         choices=zip(choices, choices),
         label='Expansions to Include',
         initial=choices, required=True
     )
+    edition = forms.ChoiceField(choices=zip(domdiv.main.EDITION_CHOICES, domdiv.main.EDITION_CHOICES),
+                                label='Edition',
+                                initial='latest')
     cropmarks = forms.BooleanField(label="Cropmarks Instead of Outlines", initial=False, required=False)
     wrappers = forms.BooleanField(label="Slipcases Instead of Dividers", initial=False, required=False)
     counts = forms.BooleanField(label="Show # of Cards per Divider", initial=False, required=False)
@@ -90,7 +113,7 @@ class TabGenerationOptionsForm(forms.Form):
         required=False
     )
     language = forms.ChoiceField(
-        choices=[('en_us', 'English-US'), ('de', 'Deutsch'), ('it', 'Italian')],
+        choices=zip(domdiv.main.LANGUAGE_CHOICES, domdiv.main.LANGUAGE_CHOICES),
         label='Language',
         initial='en_us',
         required=False
@@ -135,6 +158,7 @@ def index(request):
             options.orientation = data['orientation'].lower()
             options.size = data['cardsize'].lower()
             options.expansions = data['expansions']
+            options.edition = data['edition']
             options.papersize = data['pagesize']
             options.cropmarks = data['cropmarks']
             options.wrapper = data['wrappers']
