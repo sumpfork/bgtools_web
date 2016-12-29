@@ -1,7 +1,9 @@
 # Credit goes to https://bitbucket.org/spookylukey/django-fabfile-starter/src
 
+import os
+
 import posixpath
-from fabric.api import env, run, cd, task, local
+from fabric.api import env, run, cd, task, local, prefix, lcd
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 from fabric.context_managers import settings
@@ -34,28 +36,18 @@ CHECKOUT_DIR = posixpath.join(DJANGO_APP_ROOT, 'checkouts')
 WSGI_MODULE = '{}.wsgi'.format(DJANGO_PROJECT_NAME)
 
 
-def virtualenv(venv_dir):
-    """
-    Context manager that establishes a virtualenv to use.
-    """
-    return settings(venv=venv_dir)
-
-
-def run_venv(command, **kwargs):
+def venv():
     """
     Runs a command in a virtualenv (which has been specified using
     the virtualenv context manager
     """
-    run("source {}/bin/activate && {}".format(env.venv, command), **kwargs)
+    return prefix("source {}/bin/activate".format(VENV_DIR))
 
 
-@task
 def install_dependencies():
     ensure_virtualenv()
-    rsync_source()
-    with virtualenv(VENV_DIR):
-        with cd(SRC_DIR):
-            run_venv("pip install -r requirements.txt")
+    with venv(), cd(SRC_DIR):
+        run("pip install -r requirements.txt")
 
 
 def ensure_virtualenv():
@@ -75,6 +67,12 @@ def ensure_dir(d):
         # note that the parent directory needs to already exist, usually by making a custom app
         # with the correct name in the webfaction control panel
         run("mkdir -p {}".format(d))
+
+
+def copy_settings():
+    with lcd(os.path.dirname(os.path.realpath(env.real_fabfile))):
+        fname = 'settings_{}.py'.format(env.mode)
+        local('cp {} bgtools/bgtools/private_settings.py'.format(fname))
 
 
 def rsync_source():
@@ -104,8 +102,8 @@ def checkout_and_install_libs():
                 run('git checkout {}'.format(params['branch']))
                 run('git pull')
 
-                with virtualenv(VENV_DIR):
-                    run_venv('pip install -U .')
+                with venv():
+                    run('pip install -U .')
 
 
 @task
@@ -145,10 +143,9 @@ def webserver_restart():
     """
     Restarts the webserver that is running the Django instance
     """
-    try:
+    with settings(warn_only=True):
         run("kill -HUP $(cat {})".format(GUNICORN_PIDFILE))
-    finally:
-        webserver_start()
+    webserver_start()
 
 
 def _is_webserver_running():
@@ -159,7 +156,7 @@ def _is_webserver_running():
     for ps in psutil.process_iter():
         if (ps.pid == pid and
             any('gunicorn' in c for c in ps.cmdline)
-            and ps.username == USER):
+                and ps.username == USER):
             return True
     return False
 
@@ -174,7 +171,10 @@ def local_webserver_start():
 
 
 @task
-def deploy():
+def deploy(mode='debug'):
+    env['mode'] = mode
+    copy_settings()
+    rsync_source()
     install_dependencies()
     checkout_and_install_libs()
     webserver_restart()

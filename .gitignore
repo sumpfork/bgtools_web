@@ -90,3 +90,5 @@ ENV/
 
 # do not check in some settings files
 fabsettings.py
+settings_release.py
+settings_debug.py
