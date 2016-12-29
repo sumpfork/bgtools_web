@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django import forms
 import domdiv.main
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div
+from crispy_forms.layout import Submit, Layout, Div, HTML
 from crispy_forms.bootstrap import FormActions, Accordion, AccordionGroup
 # from chitboxes.chitboxes import ChitBoxGenerator
 
@@ -13,6 +13,20 @@ class TabGenerationOptionsForm(forms.Form):
         super(TabGenerationOptionsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML('<h3>Generation Options</h3>'),
+                    css_class='col-md-9'
+                ),
+                Div(
+                    FormActions(
+                        Submit('submit', 'Generate',
+                               style="margin-top: 20px;")
+                    ),
+                    css_class='col-md-3'
+                ),
+                css_class='row'
+            ),
             Div(
                 Div(
                     Accordion(
@@ -38,24 +52,22 @@ class TabGenerationOptionsForm(forms.Form):
                                        'divider_front_text',
                                        'divider_back_text',
                                        'language'),
-                        AccordionGroup('Order and Groups',
+                        AccordionGroup('Groups and Extras',
                                        'groupsets',
                                        'group_special',
                                        'expansion_dividers'),
 
                     ),
-                    css_class='col-md-6'
+                    css_class='col-md-12',
                 ),
-                css_class='row'
-            ),
-            Div(
-                FormActions('submit', 'Generate'), css_class='span6'),
+                css_class='row',
+            )
         )
         self.helper.form_id = 'id-tabgenoptions'
         self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
         self.helper.form_action = '/'
-        self.helper.add_input(Submit('submit', 'Generate'))
+        # self.helper.add_input(Submit('submit', 'Generate'))
 
     choices = ['Horizontal', 'Vertical']
     orientation = forms.ChoiceField(choices=zip(choices, choices),
@@ -99,7 +111,7 @@ class TabGenerationOptionsForm(forms.Form):
     groupsets = forms.BooleanField(label="Group by Expansion", initial=True, required=False)
     group_special = forms.BooleanField(label="Group Special Cards (e.g. Prizes)", initial=True, required=False)
     expansion_dividers = forms.BooleanField(label="Extra Expansion Dividers", initial=False, required=False)
-    tabsonly = forms.BooleanField(label="Avery 5167/8867 Tab Label Sheets (beta)", initial=False, required=False)
+    tabsonly = forms.BooleanField(label="Avery 5167/8867 Tab Label Sheets", initial=False, required=False)
     set_icon = forms.ChoiceField(
         choices=zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES),
         label="Set Icon Location",
