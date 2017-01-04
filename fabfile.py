@@ -35,6 +35,8 @@ CHECKOUT_DIR = posixpath.join(DJANGO_APP_ROOT, 'checkouts')
 
 WSGI_MODULE = '{}.wsgi'.format(DJANGO_PROJECT_NAME)
 
+LOCAL_DIR = os.path.dirname(os.path.realpath(env.real_fabfile))
+
 
 def venv():
     """
@@ -70,7 +72,7 @@ def ensure_dir(d):
 
 
 def copy_settings():
-    with lcd(os.path.dirname(os.path.realpath(env.real_fabfile))):
+    with lcd(LOCAL_DIR):
         fname = 'settings_{}.py'.format(env.mode)
         local('cp {} bgtools/bgtools/private_settings.py'.format(fname))
 
@@ -79,7 +81,7 @@ def rsync_source():
     """
     rsync the source over to the server
     """
-    rsync_project(local_dir=DJANGO_PROJECT_NAME, remote_dir=DJANGO_APP_ROOT)
+    rsync_project(local_dir=os.path.join(LOCAL_DIR, 'bgtools'), remote_dir=DJANGO_APP_ROOT)
 
 
 def checkout_and_install_libs():

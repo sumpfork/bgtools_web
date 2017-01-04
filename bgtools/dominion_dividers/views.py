@@ -52,8 +52,8 @@ class TabGenerationOptionsForm(forms.Form):
                                        'divider_front_text',
                                        'divider_back_text',
                                        'language'),
-                        AccordionGroup('Groups and Extras',
-                                       'groupsets',
+                        AccordionGroup('Order and Extras',
+                                       'order',
                                        'group_special',
                                        'expansion_dividers'),
 
@@ -74,7 +74,7 @@ class TabGenerationOptionsForm(forms.Form):
                                     label='Divider Orientation',
                                     initial='Horizontal',
                                     required=True)
-    choices = ['Letter', 'A4']
+    choices = ['Letter', 'A4', 'A3']
     pagesize = forms.ChoiceField(choices=zip(choices, choices), label='Page Size', initial='Letter', required=True)
     choices = ['Sleeved', 'Unsleeved']
     cardsize = forms.ChoiceField(choices=zip(choices, choices), label='Card Size', initial='Unsleeved', required=True)
@@ -108,7 +108,9 @@ class TabGenerationOptionsForm(forms.Form):
     tab_name_align = forms.ChoiceField(choices=zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES))
     tab_side = forms.ChoiceField(choices=zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES))
     samesidelabels = forms.BooleanField(label="Same Side Labels", initial=False, required=False)
-    groupsets = forms.BooleanField(label="Group by Expansion", initial=True, required=False)
+    order = forms.ChoiceField(label="Divider Order",
+                              choices=zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES),
+                              required=False)
     group_special = forms.BooleanField(label="Group Special Cards (e.g. Prizes)", initial=True, required=False)
     expansion_dividers = forms.BooleanField(label="Extra Expansion Dividers", initial=False, required=False)
     tabsonly = forms.BooleanField(label="Avery 5167/8867 Tab Label Sheets", initial=False, required=False)
@@ -180,8 +182,7 @@ def index(request):
             options.expansion_dividers = data['expansion_dividers']
             options.cost = data['cost_icon']
             options.set_icon = data['set_icon']
-            if not data['groupsets']:
-                options.order = "global"
+            options.order = data['order']
             options.special_card_groups = data['group_special']
             options.tabs_only = data['tabsonly']
             options.language = data['language']
