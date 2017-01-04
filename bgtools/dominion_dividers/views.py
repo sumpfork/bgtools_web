@@ -52,7 +52,7 @@ class TabGenerationOptionsForm(forms.Form):
                                        'divider_front_text',
                                        'divider_back_text',
                                        'language'),
-                        AccordionGroup('Order and Extras',
+                        AccordionGroup('Order, Groups and Extras',
                                        'order',
                                        'group_special',
                                        'expansion_dividers'),

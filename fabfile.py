@@ -101,9 +101,14 @@ def checkout_and_install_libs():
                 run('git clone https://github.com/{}/{}.git'.format(params['owner'], params['repo']))
             with cd(libdir):
                 run('git fetch origin')
-                run('git checkout {}'.format(params['branch']))
-                run('git pull')
-
+                if env.mode == 'debug' or env.git_tag == 'head':
+                    run('git checkout {}'.format(params['branch']))
+                    run('git pull')
+                elif env.mode == 'release':
+                    tag = env.git_tag
+                    if tag == 'latest':
+                        tag = run('git tag -l "v*"  --sort=-v:refname').split()[0]
+                    run('git checkout {}'.format(tag))
                 with venv():
                     run('pip install -U .')
 
@@ -173,8 +178,9 @@ def local_webserver_start():
 
 
 @task
-def deploy(mode='debug'):
+def deploy(mode='debug', tag='latest'):
     env['mode'] = mode
+    env['git_tag'] = tag
     copy_settings()
     rsync_source()
     install_dependencies()
