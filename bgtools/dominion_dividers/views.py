@@ -72,12 +72,11 @@ class TabGenerationOptionsForm(forms.Form):
     choices = ['Horizontal', 'Vertical']
     orientation = forms.ChoiceField(choices=zip(choices, choices),
                                     label='Divider Orientation',
-                                    initial='Horizontal',
-                                    required=True)
+                                    initial='Horizontal')
     choices = ['Letter', 'A4', 'A3']
-    pagesize = forms.ChoiceField(choices=zip(choices, choices), label='Page Size', initial='Letter', required=True)
+    pagesize = forms.ChoiceField(choices=zip(choices, choices), label='Page Size', initial='Letter')
     choices = ['Sleeved', 'Unsleeved']
-    cardsize = forms.ChoiceField(choices=zip(choices, choices), label='Card Size', initial='Unsleeved', required=True)
+    cardsize = forms.ChoiceField(choices=zip(choices, choices), label='Card Size', initial='Unsleeved')
     choices = set(domdiv.main.EXPANSION_CHOICES)
     # for the form, simplify the choices a little
     common = set()
@@ -97,54 +96,48 @@ class TabGenerationOptionsForm(forms.Form):
     expansions = forms.MultipleChoiceField(
         choices=zip(choices, [c.capitalize() for c in choices]),
         label='Expansions to Include (Cmd/Ctrl click to select multiple)',
-        initial=choices, required=True,
+        initial=choices,
         widget=forms.SelectMultiple(attrs={'size': '15'})
     )
     edition = forms.ChoiceField(choices=zip(domdiv.main.EDITION_CHOICES, domdiv.main.EDITION_CHOICES),
                                 label='Edition',
                                 initial='latest')
-    cropmarks = forms.BooleanField(label="Cropmarks Instead of Outlines", initial=False, required=False)
-    wrappers = forms.BooleanField(label="Slipcases Instead of Dividers", initial=False, required=False)
-    counts = forms.BooleanField(label="Show # of Cards per Divider", initial=False, required=False)
+    cropmarks = forms.BooleanField(label="Cropmarks Instead of Outlines", initial=False)
+    wrappers = forms.BooleanField(label="Slipcases Instead of Dividers", initial=False)
+    counts = forms.BooleanField(label="Show # of Cards per Divider", initial=False)
     tab_name_align = forms.ChoiceField(choices=zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES))
     tab_side = forms.ChoiceField(choices=zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES))
-    samesidelabels = forms.BooleanField(label="Same Side Labels", initial=False, required=False)
+    samesidelabels = forms.BooleanField(label="Same Side Labels", initial=False)
     order = forms.ChoiceField(label="Divider Order",
-                              choices=zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES),
-                              required=False)
-    group_special = forms.BooleanField(label="Group Special Cards (e.g. Prizes)", initial=True, required=False)
-    expansion_dividers = forms.BooleanField(label="Extra Expansion Dividers", initial=False, required=False)
-    tabsonly = forms.BooleanField(label="Avery 5167/8867 Tab Label Sheets", initial=False, required=False)
+                              choices=zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES))
+    group_special = forms.BooleanField(label="Group Special Cards (e.g. Prizes)", initial=True)
+    expansion_dividers = forms.BooleanField(label="Extra Expansion Dividers", initial=False)
+    tabsonly = forms.BooleanField(label="Avery 5167/8867 Tab Label Sheets", initial=False)
     set_icon = forms.ChoiceField(
         choices=zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES),
         label="Set Icon Location",
-        initial="tab",
-        required=False
+        initial="tab"
     )
     cost_icon = forms.ChoiceField(
         choices=zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES),
         label="Cost Icon Location",
-        initial="tab",
-        required=False
+        initial="tab"
     )
     language = forms.ChoiceField(
         choices=zip(domdiv.main.LANGUAGE_CHOICES, domdiv.main.LANGUAGE_CHOICES),
         label='Language',
-        initial='en_us',
-        required=False
+        initial='en_us'
     )
-    events = forms.BooleanField(label="Exclude Individual Events & Landmarks", initial=False, required=False)
+    events = forms.BooleanField(label="Exclude Individual Events & Landmarks", initial=False)
     divider_front_text = forms.ChoiceField(label='Front Text',
                                            choices=zip(domdiv.main.TEXT_CHOICES, domdiv.main.TEXT_CHOICES),
-                                           initial='card',
-                                           required=False)
+                                           initial='card')
     divider_back_text = forms.ChoiceField(
         label='Back Text',
         choices=zip(domdiv.main.TEXT_CHOICES + ['none'], domdiv.main.TEXT_CHOICES + ['no back page']),
-        initial='rules',
-        required=False
+        initial='rules'
     )
-    no_footer = forms.BooleanField(label='Omit set label footer text', initial=False, required=False)
+    no_footer = forms.BooleanField(label='Omit set label footer text', initial=False)
 
 
 class ChitBoxForm(forms.Form):
@@ -156,11 +149,11 @@ class ChitBoxForm(forms.Form):
 
         self.helper.add_input(Submit('submit', 'Generate'))
 
-    width = forms.FloatField(required=True, label='Width in cm', min_value=1.0, max_value=20.0, initial=5)
-    length = forms.FloatField(required=True, label='Length in cm', min_value=1.0, max_value=20.0, initial=5)
-    height = forms.FloatField(required=True, label='Height in cm', min_value=1.0, max_value=20.0, initial=2)
-    main_image = forms.ImageField(required=True, label='Upload Main Image')
-    side_image = forms.ImageField(required=True, label='Upload Side Image')
+    width = forms.FloatField(label='Width in cm', min_value=1.0, max_value=20.0, initial=5)
+    length = forms.FloatField(label='Length in cm', min_value=1.0, max_value=20.0, initial=5)
+    height = forms.FloatField(label='Height in cm', min_value=1.0, max_value=20.0, initial=2)
+    main_image = forms.ImageField(label='Upload Main Image')
+    side_image = forms.ImageField(label='Upload Side Image')
 
 
 def index(request):

@@ -8,10 +8,10 @@
         <!--<script src={% static "bootstrap/js/bootstrap.min.js" %}></script>-->
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-        
+
         <!-- Optional theme -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
-        
+
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
@@ -32,6 +32,12 @@
          })();
 
         </script>
+
+        <style>
+         .asteriskField {
+             display: none;
+         }
+        </style>
     </head>
     <body>
         <div class="container">
@@ -61,6 +67,7 @@
 	                          <div class="tab-pane" id="changes">
                                 {% include "dominion_dividers/version.html" %}
 		                            <ul>
+                                    <li>Jan 8, 2016, git v3.1.0: German translation improvements</li>
                                     <li>Jan 7, 2016, git v3.0.0: Full second edition support; language fixes/new languag support</li>
 			                              <li>Nov 14, 2016, git v2.3: Sauna/Avanto Promo. Preliminary release of v2 cards (better options to mix these in coming soon.) Various fixes to counts, spellings. </li>
 			                              <li>Sep 22, 2016: Options to include # of cards on dividers and to generate slipcases instead of dividers. Add centre-aligned tab option. Fix to Shelters colour. </li>
