@@ -116,7 +116,7 @@ def checkout_and_install_libs():
                 with venv():
                     run('pip install -U .')
             with cd(SRC_DIR):
-                upload_template('version_template.html',
+                upload_template(posixpath.join(LOCAL_DIR, 'version_template.html'),
                                 posixpath.join(SRC_DIR,
                                                DJANGO_APP_NAME,
                                                'templates',
