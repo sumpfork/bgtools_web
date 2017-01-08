@@ -1,6 +1,7 @@
 # Credit goes to https://bitbucket.org/spookylukey/django-fabfile-starter/src
 
 import os
+import datetime as dt
 
 import posixpath
 from fabric.api import env, run, cd, task, local, prefix, lcd
@@ -8,6 +9,7 @@ from fabric.contrib.files import exists, upload_template
 from fabric.contrib.project import rsync_project
 from fabric.context_managers import settings
 import psutil
+import requests
 
 from fabsettings import (USER, HOST, DJANGO_APP_NAME,  # noqa: F401
                          DJANGO_APPS_DIR, LOGS_ROOT_DIR,
@@ -121,14 +123,26 @@ def checkout_and_install_libs():
                 with venv():
                     run('pip install -U .')
             with cd(SRC_DIR):
-                upload_template(posixpath.join(LOCAL_DIR, 'version_template.html'),
-                                posixpath.join(SRC_DIR,
-                                               DJANGO_APP_NAME,
-                                               'templates',
-                                               DJANGO_APP_NAME,
-                                               'version.html'),
-                                context={'version': version,
-                                         'url': version_url})
+                r = requests.get('https://api.github.com/repos/{}/{}/releases'.format(params['owner'],
+                                                                                      params['repo']))
+                changelog = r.json()
+                changelog = [{'url': c['html_url'],
+                              'date': dt.datetime.strptime(c['published_at'][:10], '%Y-%m-%d').date(),
+                              'name': c['name'],
+                              'tag': c['tag_name'],
+                              'description': c['body']}
+                             for c in changelog]
+                for tname, context in [('version', {'version': version, 'url': version_url}),
+                                       ('changelog', {'changelog': changelog})]:
+                    upload_template('{}_template.html'.format(tname),
+                                    posixpath.join(SRC_DIR,
+                                                   DJANGO_APP_NAME,
+                                                   'templates',
+                                                   DJANGO_APP_NAME,
+                                                   '{}.html'.format(tname)),
+                                    context=context,
+                                    template_dir=posixpath.join(LOCAL_DIR, 'templates'),
+                                    use_jinja=True)
 
 
 @task
