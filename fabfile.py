@@ -4,7 +4,7 @@ import os
 
 import posixpath
 from fabric.api import env, run, cd, task, local, prefix, lcd
-from fabric.contrib.files import exists
+from fabric.contrib.files import exists, upload_template
 from fabric.contrib.project import rsync_project
 from fabric.context_managers import settings
 import psutil
@@ -49,7 +49,7 @@ def venv():
 def install_dependencies():
     ensure_virtualenv()
     with venv(), cd(SRC_DIR):
-        run("pip install -r requirements.txt")
+        run("pip install -U -r requirements.txt")
 
 
 def ensure_virtualenv():
@@ -89,7 +89,6 @@ def checkout_and_install_libs():
         'domdiv': {
             'owner': 'sumpfork',
             'repo': 'dominiontabs',
-            'method': 'branch',
             'branch': 'master'
         }
     }
@@ -97,20 +96,34 @@ def checkout_and_install_libs():
     with cd(CHECKOUT_DIR):
         for lib, params in libs.iteritems():
             libdir = params['repo']
+            github_url = 'https://github.com/{}/{}'.format(params['owner'], params['repo'])
             if not exists(libdir):
-                run('git clone https://github.com/{}/{}.git'.format(params['owner'], params['repo']))
+                run('git clone {}.git'.format(github_url))
             with cd(libdir):
                 run('git fetch origin')
                 if env.mode == 'debug' or env.git_tag == 'head':
                     run('git checkout {}'.format(params['branch']))
                     run('git pull')
+                    version = run('git rev-parse {}'.format(params['branch']))
+                    version_url = '{}/commits/{}'.format(github_url, version)
                 elif env.mode == 'release':
                     tag = env.git_tag
                     if tag == 'latest':
                         tag = run('git tag -l "v*"  --sort=-v:refname').split()[0]
                     run('git checkout {}'.format(tag))
+                    version = tag
+                    version_url = '{}/releases/tag/{}'.format(github_url, tag)
                 with venv():
                     run('pip install -U .')
+            with cd(SRC_DIR):
+                upload_template('version_template.html',
+                                posixpath.join(SRC_DIR,
+                                               DJANGO_APP_NAME,
+                                               'templates',
+                                               DJANGO_APP_NAME,
+                                               'version.html'),
+                                context={'version': version,
+                                         'url': version_url})
 
 
 @task
