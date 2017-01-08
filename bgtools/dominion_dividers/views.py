@@ -95,9 +95,10 @@ class TabGenerationOptionsForm(forms.Form):
     choices = sorted(choices)
 
     expansions = forms.MultipleChoiceField(
-        choices=zip(choices, choices),
-        label='Expansions to Include',
-        initial=choices, required=True
+        choices=zip(choices, [c.capitalize() for c in choices]),
+        label='Expansions to Include (Cmd/Ctrl click to select multiple)',
+        initial=choices, required=True,
+        widget=forms.SelectMultiple(attrs={'size': '15'})
     )
     edition = forms.ChoiceField(choices=zip(domdiv.main.EDITION_CHOICES, domdiv.main.EDITION_CHOICES),
                                 label='Edition',
