@@ -120,3 +120,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False
+}

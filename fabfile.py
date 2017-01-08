@@ -27,7 +27,8 @@ PYTHON_PREFIX = ""  # e.g. /usr/local  Use "" for automatic
 PYTHON_FULL_PATH = posixpath.join(PYTHON_PREFIX, 'bin', PYTHON_BIN) if PYTHON_PREFIX else PYTHON_BIN
 
 GUNICORN_PIDFILE = posixpath.join(DJANGO_APP_ROOT, 'gunicorn.pid')
-GUNICORN_LOGFILE = posixpath.join(LOGS_ROOT_DIR, 'gunicorn_{}.log'.format(DJANGO_PROJECT_NAME))
+GUNICORN_ERROR_LOGFILE = posixpath.join(LOGS_ROOT_DIR, 'gunicorn_error_{}.log'.format(DJANGO_PROJECT_NAME))
+GUNICORN_ACCESS_LOGFILE = posixpath.join(LOGS_ROOT_DIR, 'gunicorn_access_{}.log'.format(DJANGO_PROJECT_NAME))
 
 SRC_DIR = posixpath.join(DJANGO_APP_ROOT, DJANGO_PROJECT_NAME)
 VENV_DIR = posixpath.join(DJANGO_APP_ROOT, VENV_SUBDIR)
@@ -89,7 +90,8 @@ def checkout_and_install_libs():
         'domdiv': {
             'owner': 'sumpfork',
             'repo': 'dominiontabs',
-            'branch': 'master'
+            'branch': 'master',
+            'extras': [('fonts/', 'domdiv/fonts/')]
         }
     }
     ensure_dir(CHECKOUT_DIR)
@@ -113,6 +115,9 @@ def checkout_and_install_libs():
                     run('git checkout {}'.format(tag))
                     version = tag
                     version_url = '{}/releases/tag/{}'.format(github_url, tag)
+                for src, target in params['extras']:
+                    rsync_project(local_dir=posixpath.join(LOCAL_DIR, 'extras', lib, src),
+                                  remote_dir=posixpath.join(CHECKOUT_DIR, libdir, target))
                 with venv():
                     run('pip install -U .')
             with cd(SRC_DIR):
@@ -136,7 +141,9 @@ def webserver_stop():
 
 def _webserver_command():
     return ('{venv_dir}/bin/gunicorn '
-            '--log-file={logfile} '
+            '--error-logfile={error_logfile} '
+            '--access-logfile={access_logfile} '
+            '--capture-output '
             '-b 127.0.0.1:{port} '
             '-D -w {workers} --pid {pidfile} '
             '{wsgimodule}:application').format(
@@ -145,7 +152,8 @@ def _webserver_command():
                    'wsgimodule': WSGI_MODULE,
                    'port': APP_PORT,
                    'workers': GUNICORN_WORKERS,
-                   'logfile': GUNICORN_LOGFILE}
+                   'error_logfile': GUNICORN_ERROR_LOGFILE,
+                   'access_logfile': GUNICORN_ACCESS_LOGFILE}
             )
 
 
