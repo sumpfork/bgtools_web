@@ -67,7 +67,8 @@ class TabGenerationOptionsForm(forms.Form):
         self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
         self.helper.form_action = '/'
-        # self.helper.add_input(Submit('submit', 'Generate'))
+        for field in self.fields.itervalues():
+            field.required = False
 
     choices = ['Horizontal', 'Vertical']
     orientation = forms.ChoiceField(choices=zip(choices, choices),
@@ -138,7 +139,6 @@ class TabGenerationOptionsForm(forms.Form):
         initial='rules'
     )
     no_footer = forms.BooleanField(label='Omit set label footer text', initial=False)
-
 
 class ChitBoxForm(forms.Form):
     def __init__(self, *args, **kwargs):
