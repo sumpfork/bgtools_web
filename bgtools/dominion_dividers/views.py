@@ -31,8 +31,7 @@ class TabGenerationOptionsForm(forms.Form):
                 Div(
                     Accordion(
                         AccordionGroup('Expansion Selection',
-                                       'expansions',
-                                       'edition'),
+                                       'expansions'),
                         AccordionGroup('Global Style',
                                        'cropmarks',
                                        'wrappers',
@@ -78,24 +77,23 @@ class TabGenerationOptionsForm(forms.Form):
     pagesize = forms.ChoiceField(choices=zip(choices, choices), label='Page Size', initial='Letter')
     choices = ['Sleeved', 'Unsleeved']
     cardsize = forms.ChoiceField(choices=zip(choices, choices), label='Card Size', initial='Unsleeved')
-    choices = set(domdiv.main.EXPANSION_CHOICES)
-    # for the form, simplify the choices a little
-    common = set()
-    remove = set()
+    choices = domdiv.main.EXPANSION_CHOICES
+    # make pretty names for the expansion choices
+    choiceNames = []
+    replacements = {
+        '1stedition': '1st Edition',
+        '2ndeditionupgrade': '2nd Edition Upgrade',
+        '2ndedition': '2nd Edition'
+    }
     for choice in choices:
-        try:
-            index = choice.lower().index('edition')
-        except ValueError:
-            continue
-        if index == len(choice) - 7:
-            remove.add(choice)
-            common.add(choice.lower()[:index - 3])
-    choices -= remove
-    choices |= common
-    choices = sorted(choices)
-
+        for s, r in replacements.iteritems():
+            if choice.lower().endswith(s):
+                choiceNames.append('{} {}'.format(choice[:-len(s)].capitalize(), r))
+                break
+        else:
+            choiceNames.append(choice.capitalize())
     expansions = forms.MultipleChoiceField(
-        choices=zip(choices, [c.capitalize() for c in choices]),
+        choices=zip(choices, choiceNames),
         label='Expansions to Include (Cmd/Ctrl click to select multiple)',
         initial=choices,
         widget=forms.SelectMultiple(attrs={'size': '15'})
@@ -166,7 +164,6 @@ def index(request):
             options.orientation = data['orientation'].lower()
             options.size = data['cardsize'].lower()
             options.expansions = data['expansions']
-            options.edition = data['edition']
             options.papersize = data['pagesize']
             options.cropmarks = data['cropmarks']
             options.wrapper = data['wrappers']

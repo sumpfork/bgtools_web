@@ -15,7 +15,8 @@ import os
 from private_settings import (SECRET_KEY,  # noqa: F401
                               ALLOWED_HOSTS,
                               DEBUG,
-                              STATIC_ROOT)
+                              STATIC_ROOT,
+                              LOG_DIR)
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -123,5 +124,20 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+        'logfile': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'bgtools_django.log')
+        },
+    },
+    'root': {
+        'level': 'INFO',
+        'handlers': ['console', 'logfile']
+    },
 }
