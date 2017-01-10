@@ -11,7 +11,7 @@ from fabric.context_managers import settings
 import psutil
 import requests
 
-from fabsettings import (USER, HOST, DJANGO_APP_NAME,  # noqa: F401
+from fabsettings import (USER, HOST, DJANGO_APP_NAME,
                          DJANGO_APPS_DIR, LOGS_ROOT_DIR,
                          APP_PORT, GUNICORN_WORKERS, DJANGO_PROJECT_NAME)
 
