@@ -8,37 +8,14 @@ from fabric.api import env, run, cd, task, local, prefix, lcd
 from fabric.contrib.files import exists, upload_template
 from fabric.contrib.project import rsync_project
 from fabric.context_managers import settings
-import psutil
 import requests
 
 from fabsettings import (USER, HOST, DJANGO_APP_NAME,
                          DJANGO_APPS_DIR, LOGS_ROOT_DIR,
-                         APP_PORT, GUNICORN_WORKERS, DJANGO_PROJECT_NAME)
+                         APP_PORT, GUNICORN_WORKERS, DJANGO_PROJECT_NAME,
+                         STAGING_APP_PORT)
 
 env.hosts = ['{}@{}'.format(USER, HOST)]
-env.use_ssh_config = True
-
-DJANGO_APP_ROOT = posixpath.join(DJANGO_APPS_DIR, DJANGO_PROJECT_NAME)
-
-# Subdirectory of DJANGO_APP_ROOT in which virtualenv will be stored
-VENV_SUBDIR = 'venv'
-
-# Python version
-PYTHON_BIN = "python2.7"
-PYTHON_PREFIX = ""  # e.g. /usr/local  Use "" for automatic
-PYTHON_FULL_PATH = posixpath.join(PYTHON_PREFIX, 'bin', PYTHON_BIN) if PYTHON_PREFIX else PYTHON_BIN
-
-GUNICORN_PIDFILE = posixpath.join(DJANGO_APP_ROOT, 'gunicorn.pid')
-GUNICORN_ERROR_LOGFILE = posixpath.join(LOGS_ROOT_DIR, 'gunicorn_error_{}.log'.format(DJANGO_PROJECT_NAME))
-GUNICORN_ACCESS_LOGFILE = posixpath.join(LOGS_ROOT_DIR, 'gunicorn_access_{}.log'.format(DJANGO_PROJECT_NAME))
-
-SRC_DIR = posixpath.join(DJANGO_APP_ROOT, DJANGO_PROJECT_NAME)
-VENV_DIR = posixpath.join(DJANGO_APP_ROOT, VENV_SUBDIR)
-CHECKOUT_DIR = posixpath.join(DJANGO_APP_ROOT, 'checkouts')
-
-WSGI_MODULE = '{}.wsgi'.format(DJANGO_PROJECT_NAME)
-
-LOCAL_DIR = os.path.dirname(os.path.realpath(env.real_fabfile))
 
 
 def venv():
@@ -46,25 +23,25 @@ def venv():
     Runs a command in a virtualenv (which has been specified using
     the virtualenv context manager
     """
-    return prefix("source {}/bin/activate".format(VENV_DIR))
+    return prefix("source {}/bin/activate".format(env.VENV_DIR))
 
 
 def install_dependencies():
     ensure_virtualenv()
-    with venv(), cd(SRC_DIR):
+    with venv(), cd(env.SRC_DIR):
         run("pip install -U -r requirements.txt")
 
 
 def ensure_virtualenv():
-    ensure_dir(SRC_DIR)
-    if exists(VENV_DIR):
+    ensure_dir(env.SRC_DIR)
+    if exists(env.VENV_DIR):
         return
 
-    with cd(DJANGO_APP_ROOT):
+    with cd(env.DJANGO_APP_ROOT):
         run("virtualenv --no-site-packages --python={} {}".format(
-            PYTHON_BIN, VENV_SUBDIR))
+            env.PYTHON_BIN, env.VENV_SUBDIR))
         run("echo {} > {}/lib/{}/site-packages/projectsource.pth".format(
-            SRC_DIR, VENV_SUBDIR, PYTHON_BIN))
+            env.SRC_DIR, env.VENV_SUBDIR, env.PYTHON_BIN))
 
 
 def ensure_dir(d):
@@ -75,8 +52,9 @@ def ensure_dir(d):
 
 
 def copy_settings():
-    with lcd(LOCAL_DIR):
-        fname = 'settings_{}.py'.format(env.mode)
+    print env.hosts
+    with lcd(env.LOCAL_DIR):
+        fname = 'settings_{}.py'.format(env.MODE)
         local('cp {} bgtools/bgtools/private_settings.py'.format(fname))
 
 
@@ -84,7 +62,8 @@ def rsync_source():
     """
     rsync the source over to the server
     """
-    rsync_project(local_dir=os.path.join(LOCAL_DIR, 'bgtools'), remote_dir=DJANGO_APP_ROOT)
+    rsync_project(local_dir=os.path.join(env.LOCAL_DIR, 'bgtools'),
+                  remote_dir=env.DJANGO_APP_ROOT)
 
 
 def checkout_and_install_libs():
@@ -96,8 +75,8 @@ def checkout_and_install_libs():
             'extras': [('fonts/', 'domdiv/fonts/')]
         }
     }
-    ensure_dir(CHECKOUT_DIR)
-    with cd(CHECKOUT_DIR):
+    ensure_dir(env.CHECKOUT_DIR)
+    with cd(env.CHECKOUT_DIR):
         for lib, params in libs.iteritems():
             libdir = params['repo']
             github_url = 'https://github.com/{}/{}'.format(params['owner'], params['repo'])
@@ -105,24 +84,24 @@ def checkout_and_install_libs():
                 run('git clone {}.git'.format(github_url))
             with cd(libdir):
                 run('git fetch origin')
-                if env.mode == 'debug' or env.git_tag == 'head':
+                if env.MODE == 'debug' or env.GIT_TAG == 'head':
                     run('git checkout {}'.format(params['branch']))
                     run('git pull')
                     version = run('git rev-parse {}'.format(params['branch']))
                     version_url = '{}/commits/{}'.format(github_url, version)
-                elif env.mode == 'release':
-                    tag = env.git_tag
+                elif env.MODE == 'release':
+                    tag = env.GIT_TAG
                     if tag == 'latest':
                         tag = run('git tag -l "v*"  --sort=-v:refname').split()[0]
                     run('git checkout {}'.format(tag))
                     version = tag
                     version_url = '{}/releases/tag/{}'.format(github_url, tag)
                 for src, target in params['extras']:
-                    rsync_project(local_dir=posixpath.join(LOCAL_DIR, 'extras', lib, src),
-                                  remote_dir=posixpath.join(CHECKOUT_DIR, libdir, target))
+                    rsync_project(local_dir=posixpath.join(env.LOCAL_DIR, 'extras', lib, src),
+                                  remote_dir=posixpath.join(env.CHECKOUT_DIR, libdir, target))
                 with venv():
                     run('pip install -U .')
-            with cd(SRC_DIR):
+            with cd(env.SRC_DIR):
                 r = requests.get('https://api.github.com/repos/{}/{}/releases'.format(params['owner'],
                                                                                       params['repo']))
                 changelog = r.json()
@@ -135,13 +114,13 @@ def checkout_and_install_libs():
                 for tname, context in [('version', {'version': version, 'url': version_url}),
                                        ('changelog', {'changelog': changelog})]:
                     upload_template('{}_template.html'.format(tname),
-                                    posixpath.join(SRC_DIR,
+                                    posixpath.join(env.SRC_DIR,
                                                    DJANGO_APP_NAME,
                                                    'templates',
                                                    DJANGO_APP_NAME,
                                                    '{}.html'.format(tname)),
                                     context=context,
-                                    template_dir=posixpath.join(LOCAL_DIR, 'templates'),
+                                    template_dir=posixpath.join(env.LOCAL_DIR, 'templates'),
                                     use_jinja=True)
 
 
@@ -150,7 +129,7 @@ def webserver_stop():
     """
     Stop the webserver that is running the Django instance
     """
-    run("kill $(cat {})".format(GUNICORN_PIDFILE))
+    run("kill $(cat {})".format(env.GUNICORN_PIDFILE))
 
 
 def _webserver_command():
@@ -161,13 +140,13 @@ def _webserver_command():
             '-b 127.0.0.1:{port} '
             '-D -w {workers} --pid {pidfile} '
             '{wsgimodule}:application').format(
-                **{'venv_dir': VENV_DIR,
-                   'pidfile': GUNICORN_PIDFILE,
-                   'wsgimodule': WSGI_MODULE,
-                   'port': APP_PORT,
+                **{'venv_dir': env.VENV_DIR,
+                   'pidfile': env.GUNICORN_PIDFILE,
+                   'wsgimodule': env.WSGI_MODULE,
+                   'port': APP_PORT if not env.STAGING else STAGING_APP_PORT,
                    'workers': GUNICORN_WORKERS,
-                   'error_logfile': GUNICORN_ERROR_LOGFILE,
-                   'access_logfile': GUNICORN_ACCESS_LOGFILE}
+                   'error_logfile': env.GUNICORN_ERROR_LOGFILE,
+                   'access_logfile': env.GUNICORN_ACCESS_LOGFILE}
             )
 
 
@@ -177,7 +156,7 @@ def webserver_start():
     Starts the webserver that is running the Django instance
     """
     run(_webserver_command(), pty=False)
-    run('cat {}'.format(GUNICORN_PIDFILE))
+    run('cat {}'.format(env.GUNICORN_PIDFILE))
 
 
 @task
@@ -186,36 +165,49 @@ def webserver_restart():
     Restarts the webserver that is running the Django instance
     """
     with settings(warn_only=True):
-        run("kill -HUP $(cat {})".format(GUNICORN_PIDFILE))
+        run("kill -HUP $(cat {})".format(env.GUNICORN_PIDFILE))
     webserver_start()
 
 
-def _is_webserver_running():
-    try:
-        pid = int(open(GUNICORN_PIDFILE).read().strip())
-    except (IOError, OSError):
-        return False
-    for ps in psutil.process_iter():
-        if (ps.pid == pid and
-            any('gunicorn' in c for c in ps.cmdline)
-                and ps.username == USER):
-            return True
-    return False
+def populate_env(mode, tag, staging):
+    env.MODE = mode
+    env.GIT_TAG = tag
+    env.STAGING = staging
+
+    env.use_ssh_config = True
+
+    project = DJANGO_PROJECT_NAME
+    if env.STAGING:
+        project += '_staging'
+    env.DJANGO_APP_ROOT = posixpath.join(DJANGO_APPS_DIR, project)
+
+    # Subdirectory of DJANGO_APP_ROOT in which virtualenv will be stored
+    env.VENV_SUBDIR = 'venv'
+
+    # Python version
+    env.PYTHON_BIN = "python2.7"
+    env.PYTHON_PREFIX = ""  # e.g. /usr/local  Use "" for automatic
+    env.PYTHON_FULL_PATH = (posixpath.join(env.PYTHON_PREFIX, 'bin', env.PYTHON_BIN)
+                            if env.PYTHON_PREFIX else env.PYTHON_BIN)
+
+    env.GUNICORN_PIDFILE = posixpath.join(env.DJANGO_APP_ROOT, 'gunicorn.pid')
+    env.GUNICORN_ERROR_LOGFILE = posixpath.join(LOGS_ROOT_DIR,
+                                                'gunicorn_error_{}.log'.format(DJANGO_PROJECT_NAME))
+    env.GUNICORN_ACCESS_LOGFILE = posixpath.join(LOGS_ROOT_DIR,
+                                                 'gunicorn_access_{}.log'.format(DJANGO_PROJECT_NAME))
+
+    env.SRC_DIR = posixpath.join(env.DJANGO_APP_ROOT, DJANGO_PROJECT_NAME)
+    env.VENV_DIR = posixpath.join(env.DJANGO_APP_ROOT, env.VENV_SUBDIR)
+    env.CHECKOUT_DIR = posixpath.join(env.DJANGO_APP_ROOT, 'checkouts')
+
+    env.WSGI_MODULE = '{}.wsgi'.format(DJANGO_PROJECT_NAME)
+
+    env.LOCAL_DIR = os.path.dirname(os.path.realpath(env.real_fabfile))
 
 
 @task
-def local_webserver_start():
-    """
-    Starts the webserver that is running the Django instance, on the local machine
-    """
-    if not _is_webserver_running():
-        local(_webserver_command())
-
-
-@task
-def deploy(mode='debug', tag='latest'):
-    env['mode'] = mode
-    env['git_tag'] = tag
+def deploy(mode='debug', tag='latest', staging=True):
+    populate_env(mode, tag, staging)
     copy_settings()
     rsync_source()
     install_dependencies()
