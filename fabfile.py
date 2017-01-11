@@ -66,6 +66,14 @@ def rsync_source():
                   remote_dir=env.DJANGO_APP_ROOT)
 
 
+def collect_static():
+    """
+    Collect django static content on server
+    """
+    with venv(), cd(env.SRC_DIR):
+        run('python manage.py collectstatic --no-input')
+
+
 def checkout_and_install_libs():
     libs = {
         'domdiv': {
@@ -164,9 +172,11 @@ def webserver_restart():
     """
     Restarts the webserver that is running the Django instance
     """
-    with settings(warn_only=True):
-        run("kill -HUP $(cat {})".format(env.GUNICORN_PIDFILE))
-    webserver_start()
+    if exists(env.GUNICORN_PIDFILE):
+        with settings(warn_only=True):
+            run("kill -HUP $(cat {})".format(env.GUNICORN_PIDFILE))
+    if not exists(env.GUNICORN_PIDFILE):
+        webserver_start()
 
 
 def populate_env(mode, tag, staging):
@@ -192,9 +202,9 @@ def populate_env(mode, tag, staging):
 
     env.GUNICORN_PIDFILE = posixpath.join(env.DJANGO_APP_ROOT, 'gunicorn.pid')
     env.GUNICORN_ERROR_LOGFILE = posixpath.join(LOGS_ROOT_DIR,
-                                                'gunicorn_error_{}.log'.format(DJANGO_PROJECT_NAME))
+                                                'gunicorn_error_{}.log'.format(project))
     env.GUNICORN_ACCESS_LOGFILE = posixpath.join(LOGS_ROOT_DIR,
-                                                 'gunicorn_access_{}.log'.format(DJANGO_PROJECT_NAME))
+                                                 'gunicorn_access_{}.log'.format(project))
 
     env.SRC_DIR = posixpath.join(env.DJANGO_APP_ROOT, DJANGO_PROJECT_NAME)
     env.VENV_DIR = posixpath.join(env.DJANGO_APP_ROOT, env.VENV_SUBDIR)
@@ -212,4 +222,5 @@ def deploy(mode='debug', tag='latest', staging=True):
     rsync_source()
     install_dependencies()
     checkout_and_install_libs()
+    collect_static()
     webserver_restart()
