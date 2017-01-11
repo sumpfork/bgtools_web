@@ -183,7 +183,6 @@ def populate_env(mode, tag, staging):
     env.MODE = mode
     env.GIT_TAG = tag
     env.STAGING = staging
-
     env.use_ssh_config = True
 
     project = DJANGO_PROJECT_NAME
@@ -217,6 +216,8 @@ def populate_env(mode, tag, staging):
 
 @task
 def deploy(mode='debug', tag='latest', staging=True):
+    staging = staging in ['True', 'true', 1]
+    print(staging)
     populate_env(mode, tag, staging)
     copy_settings()
     rsync_source()
