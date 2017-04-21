@@ -138,6 +138,7 @@ class TabGenerationOptionsForm(forms.Form):
     )
     no_footer = forms.BooleanField(label='Omit set label footer text', initial=False)
 
+
 class ChitBoxForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ChitBoxForm, self).__init__(*args, **kwargs)
@@ -163,7 +164,8 @@ def index(request):
             data = form.cleaned_data
             options.orientation = data['orientation'].lower()
             options.size = data['cardsize'].lower()
-            options.expansions = data['expansions']
+            # due to argparse this should be a list of lists
+            options.expansions = [[e] for e in data['expansions']]
             options.papersize = data['pagesize']
             options.cropmarks = data['cropmarks']
             options.wrapper = data['wrappers']
@@ -182,7 +184,8 @@ def index(request):
             options.text_front = data['divider_front_text']
             options.text_back = data['divider_back_text']
             options.no_page_footer = data['no_footer']
-            print options
+            options = domdiv.main.clean_opts(options)
+            print 'options after cleaning:', options
 
             # Create the HttpResponse object with the appropriate PDF headers.
             response = HttpResponse(content_type='application/pdf')

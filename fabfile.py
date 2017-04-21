@@ -133,10 +133,11 @@ def checkout_and_install_libs():
 
 
 @task
-def webserver_stop():
+def webserver_stop(mode='debug', tag='latest', staging=True):
     """
     Stop the webserver that is running the Django instance
     """
+    populate_env(mode, tag, staging)
     run("kill $(cat {})".format(env.GUNICORN_PIDFILE))
 
 
@@ -159,30 +160,33 @@ def _webserver_command():
 
 
 @task
-def webserver_start():
+def webserver_start(mode='debug', tag='latest', staging=True):
     """
     Starts the webserver that is running the Django instance
     """
+    populate_env(mode, tag, staging)
     run(_webserver_command(), pty=False)
     run('cat {}'.format(env.GUNICORN_PIDFILE))
 
 
 @task
-def webserver_restart():
+def webserver_restart(mode='debug', tag='latest', staging=True):
     """
     Restarts the webserver that is running the Django instance
     """
+    populate_env(mode, tag, staging)
     if exists(env.GUNICORN_PIDFILE):
         with settings(warn_only=True):
             run("kill -HUP $(cat {})".format(env.GUNICORN_PIDFILE))
     if not exists(env.GUNICORN_PIDFILE):
-        webserver_start()
+        webserver_start(mode, tag, staging)
 
 
 def populate_env(mode, tag, staging):
     env.MODE = mode
     env.GIT_TAG = tag
     env.STAGING = staging
+
     env.use_ssh_config = True
 
     project = DJANGO_PROJECT_NAME
@@ -224,4 +228,4 @@ def deploy(mode='debug', tag='latest', staging=True):
     install_dependencies()
     checkout_and_install_libs()
     collect_static()
-    webserver_restart()
+    webserver_restart(mode, tag, staging)
