@@ -108,6 +108,29 @@
                 </div>
             </div>
         </div>
+        <!-- SHOW/HIDE items that depend on others -->
+        <script type="text/javascript">
+        $("#div_id_notch").hide();
+        $("form input[name='wrappers']").click(function () {
+            if(document.getElementById('id_wrappers').checked) {
+                $("#div_id_notch").show();
+            } else {
+                $("#div_id_notch").hide();
+            }
+        });
+
+        $("#div_id_centre_expansion_dividers").hide();
+        $("#div_id_expansion_dividers_long_name").hide();
+        $("form input[name='expansion_dividers']").click(function () {
+            if(document.getElementById('id_expansion_dividers').checked) {
+                $("#div_id_centre_expansion_dividers").show();
+                $("#div_id_expansion_dividers_long_name").show();
+            } else {
+                $("#div_id_centre_expansion_dividers").hide();
+                $("#div_id_expansion_dividers_long_name").hide();
+            }
+        });
+        </script>
     </body>
 </html>
 
