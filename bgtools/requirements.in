@@ -1,0 +1,4 @@
+django
+gunicorn
+django-crispy-forms
+Wand # move to domtabs

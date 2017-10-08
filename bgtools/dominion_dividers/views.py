@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django import forms
 import domdiv.main
@@ -6,6 +6,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, HTML
 from crispy_forms.bootstrap import FormActions, Accordion, AccordionGroup
 # from chitboxes.chitboxes import ChitBoxGenerator
+
+import base64
 
 
 class TabGenerationOptionsForm(forms.Form):
@@ -155,51 +157,64 @@ class ChitBoxForm(forms.Form):
     side_image = forms.ImageField(label='Upload Side Image')
 
 
+def _init_options_from_form_data(post_data):
+    form = TabGenerationOptionsForm(post_data)
+    if form.is_valid():
+        # generate default options
+        options = domdiv.main.parse_opts([])
+        data = form.cleaned_data
+        options.orientation = data['orientation'].lower()
+        options.size = data['cardsize'].lower()
+        # due to argparse this should be a list of lists
+        options.expansions = [[e] for e in data['expansions']]
+        options.papersize = data['pagesize']
+        options.cropmarks = data['cropmarks']
+        options.wrapper = data['wrappers']
+        options.count = data['counts']
+        options.tab_name_align = data['tab_name_align']
+        options.tab_side = data['tab_side']
+        options.expansion_dividers = data['expansion_dividers']
+        options.cost = data['cost_icon']
+        options.set_icon = data['set_icon']
+        options.order = data['order']
+        options.special_card_groups = data['group_special']
+        options.tabs_only = data['tabsonly']
+        options.language = data['language']
+        options.exclude_events = data['events']
+        options.exclude_landmarks = data['events']
+        options.text_front = data['divider_front_text']
+        options.text_back = data['divider_back_text']
+        options.no_page_footer = data['no_footer']
+        options = domdiv.main.clean_opts(options)
+        print 'options after cleaning:', options
+        return options
+    return None
+
+
 def index(request):
     if request.method == 'POST':
-        form = TabGenerationOptionsForm(request.POST)
-        if form.is_valid():
-            # generate default options
-            options = domdiv.main.parse_opts([])
-            data = form.cleaned_data
-            options.orientation = data['orientation'].lower()
-            options.size = data['cardsize'].lower()
-            # due to argparse this should be a list of lists
-            options.expansions = [[e] for e in data['expansions']]
-            options.papersize = data['pagesize']
-            options.cropmarks = data['cropmarks']
-            options.wrapper = data['wrappers']
-            options.count = data['counts']
-            options.tab_name_align = data['tab_name_align']
-            options.tab_side = data['tab_side']
-            options.expansion_dividers = data['expansion_dividers']
-            options.cost = data['cost_icon']
-            options.set_icon = data['set_icon']
-            options.order = data['order']
-            options.special_card_groups = data['group_special']
-            options.tabs_only = data['tabsonly']
-            options.language = data['language']
-            options.exclude_events = data['events']
-            options.exclude_landmarks = data['events']
-            options.text_front = data['divider_front_text']
-            options.text_back = data['divider_back_text']
-            options.no_page_footer = data['no_footer']
-            options = domdiv.main.clean_opts(options)
-            print 'options after cleaning:', options
-
-            # Create the HttpResponse object with the appropriate PDF headers.
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="sumpfork_dominion_tabs.pdf"'
-            options.outfile = response
-
-            domdiv.main.generate(options)
-            return response
+        options = _init_options_from_form_data(request.POST)
+        # Create the HttpResponse object with the appropriate PDF headers.
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="sumpfork_dominion_tabs.pdf"'
+        options.outfile = response
+        domdiv.main.generate(options)
+        return response
     else:
         form = TabGenerationOptionsForm()
 
     return render(request, 'dominion_dividers/index.html', {'form': form})
 
 
+def preview(request):
+    options = _init_options_from_form_data(request.POST)
+    preview = domdiv.main.generate_sample(options).getvalue()
+    preview = base64.b64encode(preview)
+    # Create the HttpResponse object with the appropriate PDF headers.
+    try:
+        return JsonResponse({'preview_data': preview})
+    except Exception, e:
+        return JsonResponse({'Exception': str(e)})
 # def chitbox(request):
 #     if request.method == 'POST':
 #         form = ChitBoxForm(request.POST, request.FILES)
