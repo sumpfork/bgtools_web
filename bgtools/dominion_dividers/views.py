@@ -48,7 +48,8 @@ class TabGenerationOptionsForm(forms.Form):
                                        'tab_name_align',
                                        'set_icon',
                                        'cost_icon',
-                                       'counts'),
+                                       'counts',
+                                       'types'),
                         AccordionGroup('Text Options',
                                        'divider_front_text',
                                        'divider_back_text',
@@ -106,6 +107,7 @@ class TabGenerationOptionsForm(forms.Form):
     cropmarks = forms.BooleanField(label="Cropmarks Instead of Outlines", initial=False)
     wrappers = forms.BooleanField(label="Slipcases Instead of Dividers", initial=False)
     counts = forms.BooleanField(label="Show # of Cards per Divider", initial=False)
+    types = forms.BooleanField(label="Show Card Type on each Divider", initial=False)
     tab_name_align = forms.ChoiceField(choices=zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES))
     tab_side = forms.ChoiceField(choices=zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES))
     samesidelabels = forms.BooleanField(label="Same Side Labels", initial=False)
@@ -171,6 +173,7 @@ def _init_options_from_form_data(post_data):
         options.cropmarks = data['cropmarks']
         options.wrapper = data['wrappers']
         options.count = data['counts']
+        options.types = data['types']
         options.tab_name_align = data['tab_name_align']
         options.tab_side = data['tab_side']
         options.expansion_dividers = data['expansion_dividers']
