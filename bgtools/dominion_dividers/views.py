@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django import forms
 import domdiv.main
@@ -6,6 +6,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, HTML
 from crispy_forms.bootstrap import FormActions, Accordion, AccordionGroup
 # from chitboxes.chitboxes import ChitBoxGenerator
+
+import base64
 
 
 class TabGenerationOptionsForm(forms.Form):
@@ -203,53 +205,55 @@ def _init_options_from_form_data(post_data):
         options = domdiv.main.parse_opts([])
         data = form.cleaned_data
         options.orientation = data['orientation'].lower()
-            # Separate out the various card sizes
-            if 'unsleeved' in data['cardsize'].lower():
-                options.size = 'unsleeved'
-            else:
-                options.size = 'sleeved'
-            if 'thick' in data['cardsize'].lower():
-                options.sleeved_thick = True
-            elif 'thin' in data['cardsize'].lower():
-                options.sleeved_thin = True          
-            # due to argparse this should be a list of lists
-            options.expansions = [[e] for e in data['expansions']]
-            options.fan = [[e] for e in data['fan_expansions']]
-            if data['back_offset']:
-                options.back_offset = data['back_offset']
-            if data['back_offset_height']:
-                options.back_offset_height = data['back_offset_height']
-            if data['horizontal_gap']:
-                options.horizontal_gap = data['horizontal_gap']
-            if data['vertical_gap']:
-                options.vertical_gap = data['vertical_gap']
-            options.upgrade_with_expansion = data['upgrade_with_expansion']
-            options.base_cards_with_expansion = data['base_cards_with_expansion']
-            options.papersize = data['pagesize']
-            options.cropmarks = data['cropmarks']
-            options.wrapper = data['wrappers']
-            options.notch = data['notch']
-            options.count = data['counts']
-            options.types = data['types']
-            options.tab_name_align = data['tab_name_align']
-            options.tab_side = data['tab_side']
-            options.expansion_dividers = data['expansion_dividers']
-            options.centre_expansion_dividers = data['centre_expansion_dividers']
-            options.expansion_dividers_long_name = data['expansion_dividers_long_name']
-            options.cost = data['cost_icon']
-            options.set_icon = data['set_icon']
-            options.order = data['order']
-            options.special_card_groups = data['group_special']
-            options.tabs_only = data['tabsonly']
-            options.language = data['language']
-            options.exclude_events = data['events']
-            options.exclude_landmarks = data['events']
-            options.text_front = data['divider_front_text']
-            options.text_back = data['divider_back_text']
-            options.no_page_footer = data['no_footer']
-            options = domdiv.main.clean_opts(options)
-            print 'options after cleaning:', options
-        return None
+        # Separate out the various card sizes
+        if 'unsleeved' in data['cardsize'].lower():
+            options.size = 'unsleeved'
+        else:
+            options.size = 'sleeved'
+        if 'thick' in data['cardsize'].lower():
+            options.sleeved_thick = True
+        elif 'thin' in data['cardsize'].lower():
+            options.sleeved_thin = True          
+        # due to argparse this should be a list of lists
+        options.expansions = [[e] for e in data['expansions']]
+        options.fan = [[e] for e in data['fan_expansions']]
+        if data['back_offset']:
+            options.back_offset = data['back_offset']
+        if data['back_offset_height']:
+            options.back_offset_height = data['back_offset_height']
+        if data['horizontal_gap']:
+            options.horizontal_gap = data['horizontal_gap']
+        if data['vertical_gap']:
+            options.vertical_gap = data['vertical_gap']
+        options.upgrade_with_expansion = data['upgrade_with_expansion']
+        options.base_cards_with_expansion = data['base_cards_with_expansion']
+        options.papersize = data['pagesize']
+        options.cropmarks = data['cropmarks']
+        options.wrapper = data['wrappers']
+        options.notch = data['notch']
+        options.count = data['counts']
+        options.types = data['types']
+        options.tab_name_align = data['tab_name_align']
+        options.tab_side = data['tab_side']
+        options.expansion_dividers = data['expansion_dividers']
+        options.centre_expansion_dividers = data['centre_expansion_dividers']
+        options.expansion_dividers_long_name = data['expansion_dividers_long_name']
+        options.cost = data['cost_icon']
+        options.set_icon = data['set_icon']
+        options.order = data['order']
+        options.special_card_groups = data['group_special']
+        options.tabs_only = data['tabsonly']
+        options.language = data['language']
+        options.exclude_events = data['events']
+        options.exclude_landmarks = data['events']
+        options.text_front = data['divider_front_text']
+        options.text_back = data['divider_back_text']
+        options.no_page_footer = data['no_footer']
+        options = domdiv.main.clean_opts(options)
+        print 'options after cleaning:', options
+    return None
+
+
 def index(request):
     if request.method == 'POST':
         options = _init_options_from_form_data(request.POST)
@@ -265,6 +269,15 @@ def index(request):
     return render(request, 'dominion_dividers/index.html', {'form': form})
 
 
+def preview(request):
+    options = _init_options_from_form_data(request.POST)
+    preview = domdiv.main.generate_sample(options).getvalue()
+    preview = base64.b64encode(preview)
+    # Create the HttpResponse object with the appropriate PDF headers.
+    try:
+        return JsonResponse({'preview_data': preview})
+    except Exception, e:
+        return JsonResponse({'Exception': str(e)})
 # def chitbox(request):
 #     if request.method == 'POST':
 #         form = ChitBoxForm(request.POST, request.FILES)

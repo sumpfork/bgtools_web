@@ -4,20 +4,45 @@
 <!DOCTYPE html>
 <html lang="en">
     <head><!--?xml version="1.0" encoding="UTF-8"?-->
-        <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-        <!--<script src={% static "bootstrap/js/bootstrap.min.js" %}></script>-->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
         <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
         <!-- Optional theme -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+        <!-- <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
+        <script   src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
 
         <!-- Latest compiled and minified JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <script src={% static "dominion_dividers/js/jquery.zoom.min.js" %}></script>
+        <script src={% static "dominion_dividers/js/spin.js" %}></script>
+        <script>
+         previewUpdate = function () {
+             var spinner = new spin.Spinner().spin()
+             $('#preview_img').append(spinner.el);
+             $.ajax({
+                 type: 'POST',
+                 url: '/preview/',
+                 data: $('#id-tabgenoptions').serialize(),
+                 success: function(data) {
+                     spinner.stop();
+                     var src = '"data:image/png;base64,' + data['preview_data'] + '"'
+                     $('#preview_img').html('<img class="img-rounded img-responsive" src=' + src + '></img>');
+                     $('#preview_img').zoom();
+                 }
+             });
+         };
+         $(function() {
+             $('input').change(previewUpdate);
+             $('select').change(previewUpdate);
+         });
+        </script>
+
         <title>sumpfork's Dominion Tab Generator</title>
-        <!-- <link rel="stylesheet" href={% static "css/domtabs.css" %}> -->
         <script type="text/javascript">
 
          var _gaq = _gaq || [];
@@ -30,21 +55,21 @@
              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
              var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
          })();
-
         </script>
 
         <style>
          .asteriskField {
              display: none;
          }
+         a.plainlink:hover {
+             text-decoration: none;
+         }
         </style>
     </head>
     <body>
         <div class="container">
-            <div class="row">
-                <div class="page-header">
-                    <h2>Sumpfork's Dominion Divider Generator</h2>
-                </div>
+            <div class="page-header">
+                <h2>Sumpfork's Dominion Divider Generator</h2>
             </div>
             <div class="row">
                 <div class="col-md-6">
@@ -59,12 +84,36 @@
 
 	                      <div class="tab-content">
 	                          <div class="tab-pane active" id="about">
-		                            <h4>Welcome to the Dominion divider generator.</h4>
+                                <div class="row">
+                                    <div class="col-md-9">
+		                                    <h4>Welcome to the Dominion divider generator.</h4>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-right">
+                                            <div class="btn-group-vertical btn-group-sm" role="group">
+                                                <a href="https://github.com/sumpfork/bgtools_web"
+                                                   class="btn btn-default">
+                                                    <div class="text-right">
+                                                        Web
+                                                        <img src={% static "dominion_dividers/images/GitHub-Mark-32px.png" %} width="16"></img>
+                                                    </div>
+                                                </a>
+                                                <a href="https://github.com/sumpfork/dominiontabs"
+                                                   class="btn btn-default">
+                                                    Dividers
+                                                    <img src={% static "dominion_dividers/images/GitHub-Mark-32px.png" %} width="16"></img>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <p>
-                                <img alt="Dividers in Action"
-                                     src={% static "dominion_dividers/images/divider_photo.jpg" %}
-                                     class="img-rounded img-responsive"
-                                ></img>
+                                    <div id="preview_img">
+                                        <img alt="Dividers in Action"
+                                             src={% static "dominion_dividers/images/divider_photo.jpg" %}
+                                             class="img-rounded img-responsive"
+                                        ></img>
+                                    </div>
                                 </p>
 		                            <p>Quite a while ago, I converted my base Dominion box into a <a href="http://boardgamegeek.com/thread/576889/original-box-modded-for-base-intrigue-seaside-pros">storage solution for the base game + 3 expansions plus extra materials</a>. In the process, I wrote a Python script (<a href="https://github.com/sumpfork/dominiontabs">get the source here</a>) to generate pdfs of the dividers that I used. I then published those pdfs to <a href="http://boardgamegeek.com">BoardGameGeek</a> and since then have improved them due to feedback <a href="http://boardgamegeek.com/filepage/59848/sumpforks-double-sided-dominion-tabs-for-all-expan">numerous times.</a> However, people keep putting in requests for special versions (with cropmarks, for different sets, etc.) and the file I publish keeps getting bigger and bigger due to including all version. So, instead of growing the number of versions, I've decided to try putting the script behind the web form on the left so those interested can generate their own versions. Others have also taken my source and <a href="http://boardgamegeek.com/filepage/61406/improved-sumpfork-double-sided-dominion-tabs-for-a">changed it</a> if you are looking for different things.</p>
 		                            <p>Please note issues and requests on <a href="https://github.com/sumpfork/dominiontabs/issues">github</a>, talk to fellow users <a href="http://boardgamegeek.com/article/11291217">in this thread</a>, or contact <a href="http://boardgamegeek.com/user/sumpfork">me</a> via <a href="http://boardgamegeek.com/geekmail/compose?touser=sumpfork">BGG mail</a>. You can also thumb the thread or the <a href="http://boardgamegeek.com/filepage/59848/sumpforks-double-sided-dominion-tabs-for-all-expan">original file thread</a> if you like these dividers, or even better post pictures of how you used them - I'm always curious.</p>
@@ -96,13 +145,15 @@
 		                                <li>Jan 8, 2014: Fix alternating/same side tabs options.</li>
 		                            </ul>
 	                          </div>
-	                      </div>
-                        <div class="row">
-                            <div class="pull-right">
-	                              Hosted on <a href="https://www.webfaction.com/?aid=41255">
-                                <img src="https://www.webfaction.com/local_media/images/banners/webfaction-110x40-dark-logo-bg.png"></img>
-                                </a>
-	                          </div>
+                            <div class="row">
+                                <div class="pull-right">
+	                                  <a href="https://www.webfaction.com/?aid=41255"
+                                       class="text-muted plainlink">
+                                        <img src="https://www.webfaction.com/local_media/images/banners/webfaction-24x24-dark-bg.png"></img>
+                                        Hosted on WebFaction
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
