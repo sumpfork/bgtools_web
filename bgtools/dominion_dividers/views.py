@@ -149,8 +149,6 @@ class TabGenerationOptionsForm(forms.Form):
     order = forms.ChoiceField(label="Divider Order",
                               choices=zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES))
     group_special = forms.BooleanField(label="Group Special Cards (e.g. Prizes)", initial=True)
-    exclude_events = forms.BooleanField(label="Group all 'Event' cards into one divider", initial=False)
-    exclude_landmarks = forms.BooleanField(label="Group all 'Landmark' cards into one divider", initial=False)
     expansion_dividers = forms.BooleanField(label="Include Expansion Dividers", initial=False)
     centre_expansion_dividers = forms.BooleanField(label="If Expansion Dividers, centre the tabs on expansion dividers", initial=False)
     expansion_dividers_long_name = forms.BooleanField(label="If Expansion Dividers, use edition on expansion dividers names", initial=False)
@@ -170,6 +168,7 @@ class TabGenerationOptionsForm(forms.Form):
         label='Language',
         initial='en_us'
     )
+    events = forms.BooleanField(label="Exclude Individual Events & Landmarks", initial=False)
     divider_front_text = forms.ChoiceField(label='Front Text',
                                            choices=zip(domdiv.main.TEXT_CHOICES, domdiv.main.TEXT_CHOICES),
                                            initial='card')
@@ -197,14 +196,13 @@ class ChitBoxForm(forms.Form):
     side_image = forms.ImageField(label='Upload Side Image')
 
 
-def index(request):
-    if request.method == 'POST':
-        form = TabGenerationOptionsForm(request.POST)
-        if form.is_valid():
-            # generate default options
-            options = domdiv.main.parse_opts([])
-            data = form.cleaned_data
-            options.orientation = data['orientation'].lower()
+def _init_options_from_form_data(post_data):
+    form = TabGenerationOptionsForm(post_data)
+    if form.is_valid():
+        # generate default options
+        options = domdiv.main.parse_opts([])
+        data = form.cleaned_data
+        options.orientation = data['orientation'].lower()
             # Separate out the various card sizes
             if 'unsleeved' in data['cardsize'].lower():
                 options.size = 'unsleeved'
@@ -213,7 +211,7 @@ def index(request):
             if 'thick' in data['cardsize'].lower():
                 options.sleeved_thick = True
             elif 'thin' in data['cardsize'].lower():
-                options.sleeved_thin = True
+                options.sleeved_thin = True          
             # due to argparse this should be a list of lists
             options.expansions = [[e] for e in data['expansions']]
             options.fan = [[e] for e in data['fan_expansions']]
@@ -244,21 +242,23 @@ def index(request):
             options.special_card_groups = data['group_special']
             options.tabs_only = data['tabsonly']
             options.language = data['language']
-            options.exclude_events = data['exclude_events']
-            options.exclude_landmarks = data['exclude_landmarks']
+            options.exclude_events = data['events']
+            options.exclude_landmarks = data['events']
             options.text_front = data['divider_front_text']
             options.text_back = data['divider_back_text']
             options.no_page_footer = data['no_footer']
             options = domdiv.main.clean_opts(options)
             print 'options after cleaning:', options
-
-            # Create the HttpResponse object with the appropriate PDF headers.
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="sumpfork_dominion_tabs.pdf"'
-            options.outfile = response
-
-            domdiv.main.generate(options)
-            return response
+        return None
+def index(request):
+    if request.method == 'POST':
+        options = _init_options_from_form_data(request.POST)
+        # Create the HttpResponse object with the appropriate PDF headers.
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="sumpfork_dominion_tabs.pdf"'
+        options.outfile = response
+        domdiv.main.generate(options)
+        return response
     else:
         form = TabGenerationOptionsForm()
 
