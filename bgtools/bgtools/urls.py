@@ -21,5 +21,6 @@ from dominion_dividers import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^preview/$', views.preview, name='preview')
+    url(r'^preview/$', views.preview, name='preview'),
+    url(r'^chitboxes/$', views.chitboxes, name='chitboxes')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

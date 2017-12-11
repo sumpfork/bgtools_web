@@ -5,7 +5,7 @@ import domdiv.main
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, HTML
 from crispy_forms.bootstrap import FormActions, Accordion, AccordionGroup
-# from chitboxes.chitboxes import ChitBoxGenerator
+from chitboxes.chitboxes import ChitBoxGenerator
 
 import base64
 
@@ -186,16 +186,49 @@ class ChitBoxForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ChitBoxForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML('<h3>Generation Options</h3>'),
+                    css_class='col-md-9'
+                ),
+                Div(
+                    FormActions(
+                        Submit('submit', 'Generate',
+                               style="margin-top: 20px;")
+                    ),
+                    css_class='col-md-3'
+                ),
+                css_class='row'
+            ),
+            Div(
+                Div(
+                    Accordion(
+                        AccordionGroup('Measurements',
+                                       'width',
+                                       'length',
+                                       'height'),
+                        AccordionGroup('Images',
+                                       'main_image',
+                                       'side_image')
+                    ),
+                    css_class='col-md-12',
+                ),
+                css_class='row',
+            )
+        )
+        self.helper.form_id = 'id-tabgenoptions'
+        self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
-        self.helper.form_action = '/chitbox'
-
-        self.helper.add_input(Submit('submit', 'Generate'))
+        self.helper.form_action = '/chitboxes/'
+        for field in self.fields.itervalues():
+            field.required = False
 
     width = forms.FloatField(label='Width in cm', min_value=1.0, max_value=20.0, initial=5)
     length = forms.FloatField(label='Length in cm', min_value=1.0, max_value=20.0, initial=5)
     height = forms.FloatField(label='Height in cm', min_value=1.0, max_value=20.0, initial=2)
-    main_image = forms.ImageField(label='Upload Main Image')
-    side_image = forms.ImageField(label='Upload Side Image')
+    main_image = forms.ImageField(label='Upload Main Image', upload_to='chitbox_uploads')
+    side_image = forms.ImageField(label='Upload Side Image', upload_to='chitbox_uploads')
 
 
 def _init_options_from_form_data(post_data):
@@ -274,25 +307,26 @@ def preview(request):
     options = _init_options_from_form_data(request.POST)
     preview = domdiv.main.generate_sample(options).getvalue()
     preview = base64.b64encode(preview)
-    # Create the HttpResponse object with the appropriate PDF headers.
     try:
         return JsonResponse({'preview_data': preview})
     except Exception, e:
         return JsonResponse({'Exception': str(e)})
-# def chitbox(request):
-#     if request.method == 'POST':
-#         form = ChitBoxForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             data = form.cleaned_data
-#             # Create the HttpResponse object with the appropriate PDF headers.
-#             response = HttpResponse(mimetype='application/pdf')
-#             response['Content-Disposition'] = 'attachment; filename="sumpfork_chitbox.pdf"'
-#             c = ChitBoxGenerator.fromRawData(
-#                 data['width'], data['length'], data['height'], response, data['main_image'], data['side_image']
-#             )
-#             c.generate()
 
-#             return response
-#     else:
-#         form = ChitBoxForm()
-#     return render(request, 'domtabs/chitboxes.html', {'form': form})
+
+def chitboxes(request):
+    if request.method == 'POST':
+        form = ChitBoxForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = form.cleaned_data
+            # Create the HttpResponse object with the appropriate PDF headers.
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="sumpfork_chitbox.pdf"'
+            c = ChitBoxGenerator.fromRawData(
+                data['width'], data['length'], data['height'], response, data['main_image'], data['side_image']
+            )
+            c.generate()
+
+            return response
+    else:
+        form = ChitBoxForm()
+    return render(request, 'dominion_dividers/chitboxes.html', {'form': form})

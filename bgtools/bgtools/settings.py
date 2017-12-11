@@ -16,7 +16,8 @@ from private_settings import (SECRET_KEY,  # noqa: F401
                               ALLOWED_HOSTS,
                               DEBUG,
                               STATIC_ROOT,
-                              LOG_DIR)
+                              LOG_DIR,
+                              MEDIA_ROOT)
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)

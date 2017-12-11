@@ -81,12 +81,23 @@ def checkout_and_install_libs():
             'repo': 'dominiontabs',
             'branch': env.BRANCH,
             'extras': [('fonts/', 'domdiv/fonts/')]
+        },
+        'chitboxes': {
+            'repo': 'local',
+            'path': '/Users/pgorniak/Dropbox/boardgames',
+            'name': 'chitboxes'
         }
     }
     ensure_dir(env.CHECKOUT_DIR)
     with cd(env.CHECKOUT_DIR):
         for lib, params in libs.iteritems():
             libdir = params['repo']
+            if libdir == 'local':
+                rsync_project(local_dir=posixpath.join(params['path'], params['name']),
+                              remote_dir=env.CHECKOUT_DIR)
+                with cd(params['name']), venv():
+                    run('pip install -U .')
+                continue
             github_url = 'https://github.com/{}/{}'.format(params['owner'], params['repo'])
             if not exists(libdir):
                 run('git clone {}.git'.format(github_url))
