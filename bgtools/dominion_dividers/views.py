@@ -213,7 +213,7 @@ def _init_options_from_form_data(post_data):
         if 'thick' in data['cardsize'].lower():
             options.sleeved_thick = True
         elif 'thin' in data['cardsize'].lower():
-            options.sleeved_thin = True          
+            options.sleeved_thin = True
         # due to argparse this should be a list of lists
         options.expansions = [[e] for e in data['expansions']]
         options.fan = [[e] for e in data['fan_expansions']]
@@ -251,6 +251,7 @@ def _init_options_from_form_data(post_data):
         options.no_page_footer = data['no_footer']
         options = domdiv.main.clean_opts(options)
         print 'options after cleaning:', options
+        return options
     return None
 
 
