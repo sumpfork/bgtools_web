@@ -33,16 +33,22 @@ class TabGenerationOptionsForm(forms.Form):
                 Div(
                     Accordion(
                         AccordionGroup('Expansion Selection',
-                                       'expansions'),
+                                       'expansions',
+                                       'fan_expansions'),
                         AccordionGroup('Global Style',
                                        'cropmarks',
                                        'wrappers',
+                                       'notch',
                                        'tabsonly',
-                                       'no_footer'),
+                                       'no_footer',
+                                       'horizontal_gap',
+                                       'vertical_gap'),
                         AccordionGroup('Sizes and Orientation',
                                        'orientation',
+                                       'cardsize',
                                        'pagesize',
-                                       'cardsize'),
+                                       'back_offset',
+                                       'back_offset_height'),
                         AccordionGroup('Divider Layout',
                                        'tab_side',
                                        'tab_name_align',
@@ -57,8 +63,13 @@ class TabGenerationOptionsForm(forms.Form):
                         AccordionGroup('Order, Groups and Extras',
                                        'order',
                                        'group_special',
-                                       'expansion_dividers'),
-
+                                       'base_cards_with_expansion',
+                                       'upgrade_with_expansion',
+                                       'exclude_events',
+                                       'exclude_landmarks',
+                                       'expansion_dividers',
+                                       'centre_expansion_dividers',
+                                       'expansion_dividers_long_name'),
                     ),
                     css_class='col-md-12',
                 ),
@@ -76,10 +87,16 @@ class TabGenerationOptionsForm(forms.Form):
     orientation = forms.ChoiceField(choices=zip(choices, choices),
                                     label='Divider Orientation',
                                     initial='Horizontal')
-    choices = ['Letter', 'A4', 'A3']
+    choices = ['Letter', 'Legal', 'A4', 'A3']
     pagesize = forms.ChoiceField(choices=zip(choices, choices), label='Page Size', initial='Letter')
-    choices = ['Sleeved', 'Unsleeved']
+    choices = ['Sleeved - Thin', 'Sleeved - Thick', 'Unsleeved']
     cardsize = forms.ChoiceField(choices=zip(choices, choices), label='Card Size', initial='Unsleeved')
+    back_offset = forms.FloatField(label='Back page horizontal offset points to shift to the right', initial='0', required=False, widget=forms.TextInput())
+    back_offset_height = forms.FloatField(label='Back page vertical offset points to shift upward', initial='0', required=False, widget=forms.TextInput())
+
+    horizontal_gap = forms.FloatField(label='Horizontal gap between dividers in centimeters', initial='0', required=False, widget=forms.TextInput())
+    vertical_gap = forms.FloatField(label='Vertical gap between dividers in centimeters', initial='0', required=False, widget=forms.TextInput())
+    # Expansions
     choices = domdiv.main.EXPANSION_CHOICES
     # make pretty names for the expansion choices
     choiceNames = []
@@ -101,12 +118,32 @@ class TabGenerationOptionsForm(forms.Form):
         initial=choices,
         widget=forms.SelectMultiple(attrs={'size': '18'})
     )
+    # Now Fan expansions
+    choices = domdiv.main.FAN_CHOICES
+    # make pretty names for the expansion choices
+    choiceNames = []
+    for choice in choices:
+        for s, r in replacements.iteritems():
+            if choice.lower().endswith(s):
+                choiceNames.append('{} {}'.format(choice[:-len(s)].capitalize(), r))
+                break
+        else:
+            choiceNames.append(choice.capitalize())
+    fan_expansions = forms.MultipleChoiceField(
+        choices=zip(choices, choiceNames),
+        label='Fan Expansions to Include (Cmd/Ctrl click to select multiple)',
+        initial='',
+        widget=forms.SelectMultiple(attrs={'size': '3'})
+    )
+    base_cards_with_expansion = forms.BooleanField(label="Include Base cards with the expansion", initial=False)
+    upgrade_with_expansion = forms.BooleanField(label="Include upgrade cards with the expansion being upgraded", initial=False)
     edition = forms.ChoiceField(choices=zip(domdiv.main.EDITION_CHOICES, domdiv.main.EDITION_CHOICES),
                                 label='Edition',
                                 initial='latest')
     cropmarks = forms.BooleanField(label="Cropmarks Instead of Outlines", initial=False)
     wrappers = forms.BooleanField(label="Slipcases Instead of Dividers", initial=False)
-    counts = forms.BooleanField(label="Show # of Cards per Divider", initial=False)
+    notch = forms.BooleanField(label="If Slipcases, add a notch in corners", initial=False)
+    counts = forms.BooleanField(label="Show number of Cards per Divider", initial=False)
     types = forms.BooleanField(label="Show Card Type on each Divider", initial=False)
     tab_name_align = forms.ChoiceField(choices=zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES))
     tab_side = forms.ChoiceField(choices=zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES))
@@ -114,7 +151,9 @@ class TabGenerationOptionsForm(forms.Form):
     order = forms.ChoiceField(label="Divider Order",
                               choices=zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES))
     group_special = forms.BooleanField(label="Group Special Cards (e.g. Prizes)", initial=True)
-    expansion_dividers = forms.BooleanField(label="Extra Expansion Dividers", initial=False)
+    expansion_dividers = forms.BooleanField(label="Include Expansion Dividers", initial=False)
+    centre_expansion_dividers = forms.BooleanField(label="If Expansion Dividers, centre the tabs on expansion dividers", initial=False)
+    expansion_dividers_long_name = forms.BooleanField(label="If Expansion Dividers, use edition on expansion dividers names", initial=False)
     tabsonly = forms.BooleanField(label="Avery 5167/8867 Tab Label Sheets", initial=False)
     set_icon = forms.ChoiceField(
         choices=zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES),
@@ -166,17 +205,39 @@ def _init_options_from_form_data(post_data):
         options = domdiv.main.parse_opts([])
         data = form.cleaned_data
         options.orientation = data['orientation'].lower()
-        options.size = data['cardsize'].lower()
+        # Separate out the various card sizes
+        if 'unsleeved' in data['cardsize'].lower():
+            options.size = 'unsleeved'
+        else:
+            options.size = 'sleeved'
+        if 'thick' in data['cardsize'].lower():
+            options.sleeved_thick = True
+        elif 'thin' in data['cardsize'].lower():
+            options.sleeved_thin = True
         # due to argparse this should be a list of lists
         options.expansions = [[e] for e in data['expansions']]
+        options.fan = [[e] for e in data['fan_expansions']]
+        if data['back_offset']:
+            options.back_offset = data['back_offset']
+        if data['back_offset_height']:
+            options.back_offset_height = data['back_offset_height']
+        if data['horizontal_gap']:
+            options.horizontal_gap = data['horizontal_gap']
+        if data['vertical_gap']:
+            options.vertical_gap = data['vertical_gap']
+        options.upgrade_with_expansion = data['upgrade_with_expansion']
+        options.base_cards_with_expansion = data['base_cards_with_expansion']
         options.papersize = data['pagesize']
         options.cropmarks = data['cropmarks']
         options.wrapper = data['wrappers']
+        options.notch = data['notch']
         options.count = data['counts']
         options.types = data['types']
         options.tab_name_align = data['tab_name_align']
         options.tab_side = data['tab_side']
         options.expansion_dividers = data['expansion_dividers']
+        options.centre_expansion_dividers = data['centre_expansion_dividers']
+        options.expansion_dividers_long_name = data['expansion_dividers_long_name']
         options.cost = data['cost_icon']
         options.set_icon = data['set_icon']
         options.order = data['order']

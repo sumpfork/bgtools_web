@@ -178,6 +178,7 @@ def webserver_restart(mode='debug', tag='latest', staging=True, branch='master')
     if exists(env.GUNICORN_PIDFILE):
         with settings(warn_only=True):
             run("kill -HUP $(cat {})".format(env.GUNICORN_PIDFILE))
+            run("rm {}".format(env.GUNICORN_PIDFILE))
     if not exists(env.GUNICORN_PIDFILE):
         webserver_start(mode, tag, staging)
 
