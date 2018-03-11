@@ -116,7 +116,7 @@ class TabGenerationOptionsForm(forms.Form):
         choices=zip(choices, choiceNames),
         label='Expansions to Include (Cmd/Ctrl click to select multiple)',
         initial=choices,
-        widget=forms.SelectMultiple(attrs={'size': '17'})
+        widget=forms.SelectMultiple(attrs={'size': '18'})
     )
     # Now Fan expansions
     choices = domdiv.main.FAN_CHOICES
@@ -144,7 +144,7 @@ class TabGenerationOptionsForm(forms.Form):
     wrappers = forms.BooleanField(label="Slipcases Instead of Dividers", initial=False)
     notch = forms.BooleanField(label="If Slipcases, add a notch in corners", initial=False)
     counts = forms.BooleanField(label="Show number of Cards per Divider", initial=False)
-    types = forms.BooleanField(label="Show Card Type on Divider", initial=False)
+    types = forms.BooleanField(label="Show Card Type on each Divider", initial=False)
     tab_name_align = forms.ChoiceField(choices=zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES))
     tab_side = forms.ChoiceField(choices=zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES))
     samesidelabels = forms.BooleanField(label="Same Side Labels", initial=False)

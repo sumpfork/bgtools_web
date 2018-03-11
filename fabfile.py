@@ -79,7 +79,7 @@ def checkout_and_install_libs():
         'domdiv': {
             'owner': 'sumpfork',
             'repo': 'dominiontabs',
-            'branch': 'master',
+            'branch': env.BRANCH,
             'extras': [('fonts/', 'domdiv/fonts/')]
         }
     }
@@ -133,11 +133,11 @@ def checkout_and_install_libs():
 
 
 @task
-def webserver_stop(mode='debug', tag='latest', staging=True):
+def webserver_stop(mode='debug', tag='latest', staging=True, branch='master'):
     """
     Stop the webserver that is running the Django instance
     """
-    populate_env(mode, tag, staging)
+    populate_env(mode, tag, staging, branch)
     run("kill $(cat {})".format(env.GUNICORN_PIDFILE))
 
 
@@ -160,21 +160,21 @@ def _webserver_command():
 
 
 @task
-def webserver_start(mode='debug', tag='latest', staging=True):
+def webserver_start(mode='debug', tag='latest', staging=True, branch='master'):
     """
     Starts the webserver that is running the Django instance
     """
-    populate_env(mode, tag, staging)
+    populate_env(mode, tag, staging, branch)
     run(_webserver_command(), pty=False)
     run('cat {}'.format(env.GUNICORN_PIDFILE))
 
 
 @task
-def webserver_restart(mode='debug', tag='latest', staging=True):
+def webserver_restart(mode='debug', tag='latest', staging=True, branch='master'):
     """
     Restarts the webserver that is running the Django instance
     """
-    populate_env(mode, tag, staging)
+    populate_env(mode, tag, staging, branch)
     if exists(env.GUNICORN_PIDFILE):
         with settings(warn_only=True):
             run("kill -HUP $(cat {})".format(env.GUNICORN_PIDFILE))
@@ -182,10 +182,11 @@ def webserver_restart(mode='debug', tag='latest', staging=True):
         webserver_start(mode, tag, staging)
 
 
-def populate_env(mode, tag, staging):
+def populate_env(mode, tag, staging, branch):
     env.MODE = mode
     env.GIT_TAG = tag
     env.STAGING = staging
+    env.BRANCH = branch
 
     env.use_ssh_config = True
 
@@ -219,10 +220,10 @@ def populate_env(mode, tag, staging):
 
 
 @task
-def deploy(mode='debug', tag='latest', staging=True):
+def deploy(mode='debug', tag='latest', staging=True, branch='master'):
     staging = staging in ['True', 'true', 1]
     print(staging)
-    populate_env(mode, tag, staging)
+    populate_env(mode, tag, staging, branch)
     copy_settings()
     rsync_source()
     install_dependencies()
