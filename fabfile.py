@@ -1,10 +1,11 @@
-from __future__ import print_function
+
 
 # Credit goes to https://bitbucket.org/spookylukey/django-fabfile-starter/src
 
 import os
 import datetime as dt
-from StringIO import StringIO
+from io import StringIO
+import json
 
 import posixpath
 import fabric
@@ -25,11 +26,12 @@ def upload_template(c, filename, destination, context=None, template_dir=None):
     template_dir = template_dir or os.getcwd()
     from jinja2 import Environment, FileSystemLoader
     jenv = Environment(loader=FileSystemLoader(template_dir))
-    text = jenv.get_template(filename).render(**context or {})
+    context = context if context is not None else {}
+    text = jenv.get_template(filename).render(**context)
     # Force to a byte representation of Unicode, or str()ification
     # within Paramiko's SFTP machinery may cause decode issues for
     # truly non-ASCII characters.
-    text = text.encode('utf-8')
+    # text = text.encode('utf-8')
 
     # Upload the file.
     return c.put(
@@ -111,23 +113,13 @@ def collect_static(c):
 
 def checkout_and_install_libs(c):
     args = c.config.bgtools
-    libs = {
-        'domdiv': {
-            'owner': 'sumpfork',
-            'repo': 'dominiontabs',
-            'branch': args.branch,
-            'extras': [('fonts/', 'domdiv/fonts/')]
-        },
-        'chitboxes': {
-            'repo': 'local',
-            'path': '/Users/pgorniak/Dropbox/boardgames',
-            'name': 'chitboxes'
-        }
-    }
+    libs = json.load(open('libs.json'))
     ensure_dir(c, args.CHECKOUT_DIR)
     with c.cd(args.CHECKOUT_DIR):
-        for lib, params in libs.iteritems():
+        for lib, params in libs.items():
             print('handling ' + lib)
+            if lib == 'domdiv':
+                params['branch'] = args.branch
             libdir = params['repo']
             if libdir == 'local':
                 with c.cd(args.LOCAL_DIR):
@@ -182,12 +174,12 @@ def checkout_and_install_libs(c):
 
 
 @fabric.task
-def stop_webserver(mode='debug', tag='latest', staging=True, branch='master'):
+def stop_webserver(c, mode='debug', tag='latest', staging=True, branch='master'):
     """
     Stop the webserver that is running the Django instance
     """
-    populate_env(mode, tag, staging, branch)
-    run("kill $(cat {})".format(env.GUNICORN_PIDFILE))
+    populate_args(c, mode=mode, tag=tag, staging=staging, branch=branch)
+    c.run("kill $(cat {})".format(c.config.bgtools.GUNICORN_PIDFILE))
 
 
 def _webserver_command(c):
@@ -214,13 +206,14 @@ def start_webserver(c, mode='debug', tag='latest', staging=True, branch='master'
     """
     Starts the webserver that is running the Django instance
     """
-    populate_env(mode, tag, staging, branch)
+    populate_args(c, mode=mode, tag=tag, staging=staging, branch=branch)
     start_webserver_internal(c)
 
 
 def start_webserver_internal(c):
-    print('starting new webserver')
-    c.run(_webserver_command(c), pty=False, echo=True)
+    print('starting new webserver: "{}"'.format(_webserver_command(c)))
+    with c.cd(c.config.bgtools.SRC_DIR):
+        c.run(_webserver_command(c), pty=False, echo=True)
 
 
 @fabric.task(hosts=[HOST])
@@ -236,9 +229,9 @@ def restart_webserver_internal(c):
     args = c.config.bgtools
     if file_exists(c, args.GUNICORN_PIDFILE):
         print('killing existing webserver')
-        c.run("kill -HUP $(cat {})".format(args.GUNICORN_PIDFILE), warn=True, echo=True)
-        c.run("rm {}".format(args.GUNICORN_PIDFILE))
-    start_webserver_internal(c)
+        c.run("kill -HUP $(cat {})".format(args.GUNICORN_PIDFILE), echo=True)
+    else:
+        start_webserver_internal(c)
 
 
 def populate_arg(args, existing, argname):
@@ -250,7 +243,7 @@ def populate_args(c, **kwargs):
     args = c.config.bgtools
 
     # env.use_ssh_config = True
-    for k, v in kwargs.iteritems():
+    for k, v in kwargs.items():
         print('setting {} to {}'.format(k, populate_arg(args, v, k)))
         setattr(args, k, populate_arg(args, v, k))
 
@@ -260,7 +253,7 @@ def populate_args(c, **kwargs):
     args.DJANGO_APP_ROOT = posixpath.join(DJANGO_APPS_DIR, project)
 
     # Python version
-    args.PYTHON_BIN = "python2.7"
+    args.PYTHON_BIN = "python3.5"
     # env.PYTHON_PREFIX = ""  # e.g. /usr/local  Use "" for automatic
     # env.PYTHON_FULL_PATH = (posixpath.join(env.PYTHON_PREFIX, 'bin', env.PYTHON_BIN)
     #                        if env.PYTHON_PREFIX else env.PYTHON_BIN)
@@ -281,7 +274,7 @@ def populate_args(c, **kwargs):
 
 
 @fabric.task(hosts=[HOST])
-def deploy(c, mode=None, staging=None, tag=None, branch=None):
+def deploy(c, mode=None, staging=True, tag=None, branch=None):
     populate_args(c, mode=mode, staging=staging, tag=tag, branch=branch)
     print(c.config.bgtools)
     copy_settings(c)

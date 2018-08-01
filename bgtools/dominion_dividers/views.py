@@ -9,6 +9,8 @@ from chitboxes.chitboxes import ChitBoxGenerator
 
 import base64
 
+PAGES = [('domdiv', 'Dominion Dividers'), ('chitboxes', 'Chitboxes')]
+
 
 class TabGenerationOptionsForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -80,17 +82,17 @@ class TabGenerationOptionsForm(forms.Form):
         self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
         self.helper.form_action = '/'
-        for field in self.fields.itervalues():
+        for field in self.fields.values():
             field.required = False
 
     choices = ['Horizontal', 'Vertical']
-    orientation = forms.ChoiceField(choices=zip(choices, choices),
+    orientation = forms.ChoiceField(choices=list(zip(choices, choices)),
                                     label='Divider Orientation',
                                     initial='Horizontal')
     choices = ['Letter', 'Legal', 'A4', 'A3']
-    pagesize = forms.ChoiceField(choices=zip(choices, choices), label='Page Size', initial='Letter')
+    pagesize = forms.ChoiceField(choices=list(zip(choices, choices)), label='Page Size', initial='Letter')
     choices = ['Sleeved - Thin', 'Sleeved - Thick', 'Unsleeved']
-    cardsize = forms.ChoiceField(choices=zip(choices, choices), label='Card Size', initial='Unsleeved')
+    cardsize = forms.ChoiceField(choices=list(zip(choices, choices)), label='Card Size', initial='Unsleeved')
     back_offset = forms.FloatField(label='Back page horizontal offset points to shift to the right', initial='0', required=False, widget=forms.TextInput())
     back_offset_height = forms.FloatField(label='Back page vertical offset points to shift upward', initial='0', required=False, widget=forms.TextInput())
 
@@ -106,14 +108,14 @@ class TabGenerationOptionsForm(forms.Form):
         '2ndedition': '2nd Edition'
     }
     for choice in choices:
-        for s, r in replacements.iteritems():
+        for s, r in replacements.items():
             if choice.lower().endswith(s):
                 choiceNames.append('{} {}'.format(choice[:-len(s)].capitalize(), r))
                 break
         else:
             choiceNames.append(choice.capitalize())
     expansions = forms.MultipleChoiceField(
-        choices=zip(choices, choiceNames),
+        choices=list(zip(choices, choiceNames)),
         label='Expansions to Include (Cmd/Ctrl click to select multiple)',
         initial=choices,
         widget=forms.SelectMultiple(attrs={'size': '18'})
@@ -123,21 +125,21 @@ class TabGenerationOptionsForm(forms.Form):
     # make pretty names for the expansion choices
     choiceNames = []
     for choice in choices:
-        for s, r in replacements.iteritems():
+        for s, r in replacements.items():
             if choice.lower().endswith(s):
                 choiceNames.append('{} {}'.format(choice[:-len(s)].capitalize(), r))
                 break
         else:
             choiceNames.append(choice.capitalize())
     fan_expansions = forms.MultipleChoiceField(
-        choices=zip(choices, choiceNames),
+        choices=list(zip(choices, choiceNames)),
         label='Fan Expansions to Include (Cmd/Ctrl click to select multiple)',
         initial='',
         widget=forms.SelectMultiple(attrs={'size': '3'})
     )
     base_cards_with_expansion = forms.BooleanField(label="Include Base cards with the expansion", initial=False)
     upgrade_with_expansion = forms.BooleanField(label="Include upgrade cards with the expansion being upgraded", initial=False)
-    edition = forms.ChoiceField(choices=zip(domdiv.main.EDITION_CHOICES, domdiv.main.EDITION_CHOICES),
+    edition = forms.ChoiceField(choices=list(zip(domdiv.main.EDITION_CHOICES, domdiv.main.EDITION_CHOICES)),
                                 label='Edition',
                                 initial='latest')
     cropmarks = forms.BooleanField(label="Cropmarks Instead of Outlines", initial=False)
@@ -145,38 +147,38 @@ class TabGenerationOptionsForm(forms.Form):
     notch = forms.BooleanField(label="If Slipcases, add a notch in corners", initial=False)
     counts = forms.BooleanField(label="Show number of Cards per Divider", initial=False)
     types = forms.BooleanField(label="Show Card Type on each Divider", initial=False)
-    tab_name_align = forms.ChoiceField(choices=zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES))
-    tab_side = forms.ChoiceField(choices=zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES))
+    tab_name_align = forms.ChoiceField(choices=list(zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES)))
+    tab_side = forms.ChoiceField(choices=list(zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES)))
     samesidelabels = forms.BooleanField(label="Same Side Labels", initial=False)
     order = forms.ChoiceField(label="Divider Order",
-                              choices=zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES))
+                              choices=list(zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES)))
     group_special = forms.BooleanField(label="Group Special Cards (e.g. Prizes)", initial=True)
     expansion_dividers = forms.BooleanField(label="Include Expansion Dividers", initial=False)
     centre_expansion_dividers = forms.BooleanField(label="If Expansion Dividers, centre the tabs on expansion dividers", initial=False)
     expansion_dividers_long_name = forms.BooleanField(label="If Expansion Dividers, use edition on expansion dividers names", initial=False)
     tabsonly = forms.BooleanField(label="Avery 5167/8867 Tab Label Sheets", initial=False)
     set_icon = forms.ChoiceField(
-        choices=zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES),
+        choices=list(zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES)),
         label="Set Icon Location",
         initial="tab"
     )
     cost_icon = forms.ChoiceField(
-        choices=zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES),
+        choices=list(zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES)),
         label="Cost Icon Location",
         initial="tab"
     )
     language = forms.ChoiceField(
-        choices=zip(domdiv.main.LANGUAGE_CHOICES, domdiv.main.LANGUAGE_CHOICES),
+        choices=list(zip(domdiv.main.LANGUAGE_CHOICES, domdiv.main.LANGUAGE_CHOICES)),
         label='Language',
         initial='en_us'
     )
     events = forms.BooleanField(label="Exclude Individual Events & Landmarks", initial=False)
     divider_front_text = forms.ChoiceField(label='Front Text',
-                                           choices=zip(domdiv.main.TEXT_CHOICES, domdiv.main.TEXT_CHOICES),
+                                           choices=list(zip(domdiv.main.TEXT_CHOICES, domdiv.main.TEXT_CHOICES)),
                                            initial='card')
     divider_back_text = forms.ChoiceField(
         label='Back Text',
-        choices=zip(domdiv.main.TEXT_CHOICES + ['none'], domdiv.main.TEXT_CHOICES + ['no back page']),
+        choices=list(zip(domdiv.main.TEXT_CHOICES + ['none'], domdiv.main.TEXT_CHOICES + ['no back page'])),
         initial='rules'
     )
     no_footer = forms.BooleanField(label='Omit set label footer text', initial=False)
@@ -221,14 +223,14 @@ class ChitBoxForm(forms.Form):
         self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
         self.helper.form_action = '/chitboxes/'
-        for field in self.fields.itervalues():
+        for field in self.fields.values():
             field.required = False
 
     width = forms.FloatField(label='Width in cm', min_value=1.0, max_value=20.0, initial=5)
     length = forms.FloatField(label='Length in cm', min_value=1.0, max_value=20.0, initial=5)
     height = forms.FloatField(label='Height in cm', min_value=1.0, max_value=20.0, initial=2)
-    main_image = forms.ImageField(label='Upload Main Image', upload_to='chitbox_uploads')
-    side_image = forms.ImageField(label='Upload Side Image', upload_to='chitbox_uploads')
+    main_image = forms.ImageField(label='Upload Main Image')
+    side_image = forms.ImageField(label='Upload Side Image')
 
 
 def _init_options_from_form_data(post_data):
@@ -283,7 +285,7 @@ def _init_options_from_form_data(post_data):
         options.text_back = data['divider_back_text']
         options.no_page_footer = data['no_footer']
         options = domdiv.main.clean_opts(options)
-        print 'options after cleaning:', options
+        print('options after cleaning:', options)
         return options
     return None
 
@@ -300,7 +302,8 @@ def index(request):
     else:
         form = TabGenerationOptionsForm()
 
-    return render(request, 'dominion_dividers/index.html', {'form': form})
+    return render(request, 'dominion_dividers/index.html', {'form': form, 'pages': PAGES,
+                                                            'active': 'domdiv'})
 
 
 def preview(request):
@@ -309,7 +312,17 @@ def preview(request):
     preview = base64.b64encode(preview)
     try:
         return JsonResponse({'preview_data': preview})
-    except Exception, e:
+    except Exception as e:
+        return JsonResponse({'Exception': str(e)})
+
+
+def chitbox_preview(request):
+    options = request.POST
+    preview = domdiv.main.generate_sample(options).getvalue()
+    preview = base64.b64encode(preview)
+    try:
+        return JsonResponse({'preview_data': preview})
+    except Exception as e:
         return JsonResponse({'Exception': str(e)})
 
 
@@ -329,4 +342,5 @@ def chitboxes(request):
             return response
     else:
         form = ChitBoxForm()
-    return render(request, 'dominion_dividers/chitboxes.html', {'form': form})
+    return render(request, 'dominion_dividers/index.html', {'form': form, 'pages': PAGES,
+                                                            'active': 'chitboxes'})

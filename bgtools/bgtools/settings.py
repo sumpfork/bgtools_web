@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
-from private_settings import (SECRET_KEY,  # noqa: F401
+from .private_settings import (SECRET_KEY,  # noqa: F401
                               ALLOWED_HOSTS,
                               DEBUG,
                               STATIC_ROOT,
