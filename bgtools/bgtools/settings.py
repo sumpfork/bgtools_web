@@ -17,7 +17,8 @@ from .private_settings import (SECRET_KEY,  # noqa: F401
                               DEBUG,
                               STATIC_ROOT,
                               LOG_DIR,
-                              MEDIA_ROOT)
+                              MEDIA_ROOT,
+                              STAGING)
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -126,6 +127,16 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'level': 'DEBUG',
@@ -134,11 +145,19 @@ LOGGING = {
         'logfile': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'bgtools_django.log')
+            'filename': os.path.join(LOG_DIR, 'bgtools_django{}.log'.format('_staging' if STAGING else ''))
         },
     },
-    'root': {
-        'level': 'INFO',
-        'handlers': ['console', 'logfile']
-    },
+    'loggers': {
+        'root': {
+            'level': 'INFO',
+            'handlers': ['console', 'logfile'],
+            'formatter': 'verbose'
+        },
+        'django': {
+            'level': 'INFO',
+            'handlers': ['console', 'logfile'],
+            'formatter': 'verbose'
+        }
+    }
 }

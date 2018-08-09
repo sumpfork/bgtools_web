@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseServerError
 from django.shortcuts import render
 from django import forms
 import domdiv.main
@@ -67,8 +67,7 @@ class TabGenerationOptionsForm(forms.Form):
                                        'group_special',
                                        'base_cards_with_expansion',
                                        'upgrade_with_expansion',
-                                       'exclude_events',
-                                       'exclude_landmarks',
+                                       'events',
                                        'expansion_dividers',
                                        'centre_expansion_dividers',
                                        'expansion_dividers_long_name'),
@@ -93,11 +92,15 @@ class TabGenerationOptionsForm(forms.Form):
     pagesize = forms.ChoiceField(choices=list(zip(choices, choices)), label='Page Size', initial='Letter')
     choices = ['Sleeved - Thin', 'Sleeved - Thick', 'Unsleeved']
     cardsize = forms.ChoiceField(choices=list(zip(choices, choices)), label='Card Size', initial='Unsleeved')
-    back_offset = forms.FloatField(label='Back page horizontal offset points to shift to the right', initial='0', required=False, widget=forms.TextInput())
-    back_offset_height = forms.FloatField(label='Back page vertical offset points to shift upward', initial='0', required=False, widget=forms.TextInput())
+    back_offset = forms.FloatField(label='Back page horizontal offset points to shift to the right', initial='0',
+        required=False, widget=forms.TextInput())
+    back_offset_height = forms.FloatField(label='Back page vertical offset points to shift upward', initial='0',
+        required=False, widget=forms.TextInput())
 
-    horizontal_gap = forms.FloatField(label='Horizontal gap between dividers in centimeters', initial='0', required=False, widget=forms.TextInput())
-    vertical_gap = forms.FloatField(label='Vertical gap between dividers in centimeters', initial='0', required=False, widget=forms.TextInput())
+    horizontal_gap = forms.FloatField(label='Horizontal gap between dividers in centimeters', initial='0',
+        required=False, widget=forms.TextInput())
+    vertical_gap = forms.FloatField(label='Vertical gap between dividers in centimeters', initial='0',
+        required=False, widget=forms.TextInput())
     # Expansions
     choices = domdiv.main.EXPANSION_CHOICES
     # make pretty names for the expansion choices
@@ -138,7 +141,8 @@ class TabGenerationOptionsForm(forms.Form):
         widget=forms.SelectMultiple(attrs={'size': '3'})
     )
     base_cards_with_expansion = forms.BooleanField(label="Include Base cards with the expansion", initial=False)
-    upgrade_with_expansion = forms.BooleanField(label="Include upgrade cards with the expansion being upgraded", initial=False)
+    upgrade_with_expansion = forms.BooleanField(label="Include upgrade cards with the expansion being upgraded",
+         initial=False)
     edition = forms.ChoiceField(choices=list(zip(domdiv.main.EDITION_CHOICES, domdiv.main.EDITION_CHOICES)),
                                 label='Edition',
                                 initial='latest')
@@ -147,15 +151,19 @@ class TabGenerationOptionsForm(forms.Form):
     notch = forms.BooleanField(label="If Slipcases, add a notch in corners", initial=False)
     counts = forms.BooleanField(label="Show number of Cards per Divider", initial=False)
     types = forms.BooleanField(label="Show Card Type on each Divider", initial=False)
-    tab_name_align = forms.ChoiceField(choices=list(zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES)))
+    tab_name_align = forms.ChoiceField(choices=list(zip(domdiv.main.NAME_ALIGN_CHOICES,
+        domdiv.main.NAME_ALIGN_CHOICES)))
     tab_side = forms.ChoiceField(choices=list(zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES)))
     samesidelabels = forms.BooleanField(label="Same Side Labels", initial=False)
     order = forms.ChoiceField(label="Divider Order",
                               choices=list(zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES)))
     group_special = forms.BooleanField(label="Group Special Cards (e.g. Prizes)", initial=True)
     expansion_dividers = forms.BooleanField(label="Include Expansion Dividers", initial=False)
-    centre_expansion_dividers = forms.BooleanField(label="If Expansion Dividers, centre the tabs on expansion dividers", initial=False)
-    expansion_dividers_long_name = forms.BooleanField(label="If Expansion Dividers, use edition on expansion dividers names", initial=False)
+    centre_expansion_dividers = forms.BooleanField(label="If Expansion Dividers, centre the tabs on expansion dividers",
+        initial=False)
+    expansion_dividers_long_name = forms.BooleanField(label=("If Expansion Dividers, use edition "
+             "on expansion dividers names"),
+        initial=False)
     tabsonly = forms.BooleanField(label="Avery 5167/8867 Tab Label Sheets", initial=False)
     set_icon = forms.ChoiceField(
         choices=list(zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES)),
@@ -309,11 +317,11 @@ def index(request):
 def preview(request):
     options = _init_options_from_form_data(request.POST)
     preview = domdiv.main.generate_sample(options).getvalue()
-    preview = base64.b64encode(preview)
+    preview = base64.b64encode(preview).decode('ascii')
     try:
         return JsonResponse({'preview_data': preview})
     except Exception as e:
-        return JsonResponse({'Exception': str(e)})
+        return HttpResponseServerError('Error generating preview: ' + str(e))
 
 
 def chitbox_preview(request):

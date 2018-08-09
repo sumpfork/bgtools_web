@@ -86,6 +86,7 @@ def copy_settings(c):
     with c.cd(args.LOCAL_DIR):
         fname = 'settings_{}.py'.format(args.mode)
         c.local('cp {} bgtools/bgtools/private_settings.py'.format(fname))
+        c.local('echo STAGING={} >> bgtools/bgtools/private_settings.py'.format('True' if args.staging else False, fname))
 
 
 def rsync(c, src, dest):
@@ -119,6 +120,7 @@ def checkout_and_install_libs(c):
         for lib, params in libs.items():
             print('handling ' + lib)
             if lib == 'domdiv':
+                # right now only domdiv accepts the global branch override
                 params['branch'] = args.branch
             libdir = params['repo']
             if libdir == 'local':
