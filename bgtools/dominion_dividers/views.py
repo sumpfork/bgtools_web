@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse, HttpResponseServerError
+from django.http import HttpResponse, JsonResponse, HttpResponseServerError, HttpResponseBadRequest
 from django.shortcuts import render
 from django import forms
 import domdiv.main
@@ -74,6 +74,7 @@ class TabGenerationOptionsForm(forms.Form):
                     ),
                     css_class='col-md-12',
                 ),
+                'tag',
                 css_class='row',
             )
         )
@@ -190,6 +191,7 @@ class TabGenerationOptionsForm(forms.Form):
         initial='rules'
     )
     no_footer = forms.BooleanField(label='Omit set label footer text', initial=False)
+    tag = forms.CharField(widget=forms.HiddenInput(), initial='domdiv')
 
 
 class ChitBoxForm(forms.Form):
@@ -224,6 +226,7 @@ class ChitBoxForm(forms.Form):
                     ),
                     css_class='col-md-12',
                 ),
+                'tag',
                 css_class='row',
             )
         )
@@ -239,6 +242,7 @@ class ChitBoxForm(forms.Form):
     height = forms.FloatField(label='Height in cm', min_value=1.0, max_value=20.0, initial=2)
     main_image = forms.ImageField(label='Upload Main Image')
     side_image = forms.ImageField(label='Upload Side Image')
+    tag = forms.CharField(widget=forms.HiddenInput(), initial='chitboxes')
 
 
 def _init_options_from_form_data(post_data):
@@ -315,23 +319,42 @@ def index(request):
 
 
 def preview(request):
+    print('preview request: {}'.format(request))
+    print('preview post: {}'.format(request.POST))
+    print('preview files: {}'.format(request.FILES))
+    if request.POST['tag'] == 'domdiv':
+        return domdiv_preview(request)
+    elif request.POST['tag'] == 'chitboxes':
+        return chitbox_preview(request)
+    else:
+        return HttpResponseBadRequest('Unknown tag: {}'.format(request.POST['tag']))
+
+
+def domdiv_preview(request):
     options = _init_options_from_form_data(request.POST)
-    preview = domdiv.main.generate_sample(options).getvalue()
+    preview = domdiv.main.generate_sample(options)
     preview = base64.b64encode(preview).decode('ascii')
     try:
         return JsonResponse({'preview_data': preview})
     except Exception as e:
-        return HttpResponseServerError('Error generating preview: ' + str(e))
+        return HttpResponseServerError('Error generating domdiv preview: ' + str(e))
 
 
 def chitbox_preview(request):
-    options = request.POST
-    preview = domdiv.main.generate_sample(options).getvalue()
-    preview = base64.b64encode(preview)
-    try:
-        return JsonResponse({'preview_data': preview})
-    except Exception as e:
-        return JsonResponse({'Exception': str(e)})
+    form = ChitBoxForm(request.POST, request.FILES)
+    if form.is_valid():
+        data = form.cleaned_data
+        generator = ChitBoxGenerator.fromRawData(
+            data['width'], data['length'], data['height'], None, data['main_image'], data['side_image']
+        )
+        preview = generator.generate_sample()
+        preview = base64.b64encode(preview).decode('ascii')
+        try:
+            return JsonResponse({'preview_data': preview})
+        except Exception as e:
+            return HttpResponseServerError('Error generating chitbox preview: ' + str(e))
+    else:
+        return HttpResponseBadRequest("invalid form data: {}".format(request.POST))
 
 
 def chitboxes(request):
