@@ -1,0 +1,63 @@
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+<div class="page-header">
+    <h2>Sumpfork's Chitbox Generator</h2>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        {% crispy form %}
+    </div>
+    <div class="col-md-6">
+        <div class="well">
+              <ul class="nav nav-tabs" role="tablist">
+                  <li class="active"><a href="#about" role="tab" data-toggle="tab">About</a></li>
+                  <li><a href="#changes" role="tab" data-toggle="tab">Changelog</a></li>
+              </ul>
+
+              <div class="tab-content">
+                  <div class="tab-pane active" id="about">
+                    <div class="row">
+                        <div class="col-md-9">
+                                <h4>Welcome to the chitbox generator.</h4>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-right">
+                                <div class="btn-group-vertical btn-group-sm" role="group">
+                                    <a href="https://github.com/sumpfork/bgtools_web"
+                                       class="btn btn-default">
+                                        <div class="text-right">
+                                            <img src={% static "dominion_dividers/images/GitHub-Mark-32px.png" %} width="16"></img>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p>
+                        <div id="preview_img">
+                            <img alt="Chitboxes in Action"
+                                 src={% static "dominion_dividers/images/divider_photo.jpg" %}
+                                 class="img-rounded img-responsive"
+                            ></img>
+                        </div>
+                    </p>
+                  </div>
+                  <div class="tab-pane" id="changes">
+                      to be implemented...
+                  </div>
+                <div class="row">
+                    <div class="pull-right">
+                          <a href="https://www.webfaction.com/?aid=41255"
+                           class="text-muted plainlink">
+                            <img src="https://www.webfaction.com/local_media/images/banners/webfaction-24x24-dark-bg.png"></img>
+                            Hosted on WebFaction
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
