@@ -12,34 +12,28 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
-from .private_settings import (SECRET_KEY,  # noqa: F401
-                              ALLOWED_HOSTS,
-                              DEBUG,
-                              STATIC_ROOT,
-                              LOG_DIR,
-                              MEDIA_ROOT,
-                              STAGING)
-
+from .private_settings import (  # noqa: F401
+    SECRET_KEY,
+    ALLOWED_HOSTS,
+    DEBUG,
+    STATIC_ROOT,
+    LOG_DIR,
+    MEDIA_ROOT,
+    STAGING)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
-
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'dominion_dividers',
-    'crispy_forms'
+    'django.contrib.admin', 'django.contrib.auth',
+    'django.contrib.contenttypes', 'django.contrib.sessions',
+    'django.contrib.messages', 'django.contrib.staticfiles',
+    'dominion_dividers', 'crispy_forms'
 ]
 
 MIDDLEWARE = [
@@ -72,7 +66,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bgtools.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
@@ -83,25 +76,27 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
@@ -116,7 +111,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
@@ -129,8 +123,10 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
+            'format':
+            '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style':
+            '{',
         },
         'simple': {
             'format': '{levelname} {message}',
@@ -143,9 +139,14 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
         'logfile': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'bgtools_django{}.log'.format('_staging' if STAGING else ''))
+            'level':
+            'DEBUG',
+            'class':
+            'logging.handlers.RotatingFileHandler',
+            'filename':
+            os.path.join(
+                LOG_DIR,
+                'bgtools_django{}.log'.format('_staging' if STAGING else ''))
         },
     },
     'loggers': {
