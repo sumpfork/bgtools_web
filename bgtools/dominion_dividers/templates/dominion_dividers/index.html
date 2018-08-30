@@ -19,29 +19,6 @@
 
         <script src={% static "dominion_dividers/js/jquery.zoom.min.js" %}></script>
         <script src={% static "dominion_dividers/js/spin.js" %}></script>
-        <script>
-         previewUpdate = function () {
-             var spinner = new spin.Spinner().spin()
-             $('#preview_img').append(spinner.el);
-             $.ajax({
-                 type: 'POST',
-                 url: '/preview/',
-                 data: new FormData($('#id-tabgenoptions')[0]),
-                 contentType: false,
-                 processData: false,
-                 success: function(data) {
-                     spinner.stop();
-                     var src = '"data:image/png;base64,' + data['preview_data'] + '"'
-                     $('#preview_img').html('<img class="img-rounded img-responsive" src=' + src + '></img>');
-                     $('#preview_img').zoom();
-                 }
-             });
-         };
-         $(function() {
-             $('input').change(previewUpdate);
-             $('select').change(previewUpdate);
-         });
-        </script>
 
         <title>sumpfork's Dominion Tab Generator</title>
         <script type="text/javascript">
@@ -98,7 +75,30 @@
                {% include subpage %}
             {% endwith %}
         </div>
-
+        <script>
+            previewUpdate = function () {
+                var spinner = new spin.Spinner().spin()
+                $('#preview_img').append(spinner.el);
+                var formData = get_form_data();
+                $.ajax({
+                    type: 'POST',
+                    url: '/preview/',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        spinner.stop();
+                        var src = '"data:image/png;base64,' + data['preview_data'] + '"'
+                        $('#preview_img').html('<img class="img-rounded img-responsive" src=' + src + '></img>');
+                        $('#preview_img').zoom();
+                    }
+                });
+            };
+            $(function() {
+                $('input').change(previewUpdate);
+                $('select').change(previewUpdate);
+            });
+           </script>
     </body>
 </html>
 

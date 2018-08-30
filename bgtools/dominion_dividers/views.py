@@ -345,7 +345,7 @@ def chitbox_preview(request):
     if form.is_valid():
         data = form.cleaned_data
         generator = ChitBoxGenerator.fromRawData(
-            data['width'], data['length'], data['height'], None, data['main_image'], data['side_image']
+            data['width'], data['length'], data['height'], None, None, None,
         )
         preview = generator.generate_sample()
         preview = base64.b64encode(preview).decode('ascii')
