@@ -1,3 +1,6 @@
+import re
+import base64
+
 from django.http import HttpResponse, JsonResponse, HttpResponseServerError, HttpResponseBadRequest
 from django.shortcuts import render
 from django import forms
@@ -6,10 +9,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, HTML
 from crispy_forms.bootstrap import FormActions, Accordion, AccordionGroup
 from chitboxes.chitboxes import ChitBoxGenerator
+from tuckboxes.tuckboxes import TuckBoxGenerator
 
-import base64
 
-PAGES = [('domdiv', 'Dominion Dividers'), ('chitboxes', 'Chitboxes')]
+PAGES = [('domdiv', 'Dominion Dividers'), ('chitboxes', 'Bits Boxes'), ('tuckboxes', 'Card Tuckboxes')]
 
 
 class TabGenerationOptionsForm(forms.Form):
@@ -249,6 +252,52 @@ class ChitBoxForm(forms.Form):
     tag = forms.CharField(widget=forms.HiddenInput(), initial='chitboxes')
 
 
+class TuckBoxForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(TuckBoxForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(Div(HTML('<h3>Generation Options</h3>'), css_class='col-md-9'),
+                Div(FormActions(
+                    Submit('submit', 'Generate', style="margin-top: 20px;")),
+                    css_class='col-md-3'),
+                css_class='row'),
+            Div(
+                Div(
+                    Accordion(
+                        AccordionGroup('Measurements', 'width', 'height',
+                                       'depth'),
+                        AccordionGroup('Images', 'front_image', 'side_image', 'back_image', 'end_image',
+                        'fill_colour',
+                        'preserve_side_aspect', 'preserve_end_aspect')),
+                    css_class='col-md-12',
+                ),
+                'tag',
+                css_class='row',
+            ))
+        self.helper.form_id = 'id-tabgenoptions'
+        self.helper.form_class = 'blueForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = '/tuckboxes/'
+        for field in self.fields.values():
+            field.required = False
+
+    width = forms.FloatField(
+        label='Width in cm', min_value=1.0, max_value=20.0, initial=6)
+    height = forms.FloatField(
+        label='Height in cm', min_value=1.0, max_value=20.0, initial=9.3)
+    depth = forms.FloatField(
+        label='Depth in cm', min_value=1.0, max_value=20.0, initial=3)
+    front_image = forms.ImageField(label='Upload Main Image')
+    side_image = forms.ImageField(label='Upload Side Image')
+    back_image = forms.ImageField(label='Upload Back Image')
+    end_image = forms.ImageField(label='Upload End Image')
+    preserve_side_aspect = forms.BooleanField(label='Preserve Side Image Aspect', initial=True)
+    preserve_end_aspect = forms.BooleanField(label='Preserve End Image Aspect', initial=True)
+    fill_colour = forms.CharField(widget=forms.TextInput(attrs={'type': 'color'}))
+    tag = forms.CharField(widget=forms.HiddenInput(), initial='tuckboxes')
+
+
 def _init_options_from_form_data(post_data):
     form = TabGenerationOptionsForm(post_data)
     if form.is_valid():
@@ -396,4 +445,31 @@ def chitboxes(request):
         'form': form,
         'pages': PAGES,
         'active': 'chitboxes'
+    })
+
+
+def tuckboxes(request):
+    if request.method == 'POST':
+        form = TuckBoxForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = form.cleaned_data
+            # Create the HttpResponse object with the appropriate PDF headers.
+            response = HttpResponse(content_type='application/pdf')
+            response[
+                'Content-Disposition'] = 'attachment; filename="sumpfork_chitbox.pdf"'
+            fc = re.match('#(\w{2})(\w{2})(\w{2})', data['fill_colour']).groups()
+            fc = tuple(int(p, 16) / 255.0 for p in fc)
+            c = TuckBoxGenerator.fromRawData(
+                data['width'], data['height'], data['depth'], response,
+                data['front_image'], data['side_image'], data['back_image'], data['end_image'],
+                fc, data['preserve_side_aspect'], data['preserve_end_aspect'])
+            c.generate()
+            c.close()
+            return response
+    else:
+        form = TuckBoxForm()
+    return render(request, 'dominion_dividers/index.html', {
+        'form': form,
+        'pages': PAGES,
+        'active': 'tuckboxes'
     })

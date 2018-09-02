@@ -92,3 +92,8 @@ ENV/
 fabsettings.py
 settings_release.py
 settings_debug.py
+
+# visual studio code
+.vscode
+fabric.py
+libs.json
