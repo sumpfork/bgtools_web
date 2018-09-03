@@ -1,4 +1,7 @@
-django
+django>=2
 gunicorn
-django-crispy-forms
+django-crispy-forms>1.7
 Wand # move to domtabs
+jinja2
+requests
+
