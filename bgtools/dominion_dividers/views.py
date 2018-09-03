@@ -11,8 +11,8 @@ from crispy_forms.bootstrap import FormActions, Accordion, AccordionGroup
 from chitboxes.chitboxes import ChitBoxGenerator
 from tuckboxes.tuckboxes import TuckBoxGenerator
 
-
-PAGES = [('domdiv', 'Dominion Dividers'), ('chitboxes', 'Bits Boxes'), ('tuckboxes', 'Card Tuckboxes')]
+PAGES = [('domdiv', 'Dominion Dividers'), ('chitboxes', 'Bits Boxes'),
+         ('tuckboxes', 'Card Tuckboxes')]
 
 
 class TabGenerationOptionsForm(forms.Form):
@@ -267,9 +267,10 @@ class TuckBoxForm(forms.Form):
                     Accordion(
                         AccordionGroup('Measurements', 'width', 'height',
                                        'depth'),
-                        AccordionGroup('Images', 'front_image', 'side_image', 'back_image', 'end_image',
-                        'fill_colour',
-                        'preserve_side_aspect', 'preserve_end_aspect')),
+                        AccordionGroup('Images', 'front_image', 'side_image',
+                                       'back_image', 'end_image',
+                                       'fill_colour', 'preserve_side_aspect',
+                                       'preserve_end_aspect')),
                     css_class='col-md-12',
                 ),
                 'tag',
@@ -283,18 +284,21 @@ class TuckBoxForm(forms.Form):
             field.required = False
 
     width = forms.FloatField(
-        label='Width in cm', min_value=1.0, max_value=20.0, initial=6)
+        label='Width in cm (1-20)', min_value=1.0, max_value=20.0, initial=6)
     height = forms.FloatField(
-        label='Height in cm', min_value=1.0, max_value=20.0, initial=9.3)
+        label='Height in cm (1-20)', min_value=1.0, max_value=20.0, initial=9.3)
     depth = forms.FloatField(
-        label='Depth in cm', min_value=1.0, max_value=20.0, initial=3)
+        label='Depth in cm (1-20)', min_value=1.0, max_value=20.0, initial=3)
     front_image = forms.ImageField(label='Upload Main Image')
     side_image = forms.ImageField(label='Upload Side Image')
     back_image = forms.ImageField(label='Upload Back Image')
     end_image = forms.ImageField(label='Upload End Image')
-    preserve_side_aspect = forms.BooleanField(label='Preserve Side Image Aspect', initial=True)
-    preserve_end_aspect = forms.BooleanField(label='Preserve End Image Aspect', initial=True)
-    fill_colour = forms.CharField(widget=forms.TextInput(attrs={'type': 'color'}))
+    preserve_side_aspect = forms.BooleanField(
+        label='Preserve Side Image Aspect', initial=True)
+    preserve_end_aspect = forms.BooleanField(
+        label='Preserve End Image Aspect', initial=True)
+    fill_colour = forms.CharField(
+        widget=forms.TextInput(attrs={'type': 'color'}), initial='#99FF99')
     tag = forms.CharField(widget=forms.HiddenInput(), initial='tuckboxes')
 
 
@@ -384,6 +388,8 @@ def preview(request):
         return domdiv_preview(request)
     elif request.POST['tag'] == 'chitboxes':
         return chitbox_preview(request)
+    elif request.POST['tag'] == 'tuckboxes':
+        return tuckbox_preview(request)
     else:
         return HttpResponseBadRequest('Unknown tag: {}'.format(
             request.POST['tag']))
@@ -391,10 +397,10 @@ def preview(request):
 
 def domdiv_preview(request):
     options = _init_options_from_form_data(request.POST)
-    preview = domdiv.main.generate_sample(options)
-    preview = base64.b64encode(preview).decode('ascii')
+    preview_img = domdiv.main.generate_sample(options)
+    preview_img = base64.b64encode(preview_img).decode('ascii')
     try:
-        return JsonResponse({'preview_data': preview})
+        return JsonResponse({'preview_data': preview_img})
     except Exception as e:
         return HttpResponseServerError('Error generating domdiv preview: ' +
                                        str(e))
@@ -412,13 +418,36 @@ def chitbox_preview(request):
             None,
             None,
         )
-        preview = generator.generate_sample()
-        preview = base64.b64encode(preview).decode('ascii')
+        preview_img = generator.generate_sample()
+        preview_img = base64.b64encode(preview_img).decode('ascii')
         try:
-            return JsonResponse({'preview_data': preview})
+            return JsonResponse({'preview_data': preview_img})
         except Exception as e:
             return HttpResponseServerError(
                 'Error generating chitbox preview: ' + str(e))
+    else:
+        return HttpResponseBadRequest("invalid form data: {}".format(
+            request.POST))
+
+
+def tuckbox_preview(request):
+    form = TuckBoxForm(request.POST, request.FILES)
+    if form.is_valid():
+        data = form.cleaned_data
+        fc = re.match(r'#(\w{2})(\w{2})(\w{2})', data['fill_colour']).groups()
+        fc = tuple(int(p, 16) / 255.0 for p in fc)
+
+        c = TuckBoxGenerator.fromRawData(
+            data['width'], data['height'], data['depth'],
+            fillColour=fc, preserveSideAspect=data['preserve_side_aspect'],
+            preserveEndAspect=data['preserve_end_aspect'])
+        preview_img = c.generate_sample()
+        preview_img = base64.b64encode(preview_img).decode('ascii')
+        try:
+            return JsonResponse({'preview_data': preview_img})
+        except Exception as e:
+            return HttpResponseServerError(
+                'Error generating tuckbox preview: ' + str(e))
     else:
         return HttpResponseBadRequest("invalid form data: {}".format(
             request.POST))
@@ -457,12 +486,14 @@ def tuckboxes(request):
             response = HttpResponse(content_type='application/pdf')
             response[
                 'Content-Disposition'] = 'attachment; filename="sumpfork_chitbox.pdf"'
-            fc = re.match('#(\w{2})(\w{2})(\w{2})', data['fill_colour']).groups()
+            fc = re.match(r'#(\w{2})(\w{2})(\w{2})',
+                          data['fill_colour']).groups()
             fc = tuple(int(p, 16) / 255.0 for p in fc)
             c = TuckBoxGenerator.fromRawData(
                 data['width'], data['height'], data['depth'], response,
-                data['front_image'], data['side_image'], data['back_image'], data['end_image'],
-                fc, data['preserve_side_aspect'], data['preserve_end_aspect'])
+                data['front_image'], data['side_image'], data['back_image'],
+                data['end_image'], fc, data['preserve_side_aspect'],
+                data['preserve_end_aspect'])
             c.generate()
             c.close()
             return response

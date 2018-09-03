@@ -86,7 +86,7 @@ def copy_settings(c):
     with c.cd(args.LOCAL_DIR):
         fname = 'settings_{}.py'.format(args.mode)
         c.local('cp {} bgtools/bgtools/private_settings.py'.format(fname))
-        c.local('echo STAGING={} >> bgtools/bgtools/private_settings.py'.format('True' if args.staging else False, fname))
+        c.local('echo STAGING={} >> bgtools/bgtools/private_settings.py'.format('True' if args.staging else False))
 
 
 def rsync(c, src, dest):
