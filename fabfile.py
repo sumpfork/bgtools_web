@@ -119,11 +119,10 @@ def checkout_and_install_libs(c):
     with c.cd(args.CHECKOUT_DIR):
         for lib, params in libs.items():
             print('handling ' + lib)
-            if lib == 'domdiv':
-                # right now only domdiv accepts the global branch override
-                params['branch'] = args.branch
             libdir = params['repo']
-            if libdir == 'local':
+            if libdir != 'local':
+                params['branch'] = args.branch
+            else:
                 with c.cd(args.LOCAL_DIR):
                     rsync(c, posixpath.join(params['path'], params['name']),
                           args.CHECKOUT_DIR)
@@ -147,7 +146,7 @@ def checkout_and_install_libs(c):
                     c.run('git checkout {}'.format(tag))
                     version = tag
                     version_url = '{}/releases/tag/{}'.format(github_url, tag)
-                for src, target in params['extras']:
+                for src, target in params.get('extras', []):
                     with c.cd(args.LOCAL_DIR):
                         rsync(c, posixpath.join(args.LOCAL_DIR, 'extras', lib, src),
                               posixpath.join(args.CHECKOUT_DIR, libdir, target))
