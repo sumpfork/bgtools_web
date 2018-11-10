@@ -32,7 +32,7 @@ class TabGenerationOptionsForm(forms.Form):
                                        'fan_expansions'),
                         AccordionGroup('Global Style', 'cropmarks', 'wrappers',
                                        'notch', 'tabsonly', 'no_footer',
-                                       'horizontal_gap', 'vertical_gap'),
+                                       'horizontal_gap', 'vertical_gap', 'black_tabs'),
                         AccordionGroup('Sizes and Orientation', 'orientation',
                                        'cardsize', 'pagesize', 'back_offset',
                                        'back_offset_height'),
@@ -96,6 +96,11 @@ class TabGenerationOptionsForm(forms.Form):
         initial='0',
         required=False,
         widget=forms.TextInput())
+
+    black_tabs = forms.BooleanField(
+        label='Black tab background',
+        initial=False
+    )
     # Expansions
     choices = domdiv.main.EXPANSION_CHOICES
     # make pretty names for the expansion choices
@@ -329,6 +334,7 @@ def _init_options_from_form_data(post_data):
             options.horizontal_gap = data['horizontal_gap']
         if data['vertical_gap']:
             options.vertical_gap = data['vertical_gap']
+        options.black_tabs = data['black_tabs']
         options.upgrade_with_expansion = data['upgrade_with_expansion']
         options.base_cards_with_expansion = data['base_cards_with_expansion']
         options.papersize = data['pagesize']
