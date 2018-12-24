@@ -7,13 +7,23 @@ from django import forms
 import domdiv.main
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, HTML
-from crispy_forms.bootstrap import FormActions, Accordion, AccordionGroup
+from crispy_forms.bootstrap import FormActions, Accordion, AccordionGroup, AppendedText
 from chitboxes.chitboxes import ChitBoxGenerator
 from tuckboxes.tuckboxes import TuckBoxGenerator
 
 PAGES = [('domdiv', 'Dominion Dividers'), ('chitboxes', 'Bits Boxes'),
          ('tuckboxes', 'Card Tuckboxes')]
 
+PAPER_SIZES = [u'Letter', u'Legal', u'A4', u'A3']
+TAB_SIDE_SELECTION = {"left": "Left to Right (all tab counts)",
+                      "right": "Right to Left (all tab counts)",
+                      "left-alternate": "Left then Right (2 tabs)",
+                      "right-alternate": "Right then Left (2 tabs))",
+                      "left-flip":"Left then flip (2 tabs)",
+                      "right-flip":"Right then flip (2 tabs)",
+                      "centre":"Centre (1 tab)",
+                      "full":"Full width (1 tab)"}
+TAB_NUMBER_SELECTION = {1: "1: all in the same location", 2: "2: alternating sides", 3: "3", 4: "4", 5: "5"}
 
 class TabGenerationOptionsForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -30,23 +40,35 @@ class TabGenerationOptionsForm(forms.Form):
                     Accordion(
                         AccordionGroup('Expansion Selection', 'expansions',
                                        'fan_expansions'),
-                        AccordionGroup('Global Style', 'cropmarks', 'wrappers',
-                                       'notch', 'tabsonly', 'no_footer',
-                                       'horizontal_gap', 'vertical_gap', 'black_tabs'),
-                        AccordionGroup('Sizes and Orientation', 'orientation',
-                                       'cardsize', 'pagesize', 'back_offset',
-                                       'back_offset_height'),
-                        AccordionGroup('Divider Layout', 'tab_side',
-                                       'tab_name_align', 'set_icon',
-                                       'cost_icon', 'counts', 'types'),
-                        AccordionGroup('Text Options', 'divider_front_text',
-                                       'divider_back_text', 'language'),
-                        AccordionGroup(
-                            'Order, Groups and Extras', 'order',
-                            'group_special', 'base_cards_with_expansion',
-                            'upgrade_with_expansion', 'events',
-                            'expansion_dividers', 'centre_expansion_dividers',
-                            'expansion_dividers_long_name'),
+                        AccordionGroup('Page Options', 
+                                       'pagesize',
+                                       HTML("Selecting Labels will override some settings to fit the size of the label"),
+                                       'no_footer',
+                                       AppendedText('back_offset', 'points', active=True),
+                                       AppendedText('back_offset_height', 'points', active=True)),
+                        AccordionGroup('Style Options',
+                                       'orientation', 
+                                       'wrappers', 'notch', 
+                                       'linetype', 'cardsize',
+                                       AppendedText('horizontal_gap', 'cm', active=True),
+                                       AppendedText('vertical_gap', 'cm', active=True)
+                                       ),
+                        AccordionGroup('Tab Options',
+                                       'tab_number', 'tab_side', 'serpentine', 'reset_tabs',
+                                       'tab_name_align', 'set_icon', 'cost_icon', 'black_tabs',
+                                       AppendedText('tabwidth', 'cm', active=True)
+                                       ),
+                        AccordionGroup('Body Options',
+                                       'counts', 'types', 
+                                       'divider_front_text', 'divider_back_text',
+                                       'language'),
+                        AccordionGroup('Order, Groups and Extras',
+                                       'order',
+                                       'group_special', 'base_cards_with_expansion',
+                                       'upgrade_with_expansion', 'events',
+                                       'expansion_dividers', 
+                                       'centre_expansion_dividers',
+                                       'expansion_dividers_long_name'),
                     ),
                     css_class='col-md-12',
                 ),
@@ -59,22 +81,25 @@ class TabGenerationOptionsForm(forms.Form):
         self.helper.form_action = '/'
         for field in self.fields.values():
             field.required = False
-
     choices = ['Horizontal', 'Vertical']
     orientation = forms.ChoiceField(
         choices=list(zip(choices, choices)),
         label='Divider Orientation',
         initial='Horizontal')
-    choices = ['Letter', 'Legal', 'A4', 'A3']
     pagesize = forms.ChoiceField(
-        choices=list(zip(choices, choices)),
-        label='Page Size',
+        choices=list(zip(PAPER_SIZES + domdiv.main.LABEL_KEYS, PAPER_SIZES + domdiv.main.LABEL_SELECTIONS)),
+        label='Paper Type',
         initial='Letter')
     choices = ['Sleeved - Thin', 'Sleeved - Thick', 'Unsleeved']
     cardsize = forms.ChoiceField(
         choices=list(zip(choices, choices)),
         label='Card Size',
         initial='Unsleeved')
+    tabwidth = forms.FloatField(
+        label='Width of Tab in centimeters',
+        initial='4.0',
+        required=False,
+        widget=forms.TextInput())
     back_offset = forms.FloatField(
         label='Back page horizontal offset points to shift to the right',
         initial='0',
@@ -152,10 +177,22 @@ class TabGenerationOptionsForm(forms.Form):
         initial='latest')
     cropmarks = forms.BooleanField(
         label="Cropmarks Instead of Outlines", initial=False)
+    linetype = forms.ChoiceField(
+        choices=list(
+            zip(domdiv.main.LINE_CHOICES,
+                domdiv.main.LINE_CHOICES)),
+        label='Outline Type',
+        initial='line') 
     wrappers = forms.BooleanField(
         label="Slipcases Instead of Dividers", initial=False)
     notch = forms.BooleanField(
         label="If Slipcases, add a notch in corners", initial=False)
+    serpentine = forms.BooleanField(
+        label="For 3 or more tabs, tab location reverses when the end is reached instead of resetting to the start",
+        initial=False)
+    reset_tabs = forms.BooleanField(
+        label="Restart tab starting location with every expansion.", 
+        initial=True)
     counts = forms.BooleanField(
         label="Show number of Cards per Divider", initial=False)
     types = forms.BooleanField(
@@ -164,9 +201,22 @@ class TabGenerationOptionsForm(forms.Form):
         choices=list(
             zip(domdiv.main.NAME_ALIGN_CHOICES,
                 domdiv.main.NAME_ALIGN_CHOICES)))
+    tab_number = forms.ChoiceField(
+        choices=list(zip(
+                         [x for x in TAB_NUMBER_SELECTION],
+                         [TAB_NUMBER_SELECTION[x] for x in TAB_NUMBER_SELECTION])),
+        label='Number of tabs',
+        initial=1)
+
+    for x in domdiv.main.TAB_SIDE_CHOICES:
+        if x not in TAB_SIDE_SELECTION:
+            TAB_SIDE_SELECTION[x] = x.title()
     tab_side = forms.ChoiceField(
-        choices=list(
-            zip(domdiv.main.TAB_SIDE_CHOICES, domdiv.main.TAB_SIDE_CHOICES)))
+        choices=list(zip(
+                         [x for x in TAB_SIDE_SELECTION],
+                         [TAB_SIDE_SELECTION[x] for x in TAB_SIDE_SELECTION])),
+        label='Starting tab location',
+        initial='left')
     samesidelabels = forms.BooleanField(
         label="Same Side Labels", initial=False)
     order = forms.ChoiceField(
@@ -184,8 +234,6 @@ class TabGenerationOptionsForm(forms.Form):
         label=("If Expansion Dividers, use edition "
                "on expansion dividers names"),
         initial=False)
-    tabsonly = forms.BooleanField(
-        label="Avery 5167/8867 Tab Label Sheets", initial=False)
     set_icon = forms.ChoiceField(
         choices=list(
             zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES)),
@@ -214,7 +262,7 @@ class TabGenerationOptionsForm(forms.Form):
                 domdiv.main.TEXT_CHOICES + ['no back page'])),
         initial='rules')
     no_footer = forms.BooleanField(
-        label='Omit set label footer text', initial=False)
+        label='Omit the expansion name at the bottom of the page', initial=False)
     tag = forms.CharField(widget=forms.HiddenInput(), initial='domdiv')
 
 
@@ -312,6 +360,7 @@ def _init_options_from_form_data(post_data):
     if form.is_valid():
         # generate default options
         options = domdiv.main.parse_opts([])
+        options = domdiv.main.clean_opts(options)
         data = form.cleaned_data
         options.orientation = data['orientation'].lower()
         # Separate out the various card sizes
@@ -337,29 +386,41 @@ def _init_options_from_form_data(post_data):
         options.black_tabs = data['black_tabs']
         options.upgrade_with_expansion = data['upgrade_with_expansion']
         options.base_cards_with_expansion = data['base_cards_with_expansion']
-        options.papersize = data['pagesize']
-        options.cropmarks = data['cropmarks']
         options.wrapper = data['wrappers']
         options.notch = data['notch']
+        options.cropmarks = data['cropmarks']
+        options.linetype = data['linetype']
+        options.tab_serpentine = data['serpentine']
+        options.expansion_reset_tabs = data['reset_tabs']
         options.count = data['counts']
         options.types = data['types']
         options.tab_name_align = data['tab_name_align']
+        options.tab_number = int(data['tab_number'])
         options.tab_side = data['tab_side']
         options.expansion_dividers = data['expansion_dividers']
         options.centre_expansion_dividers = data['centre_expansion_dividers']
-        options.expansion_dividers_long_name = data[
-            'expansion_dividers_long_name']
+        options.expansion_dividers_long_name = data['expansion_dividers_long_name']
         options.cost = data['cost_icon']
         options.set_icon = data['set_icon']
         options.order = data['order']
         options.special_card_groups = data['group_special']
-        options.tabs_only = data['tabsonly']
         options.language = data['language']
         options.exclude_events = data['events']
         options.exclude_landmarks = data['events']
         options.text_front = data['divider_front_text']
         options.text_back = data['divider_back_text']
         options.no_page_footer = data['no_footer']
+        options.tabwidth = data['tabwidth']
+        # Paper or Labels?
+        if data['pagesize'] in PAPER_SIZES:
+            options.papersize = data['pagesize']
+            options.label_name = None
+        else:
+            options.label_name = data['pagesize']
+            options.papersize = 'letter'
+            options.wrapper = False
+            options.notch = False
+            options.cropmarks = False
         options = domdiv.main.clean_opts(options)
         print('options after cleaning:', options)
         return options
@@ -369,6 +430,7 @@ def _init_options_from_form_data(post_data):
 def index(request):
     if request.method == 'POST':
         options = _init_options_from_form_data(request.POST)
+        print('options after POST:', options)
         # Create the HttpResponse object with the appropriate PDF headers.
         response = HttpResponse(content_type='application/pdf')
         response[
