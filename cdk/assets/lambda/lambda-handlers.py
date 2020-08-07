@@ -3,6 +3,13 @@ import os
 
 from flask_lambda import FlaskLambda
 from flask import request
+from flask import render_template
+
+PAGES = [
+    ("domdiv", "Dominion Dividers"),
+    ("chitboxes", "Bits Boxes"),
+    ("tuckboxes", "Card Tuckboxes"),
+]
 
 flask_app = FlaskLambda(__name__)
 
@@ -14,13 +21,12 @@ logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
 def root():
     logger.info("in root!")
     logger.info(request)
-    data = {
-        "form": dict(request.form.copy()),
-        "args": dict(request.args.copy()),
-        "json": request.json,
-    }
-    logger.info(data)
-    return data
+    return render_template(
+        "index.html",
+        pages=PAGES,
+        active="domdiv",
+        static_url=os.environ["STATIC_WEB_URL"],
+    )
 
 
 def bar(event, context):

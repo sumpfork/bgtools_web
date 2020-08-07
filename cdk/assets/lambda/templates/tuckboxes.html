@@ -1,0 +1,66 @@
+{% load crispy_forms_tags %} {% load staticfiles %}
+
+<div class="page-header">
+    <h2>Tuckbox Generator</h2>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        {% crispy form %}
+    </div>
+    <div class="col-md-6">
+        <div class="well">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active"><a href="#about" role="tab" data-toggle="tab">About</a></li>
+                {% comment %}
+                <li><a href="#changes" role="tab" data-toggle="tab">Changelog</a></li> {% endcomment %}
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="about">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4>Welcome to the tuckbox generator.</h4>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-right">
+                                <div class="btn-group-vertical btn-group-sm" role="group">
+                                    <a href="https://github.com/sumpfork/bgtools_web" class="btn btn-default">
+                                        <div class="text-right">
+                                            <img src={% static "dominion_dividers/images/GitHub-Mark-32px.png" %} width="16"></img>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p>
+                        A while ago, I produced a script to produce some card tuckboxes for some of my games. The preview below only shows the outlines with placeholders,
+                        but the full pdf will have the images you upload. The limited options are currently to set a background colour that will
+                        render on the sides and ends, either if you don't specify an image to use there, or if you preserve the aspect ratio of the image
+                        used there, and the image fails to cover the entire side or end.
+                        <div id="preview_img">
+                            <img alt="Tuckboxes in Action" src={% static "dominion_dividers/images/tuckbox_photo.jpg" %} class="img-rounded img-responsive"></img>
+                        </div>
+                    </p>
+                </div>
+                <div class="tab-pane" id="changes">
+                    to be implemented...
+                </div>
+                <div class="row">
+                    <div class="pull-right">
+                        <a href="https://www.webfaction.com/?aid=41255" class="text-muted plainlink">
+                            <img src="https://www.webfaction.com/local_media/images/banners/webfaction-24x24-dark-bg.png"></img>
+                            Hosted on WebFaction
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var get_form_data = function () {
+        var data = new FormData($('#id-tabgenoptions')[0]);
+        return data;
+    }
+</script>
