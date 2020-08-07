@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 
 import subprocess
-import sys
 import os
 
-from aws_cdk import aws_lambda as lambda_, aws_apigateway as apig, aws_s3 as s3, core
+from aws_cdk import (
+    aws_lambda as lambda_,
+    aws_lambda_python as lambda_python,
+    aws_apigateway as apig,
+    aws_s3 as s3,
+    aws_s3_deployment as s3_deployment,
+    core,
+)
 
 app = core.App()
 
@@ -25,26 +31,9 @@ class BGToolsStack(core.Stack):
     def __init__(self, app: core.App, id: str) -> None:
         super().__init__(app, id)
 
-        self.tmp_dir = f".{id}.tmp"
-        os.makedirs(self.tmp_dir, exist_ok=True)
-        self.lambda_dir = os.path.join(self.tmp_dir, "lambda")
+        self.lambda_dir = "assets/lambda"
 
-        rsync("assets/lambda", self.lambda_dir)
-        subprocess.check_call(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "-q",
-                "-q",
-                "-r",
-                "lambda_requirements.txt",
-                "-t",
-                f"{self.lambda_dir}",
-            ]
-        )
-        s3.Bucket(
+        static_website_bucket = s3.Bucket(
             self,
             "Dominion Divider Generator Site",
             website_index_document="index.html",
@@ -52,13 +41,23 @@ class BGToolsStack(core.Stack):
             public_read_access=True,
         )
 
+        s3_deployment.BucketDeployment(
+            self,
+            "Static Files Deployment",
+            sources=[s3_deployment.Source.asset("./static")],
+            destination_bucket=static_website_bucket,
+            destination_key_prefix="static",
+        )
+
         api = apig.RestApi(self, "bgtools-api")
 
-        flask_app = lambda_.Function(
+        flask_app = lambda_python.PythonFunction(
             self,
             "DominionDividersFlaskApp",
-            code=lambda_.Code.from_asset(self.lambda_dir),
-            handler="lambda-handlers.flask_app",
+            entry=self.lambda_dir,
+            index="lambda-handlers.py",
+            handler="flask_app",
+            environment={"STATIC_WEB_URL": static_website_bucket.bucket_website_url},
             timeout=core.Duration.seconds(5),
             runtime=lambda_.Runtime.PYTHON_3_7,
         )

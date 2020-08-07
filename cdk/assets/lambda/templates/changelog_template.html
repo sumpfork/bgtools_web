@@ -1,0 +1,5 @@
+<ul>
+    {% for entry in changelog %}
+    <li><a href="{{ entry.url }}">{{ entry.tag }}</a> on {{ entry.date }}: <b>{{ entry.name }}</b> {{ entry.description }}</li>
+    {% endfor %}
+</ul>

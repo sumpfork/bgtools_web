@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><!--?xml version="1.0" encoding="UTF-8"?-->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <!-- <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
+        <script   src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+        <script src="{{ static_url }}/static/js/jquery.zoom.min.js"></script>
+        <script src="{{ static_url }}/static/js/spin.js"></script>
+
+        <title>sumpfork's Dominion Tab Generator</title>
+        <script type="text/javascript">
+
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-2291281-4']);
+         _gaq.push(['_setDomainName', 'sandflea.org']);
+         _gaq.push(['_trackPageview']);
+
+         (function() {
+             var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+             ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+        </script>
+
+        <style>
+         .asteriskField {
+             display: none;
+         }
+         a.plainlink:hover {
+             text-decoration: none;
+         }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Static navbar -->
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#">BGT</a>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            {% for page in pages %}
+                              {% if page.0 == active %}
+                                <li class="active"><a href="#">{{ page.1 }}</a></li>
+                              {% else %}
+                                <li><a href="/{{ page.0 }}/">{{ page.1 }}</a></li>
+                              {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div><!--/.container-fluid -->
+            </nav>
+            {% with subpage = "{}.html".format(active) %}
+                {% include subpage %}
+            {% endwith %}
+        </div>
+        <script>
+            previewUpdate = function () {
+                var spinner = new spin.Spinner().spin()
+                $('#preview_img').append(spinner.el);
+                var formData = get_form_data();
+                $.ajax({
+                    type: 'POST',
+                    url: '/preview/',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        spinner.stop();
+                        var src = '"data:image/png;base64,' + data['preview_data'] + '"'
+                        $('#preview_img').html('<img class="img-rounded img-responsive" src=' + src + '></img>');
+                        $('#preview_img').zoom();
+                    }
+                });
+            };
+            $(function() {
+                $('input').change(previewUpdate);
+                $('select').change(previewUpdate);
+            });
+           </script>
+    </body>
+</html>
+

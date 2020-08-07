@@ -1,0 +1,96 @@
+{% load crispy_forms_tags %} {% load staticfiles %}
+
+<div class="page-header">
+    <h2>Boardgame Bits Box Generator</h2>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        {% crispy form %}
+    </div>
+    <div class="col-md-6">
+        <div class="well">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active"><a href="#about" role="tab" data-toggle="tab">About</a></li>
+                <li><a href="#instructions" role="tab" data-toggle="tab">Instructions</a></li>
+                {% comment %}
+                <li><a href="#changes" role="tab" data-toggle="tab">Changelog</a></li> {% endcomment %}
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="about">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4>Welcome to the boardgame bits box generator.</h4>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-right">
+                                <div class="btn-group-vertical btn-group-sm" role="group">
+                                    <a href="https://github.com/sumpfork/bgtools_web" class="btn btn-default">
+                                        <div class="text-right">
+                                            <img src={% static "dominion_dividers/images/GitHub-Mark-32px.png" %} width="16"></img>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p>
+                        I was inspired by <a href="https://boardgamegeek.com/filepage/52619/custom-boxes-chitsfaltschachteln-fur-die-plattchen">
+                            Michael Kröhnert's cool chitboxes for the game Shipyard</a> to write a generator that can make
+                        similar boxes for any game. He was nice enough to give me permission to publish the generator here
+                        and provide his great instructions. Note: preview only renders image
+                        placeholders, full pdf will have the specified images in their place instead.
+                    </p>
+                    <p>
+                        Sorry, the image is of a quick paper mockup I made - I'll try to get a better picture of a better sample soon.
+                        <div id="preview_img">
+                            <img alt="Boardgame Bits Boxes in Action" src={% static "dominion_dividers/images/chitbox_photo.jpg" %} class="img-rounded img-responsive"></img>
+                        </div>
+                    </p>
+                </div>
+                <div class="tab-pane" id="instructions">
+                    <p>
+                        These are copied from <a href="https://boardgamegeek.com/filepage/52619/custom-boxes-chitsfaltschachteln-fur-die-plattchen">
+                        Michael Kröhnert's pdf for the game Shipyard</a> - please find the more scalable pdf version
+                        there.
+                    </p>
+                    <p>
+                        The generator will always scale images to fill the sides of the box. For best quality output, I recommend using images that
+                        actually have the right dimensions (width x length for the main image and width x height for the
+                        side image).
+                    </p>
+                    <p>
+
+                        Does it actually make sense to use a different width and length? Yes, it does in the sense that you can produce rectangular
+                        boxes that way, and the folding will still work. However, in this case the side image will get scaled
+                        to two different aspect ratios (width x height as well as length x height - you could just leave
+                        it blank or use a uniform colour image if this bugs you) and there will be no cutting/folding guides
+                        because I haven't had time to do the math to figure out where they go in this case. I may do a version
+                        that takes two different side images to address the former problem at some point.
+                    </p>
+                    <p>This generator produces both the 100% scale version for the lid and the 95% scale version of the same
+                        image for the bottom of the box on two separate pages. Print both pages on thick paper (100lb index
+                        paper, about 200 g/m^2) and follow these folding/cutting instructions:
+                        <img alt="Boardgame Bits Box Instructions" src={% static "dominion_dividers/images/chitbox_instructions.png" %} class="img-rounded img-responsive"></img></p>
+                </div>
+                <div class="tab-pane" id="changes">
+                    to be implemented...
+                </div>
+                <div class="row">
+                    <div class="pull-right">
+                        <a href="https://www.webfaction.com/?aid=41255" class="text-muted plainlink">
+                            <img src="https://www.webfaction.com/local_media/images/banners/webfaction-24x24-dark-bg.png"></img>
+                            Hosted on WebFaction
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var get_form_data = function () {
+        var data = new FormData($('#id-tabgenoptions')[0]);
+        return data;
+    }
+</script>
