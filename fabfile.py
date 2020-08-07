@@ -164,12 +164,13 @@ def checkout_and_install_libs(c):
                              for ch in changelog]
                 for tname, context in [('version', {'version': version, 'url': version_url}),
                                        ('changelog', {'changelog': changelog})]:
+                    print('uploading {}_{}.html'.format(lib, tname))
                     upload_template(c, '{}_template.html'.format(tname),
                                     posixpath.join(args.SRC_DIR,
                                                    DJANGO_APP_NAME,
                                                    'templates',
                                                    DJANGO_APP_NAME,
-                                                   '{}.html'.format(tname)),
+                                                   '{}_{}.html'.format(lib, tname)),
                                     context=context,
                                     template_dir=posixpath.join(args.LOCAL_DIR, 'templates'))
 
