@@ -64,9 +64,9 @@ class TabGenerationOptionsForm(forms.Form):
                                        'language'),
                         AccordionGroup('Order, Groups and Extras',
                                        'order',
-                                       'group_special', 'base_cards_with_expansion',
-                                       'upgrade_with_expansion', 'events',
-                                       'expansion_dividers', 
+                                       'group_special', 'group_kingdom', 'group_global',
+                                       'base_cards_with_expansion', 'upgrade_with_expansion',
+                                       'expansion_dividers',
                                        'centre_expansion_dividers',
                                        'expansion_dividers_long_name'),
                     ),
@@ -224,7 +224,20 @@ class TabGenerationOptionsForm(forms.Form):
         choices=list(
             zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES)))
     group_special = forms.BooleanField(
-        label="Group Special Cards (e.g. Prizes)", initial=True)
+        label="Group Special Cards (e.g. Prizes with Tournament)", initial=True)
+    group_kingdom = forms.BooleanField(
+        label="Group cards without randomizers separately", initial=False)
+    # global grouping 
+    choices = domdiv.main.GROUP_GLOBAL_CHOICES
+    # make pretty names for the global group choices
+    choiceNames = []
+    for choice in choices:
+        choiceNames.append(choice.capitalize())
+    group_global = forms.MultipleChoiceField(
+        choices=list(zip(choices, choiceNames)),
+        label='Group these card types globally (Cmd/Ctrl click to select multiple)',
+        initial='',
+        widget=forms.SelectMultiple(attrs={'size': '4'}))
     expansion_dividers = forms.BooleanField(
         label="Include Expansion Dividers", initial=False)
     centre_expansion_dividers = forms.BooleanField(
@@ -404,10 +417,9 @@ def _init_options_from_form_data(post_data):
         options.set_icon = data['set_icon']
         options.order = data['order']
         options.group_special = data['group_special']
+        options.group_kingdom = data['group_kingdom']
+        options.group_global = [[e] for e in data['group_global']]
         options.language = data['language']
-        options.group_global = None  # Default to no global groupings of Events, Landmarks, Ways, etc
-        options.exclude_events = data['events']
-        options.exclude_landmarks = data['events']
         options.text_front = data['divider_front_text']
         options.text_back = data['divider_back_text']
         options.no_page_footer = data['no_footer']
