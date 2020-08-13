@@ -94,6 +94,8 @@ settings_release.py
 settings_debug.py
 fabric.py
 libs.json
+fabric.yml
+hosts
 
 # visual studio code
 .vscode
