@@ -405,6 +405,7 @@ def _init_options_from_form_data(post_data):
         options.order = data['order']
         options.group_special = data['group_special']
         options.language = data['language']
+        options.group_global = None  # Default to no global groupings of Events, Landmarks, Ways, etc
         options.exclude_events = data['events']
         options.exclude_landmarks = data['events']
         options.text_front = data['divider_front_text']
