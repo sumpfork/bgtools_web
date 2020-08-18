@@ -65,6 +65,7 @@ class TabGenerationOptionsForm(forms.Form):
                         AccordionGroup('Order, Groups and Extras',
                                        'order',
                                        'group_special', 'group_kingdom', 'group_global',
+                                       'start_decks', 'curse10', 'no_trash',
                                        'base_cards_with_expansion', 'upgrade_with_expansion',
                                        'expansion_dividers',
                                        'centre_expansion_dividers',
@@ -238,6 +239,12 @@ class TabGenerationOptionsForm(forms.Form):
         label='Group these card types globally (Cmd/Ctrl click to select multiple)',
         initial='',
         widget=forms.SelectMultiple(attrs={'size': '4'}))
+    start_decks = forms.BooleanField(
+        label="Group four start decks with the Base cards", initial=False)
+    curse10 = forms.BooleanField(
+        label="Group Curse cards into groups of ten cards", initial=False)
+    no_trash = forms.BooleanField(
+        label="Exclude Trash from cards", initial=False)
     expansion_dividers = forms.BooleanField(
         label="Include Expansion Dividers", initial=False)
     centre_expansion_dividers = forms.BooleanField(
@@ -419,6 +426,11 @@ def _init_options_from_form_data(post_data):
         options.group_special = data['group_special']
         options.group_kingdom = data['group_kingdom']
         options.group_global = [[e] for e in data['group_global']]
+        if not any(options.group_global):
+            options.group_global = None
+        options.start_decks = data['start_decks']
+        options.curse10 = data['curse10']
+        options.no_trash = data['no_trash']
         options.language = data['language']
         options.text_front = data['divider_front_text']
         options.text_back = data['divider_back_text']
