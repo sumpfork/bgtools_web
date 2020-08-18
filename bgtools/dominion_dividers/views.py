@@ -425,9 +425,10 @@ def _init_options_from_form_data(post_data):
         options.order = data['order']
         options.group_special = data['group_special']
         options.group_kingdom = data['group_kingdom']
-        options.group_global = [[e] for e in data['group_global']]
-        if not any(options.group_global):
+        if not data['group_global']:
             options.group_global = None
+        else:
+            options.group_global = [[e] for e in data['group_global']]
         options.start_decks = data['start_decks']
         options.curse10 = data['curse10']
         options.no_trash = data['no_trash']
