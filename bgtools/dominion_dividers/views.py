@@ -64,7 +64,7 @@ class TabGenerationOptionsForm(forms.Form):
                                        'language'),
                         AccordionGroup('Order, Groups and Extras',
                                        'order',
-                                       'group_special', 'group_kingdom', 'group_global',
+                                       'group_special', 'group_global',
                                        'start_decks', 'curse10', 'no_trash',
                                        'base_cards_with_expansion', 'upgrade_with_expansion',
                                        'expansion_dividers',
