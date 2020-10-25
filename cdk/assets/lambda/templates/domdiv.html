@@ -1,31 +1,58 @@
-<div class="page-header">
+<div class="pb-2 mt-4 mb-2 border-bottom">
     <h2>Dominion Divider Generator</h2>
 </div>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col">
         <form method="POST" action="/" id="id-tabgenoptions">
             {{ form.csrf_token }}
             <div class="row">
-                <div class="col-md-9">
-                    <h3>Generation Options</h3>
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" style="margin-top: 20px;">Generate</button>
+                <div class="col">
+                    <div class="clearfix">
+                        <h3 class="float-left">Generation Options</h3>
+                        <button type="submit" class="btn btn-primary float-right">Generate</button>
+                    </div>
                 </div>
             </div>
             <div id="tag" class="row">
-                <div class="col-md-12">
-                    <div class="accordion">
+                <div class="col">
+                    <div class="accordion" id="accordion">
                         <div class="card">
-                            <div class="card-header">
-                                <h5>foo</h5>
+                            <div class="card-header" id="expansionHeader">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button"
+                                        data-toggle="collapse" data-target="#expansionBody" aria-expanded="true"
+                                        aria-controls="collapseOne">Expansion Selection</button></h5>
+                            </div>
+                            <div id="expansionBody" class="collapse show" aria-labelledby="expansionHeader"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        {{ form.expansions.label }}
+                                        {{ form.expansions(class_="form-control", size="18")}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-header" id="styleHeader">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button"
+                                        data-toggle="collapse" data-target="#styleBody" aria-expanded="true"
+                                        aria-controls="collapseOne">Expansion Selection</button></h5>
+                            </div>
+                            <div id="styleBody" class="collapse show" aria-labelledby="styleHeader"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        {{ form.orientation.label }} {{ form.orientation(class_="form-control") }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
         </form>
     </div>
-    <div class="col-md-6">
+    <div class="col">
         <div class="well">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="active"><a href="#about" role="tab" data-toggle="tab">About</a></li>
@@ -35,22 +62,21 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="about">
                     <div class="row">
-                        <div class="col-md-9">
+                        <div class="col-9">
                             <h4>Welcome to the Dominion divider generator.</h4>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col">
                             <div class="text-right">
                                 <div class="btn-group-vertical btn-group-sm" role="group">
                                     <a href="https://github.com/sumpfork/bgtools_web" class="btn btn-default">
                                         <div class="text-right">
                                             Web
-                                            <img src="{{ static_url }}/static/images/GitHub-Mark-32px.png"
-                                                width="16"></img>
+                                            <img src="{{ static_url }}/static/images/GitHub-Mark-32px.png" width="16">
                                         </div>
                                     </a>
                                     <a href="https://github.com/sumpfork/dominiontabs" class="btn btn-default">
                                         Dividers
-                                        <img src="{{ static_url }}/static/images/GitHub-Mark-32px.png" width="16"></img>
+                                        <img src="{{ static_url }}/static/images/GitHub-Mark-32px.png" width="16">
                                     </a>
                                 </div>
                             </div>
@@ -59,7 +85,7 @@
                     <p>
                     <div id="preview_img">
                         <img alt="Dividers in Action" src="{{ static_url }}/static/images/divider_photo.jpg"
-                            class="img-rounded img-responsive"></img>
+                            class="img-rounded img-responsive">
                     </div>
                     </p>
                     <p>Quite a while ago, I converted my base Dominion box into a <a
@@ -128,15 +154,6 @@
                         <li>Jan 30, 2014: Back text for Hinterland cards.</li>
                         <li>Jan 8, 2014: Fix alternating/same side tabs options.</li>
                     </ul>
-                </div>
-                <div class="row">
-                    <div class="pull-right">
-                        <a href="https://www.webfaction.com/?aid=41255" class="text-muted plainlink">
-                            <img
-                                src="https://www.webfaction.com/local_media/images/banners/webfaction-24x24-dark-bg.png"></img>
-                            Hosted on WebFaction
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
