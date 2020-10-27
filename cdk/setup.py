@@ -20,6 +20,7 @@ setuptools.setup(
 
     install_requires=[
         "aws-cdk.core",
+        "aws-cdk.aws_certificatemanager"
         "aws-cdk.aws_cloudfront",
         "aws-cdk.aws_cloudfront_origins",
         "aws-cdk.aws_lambda",
