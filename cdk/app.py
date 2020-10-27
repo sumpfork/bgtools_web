@@ -4,6 +4,7 @@ import subprocess
 import os
 
 from aws_cdk import (
+    aws_certificatemanager as acm,
     aws_lambda as lambda_,
     aws_lambda_python as lambda_python,
     aws_apigateway as apig,
@@ -13,6 +14,7 @@ from aws_cdk import (
     aws_s3_deployment as s3_deployment,
     core,
 )
+from aws_cdk.aws_apigateway import DomainNameOptions
 
 app = core.App()
 
@@ -26,12 +28,12 @@ class BGToolsStack(core.Stack):
         static_website_bucket = s3.Bucket(
             self,
             "Dominion Divider Generator Site",
-            #website_index_document="index.html",
-            #website_error_document="error.html",
-            #public_read_access=True,
+            # website_index_document="index.html",
+            # website_error_document="error.html",
+            # public_read_access=True,
         )
 
-        cf_dist = cloudfront.Distribution(
+        cf_static_dist = cloudfront.Distribution(
             self,
             "StaticCloudfrontDist",
             default_behavior=cloudfront.BehaviorOptions(
@@ -54,14 +56,44 @@ class BGToolsStack(core.Stack):
             index="lambda-handlers.py",
             handler="flask_app",
             environment={
-                "STATIC_WEB_URL": f"https://{cf_dist.domain_name}",
+                "STATIC_WEB_URL": f"https://{cf_static_dist.domain_name}",
                 "FLASK_SECRET_KEY": "",  # fill in console once deployed
             },
             timeout=core.Duration.seconds(5),
             runtime=lambda_.Runtime.PYTHON_3_7,
         )
-        api = apig.LambdaRestApi(self, "bgtools-api", handler=flask_app)
-
+        api = apig.LambdaRestApi(
+            self,
+            "bgtools-api",
+            handler=flask_app,
+            # domain_name=DomainNameOptions(
+            #     domain_name="domdiv.bgtools.net",
+            #     certificate=acm.Certificate.from_certificate_arn(
+            #         self,
+            #         "cert",
+            #         "arn:aws:acm:us-west-2:572001094971:certificate/f0f173fd-5203-4066-ba19-b044c5de1004",
+            #     ),
+            # ),
+        )
+        cf_bgtools_dist = cloudfront.Distribution(
+            self,
+            "BGToolsCloudfrontDist",
+            default_behavior=cloudfront.BehaviorOptions(
+                origin=cloudfront_origins.HttpOrigin(
+                    core.Fn.select(2, core.Fn.split("/", api.url)),
+                    origin_path=core.Fn.join(
+                        "", ["/", core.Fn.select(3, core.Fn.split("/", api.url))]
+                    ),
+                ),
+                allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL
+            ),
+            domain_names=["domdiv.bgtools.net"],
+            certificate=acm.Certificate.from_certificate_arn(
+                self,
+                "cert",
+                "arn:aws:acm:us-east-1:572001094971:certificate/51cbd5c4-62a0-48eb-9459-963fad97fac1",
+            ),
+        )
         # flask_endpoint = apig.LambdaIntegration(flask_app)
         # api.root.add_proxy(default_integration=flask_endpoint)
 
@@ -72,16 +104,16 @@ class BGToolsStack(core.Stack):
         #         http_method="GET",
         #     )
         # )
-        generate = lambda_.Function(
-            self,
-            "DominionDividersGenerate",
-            code=lambda_.Code.from_asset(self.lambda_dir),
-            handler="lambda-handlers.generate",
-            timeout=core.Duration.seconds(300),
-            runtime=lambda_.Runtime.PYTHON_3_7,
-        )
-        generate_endpoint = apig.LambdaIntegration(generate)
-        api.root.add_resource("generate").add_method("PUT", generate_endpoint)
+        # generate = lambda_.Function(
+        #     self,
+        #     "DominionDividersGenerate",
+        #     code=lambda_.Code.from_asset(self.lambda_dir),
+        #     handler="lambda-handlers.generate",
+        #     timeout=core.Duration.seconds(300),
+        #     runtime=lambda_.Runtime.PYTHON_3_7,
+        # )
+        # generate_endpoint = apig.LambdaIntegration(generate)
+        # api.root.add_resource("generate").add_method("PUT", generate_endpoint)
 
 
 BGToolsStack(app, "bgtools")

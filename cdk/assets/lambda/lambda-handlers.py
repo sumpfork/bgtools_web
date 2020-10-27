@@ -1,8 +1,9 @@
+from io import BytesIO
 import logging
 import os
 
 from flask_lambda import FlaskLambda
-from flask import request
+from flask import request, send_file
 from flask import render_template
 from flask_wtf import FlaskForm
 import wtforms.fields as wtf_fields
@@ -50,12 +51,27 @@ class DomDivForm(FlaskForm):
     )
 
 
-@flask_app.route("/", methods=["GET"])
+@flask_app.route("/", methods=["GET", "POST"])
 def root():
     logger.info(request)
     form = DomDivForm()
     if form.validate_on_submit():
-        return
+        options = domdiv.main.parse_opts([])
+        logger.info(f"options before populate: {options}")
+        form.populate_obj(options)
+        logger.info(f"options after populate: {options}")
+        options = domdiv.main.clean_opts(options)
+        logger.info(f"options after cleaning: {options}")
+        buf = BytesIO()
+        options.outfile = buf
+        domdiv.main.generate(options)
+        buf.seek(0)
+        return send_file(
+            buf,
+            mimetype="application/pdf",
+            as_attachment=True,
+            attachment_filename="sumpfork_dominion_dividers.pdf",
+        )
     return render_template(
         "index.html",
         pages=PAGES,
