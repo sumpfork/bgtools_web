@@ -85,7 +85,10 @@ class BGToolsStack(core.Stack):
                         "", ["/", core.Fn.select(3, core.Fn.split("/", api.url))]
                     ),
                 ),
-                allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL
+                origin_request_policy=cloudfront.OriginRequestPolicy(self, "OriginRequestPolicy",
+                    cookie_behavior=cloudfront.OriginRequestCookieBehavior.all()
+                ),
+                allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
             ),
             domain_names=["domdiv.bgtools.net"],
             certificate=acm.Certificate.from_certificate_arn(
