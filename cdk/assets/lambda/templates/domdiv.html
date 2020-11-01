@@ -28,8 +28,10 @@
                                 data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.expansions.label }} {{ form.expansions(class_="form-control", size="18")}}
-                                        {{ form.fan_expansions.label }} {{ form.fan_expansions(class_="form-control", size="2")}}
+                                        {{ form.expansions.label }}
+                                        {{ form.expansions(class_="form-control", size="18")}}
+                                        {{ form.fan_expansions.label }}
+                                        {{ form.fan_expansions(class_="form-control", size="2")}}
                                     </div>
                                 </div>
                             </div>
@@ -40,14 +42,18 @@
                                         data-toggle="collapse" data-target="#pageBody" aria-expanded="true"
                                         aria-controls="collapseOne">Page</button></h5>
                             </div>
-                            <div id="pageBody" class="collapse" aria-labelledby="pageHeader"
-                                data-parent="#accordion">
+                            <div id="pageBody" class="collapse" aria-labelledby="pageHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.pagesize.label }} {{ form.pagesize(class_="form-control") }}
-                                        {{ form.no_footer.label }} {{ form.no_footer(class_="form-control") }}
+                                        {{ form.pagesize(class_="form-control") }}
+                                        {{ form.pagesize.label(class_="form-check-label") }}
+                                        <div class="form-check">
+                                            {{ form.no_footer(class_="form-check-input") }}
+                                            {{ form.no_footer.label(class_="form-check-label") }}
+                                        </div>
                                         {{ form.back_offset.label }} {{ form.back_offset(class_="form-control") }}
-                                        {{ form.back_offset_height.label }} {{ form.back_offset_height(class_="form-control") }}
+                                        {{ form.back_offset_height.label }}
+                                        {{ form.back_offset_height(class_="form-control") }}
                                     </div>
                                 </div>
                             </div>
@@ -58,13 +64,16 @@
                                         data-toggle="collapse" data-target="#styleBody" aria-expanded="true"
                                         aria-controls="collapseOne">Style</button></h5>
                             </div>
-                            <div id="styleBody" class="collapse" aria-labelledby="styleHeader"
-                                data-parent="#accordion">
+                            <div id="styleBody" class="collapse" aria-labelledby="styleHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.orientation.label }} {{ form.orientation(class_="form-control") }}
-                                        {{ form.wrappers.label }} {{ form.wrappers(class_="form-control") }}
-                                        {{ form.notch.label }} {{ form.notch(class_="form-control") }}
+                                        {{ form.orientation.label(class_="form-check-label") }}
+                                        {{ form.orientation(class_="form-control") }}
+                                        <div class="form-check">
+                                            {{ form.wrappers(class_="form-check-input") }}
+                                            {{ form.wrappers.label(class_="form-check-label") }}
+                                        </div>
+                                        {{ form.notch.label }} {{ form.notch(class_="form-check-input") }}
                                         {{ form.linetype.label }} {{ form.linetype(class_="form-control") }}
                                         {{ form.cardsize.label }} {{ form.cardsize(class_="form-control") }}
                                         {{ form.horizontal_gap.label }} {{ form.horizontal_gap(class_="form-control") }}
@@ -79,18 +88,23 @@
                                         data-toggle="collapse" data-target="#tabBody" aria-expanded="true"
                                         aria-controls="collapseOne">Tab</button></h5>
                             </div>
-                            <div id="tabBody" class="collapse" aria-labelledby="tabHeader"
-                                data-parent="#accordion">
+                            <div id="tabBody" class="collapse" aria-labelledby="tabHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
                                         {{ form.tab_number.label }} {{ form.tab_number(class_="form-control") }}
                                         {{ form.tab_side.label }} {{ form.tab_side(class_="form-control") }}
-                                        {{ form.serpentine.label }} {{ form.serpentine(class_="form-control") }}
-                                        {{ form.reset_tabs.label }} {{ form.reset_tabs(class_="form-control") }}
+                                        <div class="form-check">
+                                            {{ form.serpentine(class_="form-check-input") }}
+                                            {{ form.serpentine.label(class_="form-check-label") }}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ form.reset_tabs(class_="form-check-input") }}
+                                            {{ form.reset_tabs.label(class_="form-check-label") }}
+                                        </div>
                                         {{ form.tab_name_align.label }} {{ form.tab_name_align(class_="form-control") }}
                                         {{ form.set_icon.label }} {{ form.set_icon(class_="form-control") }}
                                         {{ form.cost_icon.label }} {{ form.cost_icon(class_="form-control") }}
-                                        {{ form.black_tabs.label }} {{ form.black_tabs(class_="form-control") }}
+                                        {{ form.black_tabs.label }} {{ form.black_tabs(class_="form-check-input") }}
                                     </div>
                                 </div>
                             </div>
@@ -101,14 +115,21 @@
                                         data-toggle="collapse" data-target="#bodyBody" aria-expanded="true"
                                         aria-controls="collapseOne">Body</button></h5>
                             </div>
-                            <div id="bodyBody" class="collapse" aria-labelledby="bodyHeader"
-                                data-parent="#accordion">
+                            <div id="bodyBody" class="collapse" aria-labelledby="bodyHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.counts.label }} {{ form.counts(class_="form-control") }}
-                                        {{ form.types.label }} {{ form.types(class_="form-control") }}
-                                        {{ form.divider_front_text.label }} {{ form.divider_front_text(class_="form-control") }}
-                                        {{ form.divider_back_text.label }} {{ form.divider_back_text(class_="form-control") }}
+                                        <div class="form-check">
+                                            {{ form.counts(class_="form-check-input") }}
+                                            {{ form.counts.label(class_="form-check-label") }}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ form.types(class_="form-check-input") }}
+                                            {{ form.types.label(class_="form-check-label") }}
+                                        </div>
+                                        {{ form.divider_front_text.label }}
+                                        {{ form.divider_front_text(class_="form-control") }}
+                                        {{ form.divider_back_text.label }}
+                                        {{ form.divider_back_text(class_="form-control") }}
                                         {{ form.language.label }} {{ form.language(class_="form-control") }}
                                     </div>
                                 </div>
@@ -120,18 +141,38 @@
                                         data-toggle="collapse" data-target="#orderBody" aria-expanded="true"
                                         aria-controls="collapseOne">Order, Groups and Extras</button></h5>
                             </div>
-                            <div id="orderBody" class="collapse" aria-labelledby="orderHeader"
-                                data-parent="#accordion">
+                            <div id="orderBody" class="collapse" aria-labelledby="orderHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
                                         {{ form.order.label }} {{ form.order(class_="form-control") }}
-                                        {{ form.group_special.label }} {{ form.group_special(class_="form-control") }}
-                                        {{ form.base_cards_with_expansion.label }} {{ form.base_cards_with_expansion(class_="form-control") }}
-                                        {{ form.upgrade_with_expansion.label }} {{ form.upgrade_with_expansion(class_="form-control") }}
-                                        {{ form.events.label }} {{ form.events(class_="form-control") }}
-                                        {{ form.expansion_dividers.label }} {{ form.expansion_dividers(class_="form-control") }}
-                                        {{ form.centre_expansion_dividers.label }} {{ form.centre_expansion_dividers(class_="form-control") }}
-                                        {{ form.expansion_dividers_long_name.label }} {{ form.expansion_dividers_long_name(class_="form-control") }}
+                                        <div class="form-check">
+                                            {{ form.group_special(class_="form-check-input") }}
+                                            {{ form.group_special.label(class_="form-check-label") }}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ form.base_cards_with_expansion(class_="form-check-input") }}
+                                            {{ form.base_cards_with_expansion.label(class_="form-check-label") }}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ form.upgrade_with_expansion(class_="form-check-input") }}
+                                            {{ form.upgrade_with_expansion.label(class_="form-check-label") }}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ form.events(class_="form-check-input") }}
+                                            {{ form.events.label(class_="form-check-label") }}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ form.expansion_dividers(class_="form-check-input") }}
+                                            {{ form.expansion_dividers.label(class_="form-check-label") }}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ form.centre_expansion_dividers(class_="form-check-input") }}
+                                            {{ form.centre_expansion_dividers.label(class_="form-check-label") }}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ form.expansion_dividers_long_name(class_="form-check-input") }}
+                                            {{ form.expansion_dividers_long_name.label(class_="form-check-label") }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -144,12 +185,14 @@
     <div class="col">
         <div class="well">
             <ul class="nav nav-tabs" role="tablist">
-                <li class="active"><a href="#about" role="tab" data-toggle="tab">About</a></li>
-                <li><a href="#changes" role="tab" data-toggle="tab">Changelog</a></li>
+                <li class="nav-item"><a class="nav-link active" id="about-tab" href="#about" role="tab"
+                        data-toggle="tab" aria-controls="about" aria-selected="true">About</a></li>
+                <li class="nav-item"><a class="nav-link" id="changes-tab" href="#changes" role="tab" data-toggle="tab"
+                        aria-controls="changes" aria-selected="false">Changelog</a></li>
             </ul>
 
             <div class="tab-content">
-                <div class="tab-pane active" id="about">
+                <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
                     <div class="row">
                         <div class="col-9">
                             <h4>Welcome to the Dominion divider generator.</h4>
@@ -210,7 +253,7 @@
                                 href="https://github.com/nickv2002">github</a>) without whom I would have no chance to
                             stay up-to-date with this project.</b></p>
                 </div>
-                <div class="tab-pane" id="changes">
+                <div class="tab-pane fade" id="changes" role="tabpanel" aria-labelledby="changes-tab">
                     {% include "version_template.html" %}
                     {% include "changelog_template.html" %}
 
