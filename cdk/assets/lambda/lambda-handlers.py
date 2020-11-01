@@ -1,9 +1,10 @@
 from io import BytesIO
+import json
 import logging
 import os
 
-from flask_lambda import FlaskLambda
-from flask import request, send_file, make_response
+import apig_wsgi
+from flask import Flask, request, send_file, make_response
 from flask import render_template
 from flask_wtf import FlaskForm
 
@@ -17,8 +18,8 @@ PAGES = [
     ("tuckboxes", "Card Tuckboxes"),
 ]
 
-flask_app = FlaskLambda(__name__)
-# CSRFProtect(flask_app)
+flask_app = Flask(__name__)
+apig_wsgi_handler = apig_wsgi.make_lambda_handler(flask_app, binary_support=True)
 secret_key = os.environ["FLASK_SECRET_KEY"]
 assert secret_key, "Need secret key specified in env"
 flask_app.config["SECRET_KEY"] = secret_key
@@ -26,6 +27,11 @@ flask_app.config["SECRET_KEY"] = secret_key
 logger = logging.getLogger("bgtools_logger")
 logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
 
+# def apig_wsgi_handler(event, context):
+#     print(json.dumps(event, indent=2, sort_keys=True))
+#     response = apig_wsgi_handler_helper(event, context)
+#     print(json.dumps(response, indent=2, sort_keys=True))
+#     return response
 
 class DomDivForm(FlaskForm):
     # Expansions
@@ -80,17 +86,20 @@ def root():
         options.outfile = buf
         domdiv.main.generate(options)
         logger.info("done generation, returning pdf")
-        r = make_response(buf.getvalue())
-        r.headers['Content-Type'] = 'application/pdf'
-        r.headers['Content-Disposition'] = 'attachment; filename="sumpfork_dominion_dividers.pdf"'
+        buf.seek(0)
+        r = send_file(
+            buf,
+            mimetype="application/pdf",
+            as_attachment=True,
+            attachment_filename="sumpfork_dominion_dividers.pdf",
+        )
         logger.info(f"response: {r}")
         return r
-        # return send_file(
-        #     buf,
-        #     mimetype="application/pdf",
-        #     as_attachment=True,
-        #     attachment_filename="sumpfork_dominion_dividers.pdf".encode("utf-8"),
-        # )
+        # r = make_response(buf.getvalue())
+        # r.headers["Content-Type"] = "application/pdf"
+        # r.headers[
+        #     "Content-Disposition"
+        # ] = 'attachment; filename="sumpfork_dominion_dividers.pdf"'
     r = render_template(
         "index.html",
         pages=PAGES,
