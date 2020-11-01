@@ -11,6 +11,8 @@ from flask_wtf import FlaskForm
 # from flask_wtf.csrf import CSRFProtect
 import wtforms.fields as wtf_fields
 import domdiv.main
+import tuckboxes
+import chitboxes
 
 PAGES = [
     ("domdiv", "Dominion Dividers"),
@@ -249,7 +251,7 @@ def root():
         options.horizontal_gap = float(options.horizontal_gap)
         options.back_offset = float(options.back_offset)
         options.back_offset_height = float(options.back_offset_height)
-        
+
         logger.info(f"options after populate: {options}")
         options = domdiv.main.clean_opts(options)
         logger.info(f"options after cleaning: {options}")
@@ -281,10 +283,15 @@ def root():
     return r
 
 
-@flask_app.route("/bar/", methods=["GET"])
-def bar():
-    logger.info("in bar!")
-    return {"statusCode": 200, "body": "bar!"}
+@flask_app.route("/tuckboxes/", methods=["GET", "POST"])
+def tuckboxes():
+    logger.info("in tuckboxes!")
+    return {"statusCode": 200, "body": "tuckboxes"}
+
+@flask_app.route("/chitboxes/", methods=["GET", "POST"])
+def chitboxes():
+    logger.info("in chitboxes!")
+    return {"statusCode": 200, "body": "chitboxes"}
 
 
 if __name__ == "__main__":

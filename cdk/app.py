@@ -60,6 +60,7 @@ class BGToolsStack(core.Stack):
                 "FLASK_SECRET_KEY": "",  # fill in console once deployed
             },
             timeout=core.Duration.seconds(60),
+            memory_size=512,
             runtime=lambda_.Runtime.PYTHON_3_7,
         )
         api = apig.LambdaRestApi(
@@ -67,16 +68,8 @@ class BGToolsStack(core.Stack):
             "bgtools-api",
             handler=flask_app,
             binary_media_types=["*/*"]
-            # domain_name=DomainNameOptions(
-            #     domain_name="domdiv.bgtools.net",
-            #     certificate=acm.Certificate.from_certificate_arn(
-            #         self,
-            #         "cert",
-            #         "arn:aws:acm:us-west-2:572001094971:certificate/f0f173fd-5203-4066-ba19-b044c5de1004",
-            #     ),
-            # ),
         )
-        cf_bgtools_dist = cloudfront.Distribution(
+        cloudfront.Distribution(
             self,
             "BGToolsCloudfrontDist",
             default_behavior=cloudfront.BehaviorOptions(
@@ -100,27 +93,6 @@ class BGToolsStack(core.Stack):
                 "arn:aws:acm:us-east-1:572001094971:certificate/51cbd5c4-62a0-48eb-9459-963fad97fac1",
             ),
         )
-        # flask_endpoint = apig.LambdaIntegration(flask_app)
-        # api.root.add_proxy(default_integration=flask_endpoint)
-
-        # api.root.add_resource("static").add_proxy(
-        #     default_integration=apig.HttpIntegration(
-        #         f"{static_website_bucket.bucket_website_url}/static/",
-        #         proxy=True,
-        #         http_method="GET",
-        #     )
-        # )
-        # generate = lambda_.Function(
-        #     self,
-        #     "DominionDividersGenerate",
-        #     code=lambda_.Code.from_asset(self.lambda_dir),
-        #     handler="lambda-handlers.generate",
-        #     timeout=core.Duration.seconds(300),
-        #     runtime=lambda_.Runtime.PYTHON_3_7,
-        # )
-        # generate_endpoint = apig.LambdaIntegration(generate)
-        # api.root.add_resource("generate").add_method("PUT", generate_endpoint)
-
 
 BGToolsStack(app, "bgtools")
 app.synth()
