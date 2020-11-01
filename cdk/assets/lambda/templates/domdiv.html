@@ -17,32 +17,121 @@
                 <div class="col">
                     <div class="accordion" id="accordion">
                         <div class="card">
+                            <!-- Expansions -->
                             <div class="card-header" id="expansionHeader">
                                 <h5 class="mb-0">
                                     <button class="btn btn-link btn-block text-left" type="button"
                                         data-toggle="collapse" data-target="#expansionBody" aria-expanded="true"
-                                        aria-controls="collapseOne">Expansion Selection</button></h5>
+                                        aria-controls="collapseOne">Expansions</button></h5>
                             </div>
                             <div id="expansionBody" class="collapse show" aria-labelledby="expansionHeader"
                                 data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.expansions.label }}
-                                        {{ form.expansions(class_="form-control", size="18")}}
+                                        {{ form.expansions.label }} {{ form.expansions(class_="form-control", size="18")}}
+                                        {{ form.fan_expansions.label }} {{ form.fan_expansions(class_="form-control", size="2")}}
                                     </div>
                                 </div>
                             </div>
+                            <!-- Page Options -->
+                            <div class="card-header" id="pageHeader">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button"
+                                        data-toggle="collapse" data-target="#pageBody" aria-expanded="true"
+                                        aria-controls="collapseOne">Page</button></h5>
+                            </div>
+                            <div id="pageBody" class="collapse" aria-labelledby="pageHeader"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        {{ form.pagesize.label }} {{ form.pagesize(class_="form-control") }}
+                                        {{ form.no_footer.label }} {{ form.no_footer(class_="form-control") }}
+                                        {{ form.back_offset.label }} {{ form.back_offset(class_="form-control") }}
+                                        {{ form.back_offset_height.label }} {{ form.back_offset_height(class_="form-control") }}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Style Options -->
                             <div class="card-header" id="styleHeader">
                                 <h5 class="mb-0">
                                     <button class="btn btn-link btn-block text-left" type="button"
                                         data-toggle="collapse" data-target="#styleBody" aria-expanded="true"
                                         aria-controls="collapseOne">Style</button></h5>
                             </div>
-                            <div id="styleBody" class="collapse show" aria-labelledby="styleHeader"
+                            <div id="styleBody" class="collapse" aria-labelledby="styleHeader"
                                 data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
                                         {{ form.orientation.label }} {{ form.orientation(class_="form-control") }}
+                                        {{ form.wrappers.label }} {{ form.wrappers(class_="form-control") }}
+                                        {{ form.notch.label }} {{ form.notch(class_="form-control") }}
+                                        {{ form.linetype.label }} {{ form.linetype(class_="form-control") }}
+                                        {{ form.cardsize.label }} {{ form.cardsize(class_="form-control") }}
+                                        {{ form.horizontal_gap.label }} {{ form.horizontal_gap(class_="form-control") }}
+                                        {{ form.vertical_gap.label }} {{ form.vertical_gap(class_="form-control") }}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tab Options -->
+                            <div class="card-header" id="tabHeader">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button"
+                                        data-toggle="collapse" data-target="#tabBody" aria-expanded="true"
+                                        aria-controls="collapseOne">Tab</button></h5>
+                            </div>
+                            <div id="tabBody" class="collapse" aria-labelledby="tabHeader"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        {{ form.tab_number.label }} {{ form.tab_number(class_="form-control") }}
+                                        {{ form.tab_side.label }} {{ form.tab_side(class_="form-control") }}
+                                        {{ form.serpentine.label }} {{ form.serpentine(class_="form-control") }}
+                                        {{ form.reset_tabs.label }} {{ form.reset_tabs(class_="form-control") }}
+                                        {{ form.tab_name_align.label }} {{ form.tab_name_align(class_="form-control") }}
+                                        {{ form.set_icon.label }} {{ form.set_icon(class_="form-control") }}
+                                        {{ form.cost_icon.label }} {{ form.cost_icon(class_="form-control") }}
+                                        {{ form.black_tabs.label }} {{ form.black_tabs(class_="form-control") }}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Body Options -->
+                            <div class="card-header" id="bodyHeader">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button"
+                                        data-toggle="collapse" data-target="#bodyBody" aria-expanded="true"
+                                        aria-controls="collapseOne">Body</button></h5>
+                            </div>
+                            <div id="bodyBody" class="collapse" aria-labelledby="bodyHeader"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        {{ form.counts.label }} {{ form.counts(class_="form-control") }}
+                                        {{ form.types.label }} {{ form.types(class_="form-control") }}
+                                        {{ form.divider_front_text.label }} {{ form.divider_front_text(class_="form-control") }}
+                                        {{ form.divider_back_text.label }} {{ form.divider_back_text(class_="form-control") }}
+                                        {{ form.language.label }} {{ form.language(class_="form-control") }}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Order, Groups and Extras -->
+                            <div class="card-header" id="orderHeader">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button"
+                                        data-toggle="collapse" data-target="#orderBody" aria-expanded="true"
+                                        aria-controls="collapseOne">Order, Groups and Extras</button></h5>
+                            </div>
+                            <div id="orderBody" class="collapse" aria-labelledby="orderHeader"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        {{ form.order.label }} {{ form.order(class_="form-control") }}
+                                        {{ form.group_special.label }} {{ form.group_special(class_="form-control") }}
+                                        {{ form.base_cards_with_expansion.label }} {{ form.base_cards_with_expansion(class_="form-control") }}
+                                        {{ form.upgrade_with_expansion.label }} {{ form.upgrade_with_expansion(class_="form-control") }}
+                                        {{ form.events.label }} {{ form.events(class_="form-control") }}
+                                        {{ form.expansion_dividers.label }} {{ form.expansion_dividers(class_="form-control") }}
+                                        {{ form.centre_expansion_dividers.label }} {{ form.centre_expansion_dividers(class_="form-control") }}
+                                        {{ form.expansion_dividers_long_name.label }} {{ form.expansion_dividers_long_name(class_="form-control") }}
                                     </div>
                                 </div>
                             </div>
