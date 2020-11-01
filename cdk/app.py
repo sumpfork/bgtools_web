@@ -54,18 +54,19 @@ class BGToolsStack(core.Stack):
             "DominionDividersFlaskApp",
             entry=self.lambda_dir,
             index="lambda-handlers.py",
-            handler="flask_app",
+            handler="apig_wsgi_handler",
             environment={
                 "STATIC_WEB_URL": f"https://{cf_static_dist.domain_name}",
                 "FLASK_SECRET_KEY": "",  # fill in console once deployed
             },
-            timeout=core.Duration.seconds(5),
+            timeout=core.Duration.seconds(60),
             runtime=lambda_.Runtime.PYTHON_3_7,
         )
         api = apig.LambdaRestApi(
             self,
             "bgtools-api",
             handler=flask_app,
+            binary_media_types=["*/*"]
             # domain_name=DomainNameOptions(
             #     domain_name="domdiv.bgtools.net",
             #     certificate=acm.Certificate.from_certificate_arn(
@@ -85,8 +86,10 @@ class BGToolsStack(core.Stack):
                         "", ["/", core.Fn.select(3, core.Fn.split("/", api.url))]
                     ),
                 ),
-                origin_request_policy=cloudfront.OriginRequestPolicy(self, "OriginRequestPolicy",
-                    cookie_behavior=cloudfront.OriginRequestCookieBehavior.all()
+                origin_request_policy=cloudfront.OriginRequestPolicy(
+                    self,
+                    "OriginRequestPolicy",
+                    cookie_behavior=cloudfront.OriginRequestCookieBehavior.all(),
                 ),
                 allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
             ),

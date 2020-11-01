@@ -1,3 +1,3 @@
-flask-lambda-python36
+apig-wsgi
 Flask-WTF
 domdiv
