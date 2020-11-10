@@ -1,14 +1,66 @@
-{% load crispy_forms_tags %} {% load staticfiles %}
-
 <div class="page-header">
     <h2>Tuckbox Generator</h2>
 </div>
 <div class="row">
-    <div class="col-md-6">
-        {% crispy form %}
+    <div class="col">
+        <form method="POST" action="/tuckboxes">
+            {{ form.csrf_token }}
+            <div class="row">
+                <div class="col">
+                    <div class="clearfix">
+                        <h3 class="float-left">Generation Options</h3>
+                        <button type="submit" class="btn btn-primary float-right">Generate</button>
+                    </div>
+                </div>
+            </div>
+            <div id="tag" class="row">
+                <div class="col">
+                    <div class="accordion" id="accordion">
+                        <div class="card">
+                            <!-- Measurements -->
+                            <div class="card-header" id="measurementHeader">
+                                <h5 class="mb-0 accordion-menu">
+                                    <button class="btn btn-link btn-block text-left" type="button"
+                                        data-toggle="collapse" data-target="#measurementBody" aria-expanded="true"
+                                        aria-controls="collapseOne">Measurements</button></h5>
+                            </div>
+                            <div id="measurementBody" class="collapse show" aria-labelledby="measurementHeader"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        {{ form.width.label }}
+                                        {{ form.width }}
+                                        {{ form.height.label }}
+                                        {{ form.height }}
+                                        {{ form.depth.label }}
+                                        {{ form.depth }}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Images -->
+                            <div class="card-header" id="imagesHeader">
+                                <h5 class="mb-0 accordion-menu">
+                                    <button class="btn btn-link btn-block text-left" type="button"
+                                        data-toggle="collapse" data-target="#imagesBody" aria-expanded="false"
+                                        aria-controls="collapseOne">Images</button></h5>
+                            </div>
+                            <div id="imagesBody" class="collapse show" aria-labelledby="imagesHeader"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        {{ form.front_image.label }}
+                                        {{ form.front_image }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-    <div class="col-md-6">
-        <div class="well">
+    <div class="col">
+        <div class="card card-body bg-light">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="active"><a href="#about" role="tab" data-toggle="tab">About</a></li>
                 {% comment %}
@@ -26,7 +78,8 @@
                                 <div class="btn-group-vertical btn-group-sm" role="group">
                                     <a href="https://github.com/sumpfork/bgtools_web" class="btn btn-default">
                                         <div class="text-right">
-                                            <img src={% static "dominion_dividers/images/GitHub-Mark-32px.png" %} width="16"></img>
+                                            <img src={% static "dominion_dividers/images/GitHub-Mark-32px.png" %}
+                                                width="16"></img>
                                         </div>
                                     </a>
                                 </div>
@@ -34,13 +87,17 @@
                         </div>
                     </div>
                     <p>
-                        A while ago, I produced a script to produce some card tuckboxes for some of my games. The preview below only shows the outlines with placeholders,
-                        but the full pdf will have the images you upload. The limited options are currently to set a background colour that will
-                        render on the sides and ends, either if you don't specify an image to use there, or if you preserve the aspect ratio of the image
+                        A while ago, I produced a script to produce some card tuckboxes for some of my games. The
+                        preview below only shows the outlines with placeholders,
+                        but the full pdf will have the images you upload. The limited options are currently to set a
+                        background colour that will
+                        render on the sides and ends, either if you don't specify an image to use there, or if you
+                        preserve the aspect ratio of the image
                         used there, and the image fails to cover the entire side or end.
-                        <div id="preview_img">
-                            <img alt="Tuckboxes in Action" src={% static "dominion_dividers/images/tuckbox_photo.jpg" %} class="img-rounded img-responsive"></img>
-                        </div>
+                    <div id="preview_img">
+                        <img alt="Tuckboxes in Action" src={% static "dominion_dividers/images/tuckbox_photo.jpg" %}
+                            class="img-rounded img-responsive"></img>
+                    </div>
                     </p>
                 </div>
                 <div class="tab-pane" id="changes">
@@ -49,7 +106,8 @@
                 <div class="row">
                     <div class="pull-right">
                         <a href="https://www.webfaction.com/?aid=41255" class="text-muted plainlink">
-                            <img src="https://www.webfaction.com/local_media/images/banners/webfaction-24x24-dark-bg.png"></img>
+                            <img
+                                src="https://www.webfaction.com/local_media/images/banners/webfaction-24x24-dark-bg.png"></img>
                             Hosted on WebFaction
                         </a>
                     </div>

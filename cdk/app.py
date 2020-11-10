@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
-import subprocess
+import datetime as dt
 import os
+import requests
+
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from aws_cdk import (
     aws_certificatemanager as acm,
@@ -24,6 +27,34 @@ class BGToolsStack(core.Stack):
         super().__init__(app, id)
 
         self.lambda_dir = "assets/lambda"
+        os.makedirs(
+            os.path.join(self.lambda_dir, "templates", "generated"), exist_ok=True
+        )
+
+        r = requests.get("https://api.github.com/repos/sumpfork/dominiontabs/releases")
+        changelog = r.json()
+        changelog = [
+            {
+                "url": ch["html_url"],
+                "date": dt.datetime.strptime(
+                    ch["published_at"][:10], "%Y-%m-%d"
+                ).date(),
+                "name": ch["name"],
+                "tag": ch["tag_name"],
+                "description": ch["body"],
+            }
+            for ch in changelog
+        ]
+
+        env = Environment(
+            loader=FileSystemLoader("templates"), autoescape=select_autoescape(["html"])
+        )
+        t = env.get_template("changelog.html.j2")
+        with open(
+            os.path.join(self.lambda_dir, "templates", "generated", "changelog.html"),
+            "w",
+        ) as f:
+            f.write(t.render(changelog=changelog))
 
         static_website_bucket = s3.Bucket(
             self,
@@ -64,10 +95,7 @@ class BGToolsStack(core.Stack):
             runtime=lambda_.Runtime.PYTHON_3_7,
         )
         api = apig.LambdaRestApi(
-            self,
-            "bgtools-api",
-            handler=flask_app,
-            binary_media_types=["*/*"]
+            self, "bgtools-api", handler=flask_app, binary_media_types=["*/*"]
         )
         cloudfront.Distribution(
             self,
@@ -93,6 +121,7 @@ class BGToolsStack(core.Stack):
                 "arn:aws:acm:us-east-1:572001094971:certificate/51cbd5c4-62a0-48eb-9459-963fad97fac1",
             ),
         )
+
 
 BGToolsStack(app, "bgtools")
 app.synth()
