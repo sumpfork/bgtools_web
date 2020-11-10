@@ -160,7 +160,25 @@ class DomDivForm(FlaskForm):
         choices=list(
             zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES)))
     group_special = wtf_fields.BooleanField(
-        label="Group Special Cards (e.g. Prizes)", default=True)
+        label="Group Special Cards (e.g. Prizes with Tournament)", default=True)
+    group_kingdom = wtf_fields.BooleanField(
+        label="Group cards without randomizers separately")
+    # global grouping 
+    choices = domdiv.main.GROUP_GLOBAL_CHOICES
+    # make pretty names for the global group choices
+    choiceNames = []
+    for choice in choices:
+        choiceNames.append(choice.capitalize())
+    group_global = wtf_fields.SelectMultipleField(
+        choices=list(zip(choices, choiceNames)),
+        label='Group these card types globally (Cmd/Ctrl click to select multiple)',
+        default='')
+    start_decks = wtf_fields.BooleanField(
+        label="Group four start decks with the Base cards")
+    curse10 = wtf_fields.BooleanField(
+        label="Group Curse cards into groups of ten cards")
+    no_trash = wtf_fields.BooleanField(
+        label="Exclude Trash from cards")
     expansion_dividers = wtf_fields.BooleanField(
         label="Include Expansion Dividers", default=False)
     centre_expansion_dividers = wtf_fields.BooleanField(
@@ -207,6 +225,10 @@ class DomDivForm(FlaskForm):
         self.populate_obj(options)
         options.expansions = [[e] for e in self["expansions"].data]
         options.fan_expansions = [[e] for e in self["fan_expansions"].data]
+        if self["group_global"].data:
+            options.group_global = [[g] for g in self["group_global"].data]
+        else:
+            options.group_gloal = None
         options.tab_number = int(options.tab_number)
         options.tabwidth = float(options.tabwidth)
         options.vertical_gap = float(options.vertical_gap)
