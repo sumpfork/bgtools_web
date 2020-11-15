@@ -3,7 +3,7 @@
 </div>
 <div class="row">
     <div class="col">
-        <form method="POST" action="/tuckboxes">
+        <form method="POST" action="{{ form_target }}">
             {{ form.csrf_token }}
             <div class="row">
                 <div class="col">
@@ -44,7 +44,7 @@
                                         data-toggle="collapse" data-target="#imagesBody" aria-expanded="false"
                                         aria-controls="collapseOne">Images</button></h5>
                             </div>
-                            <div id="imagesBody" class="collapse show" aria-labelledby="imagesHeader"
+                            <div id="imagesBody" class="collapse" aria-labelledby="imagesHeader"
                                 data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
@@ -62,25 +62,30 @@
     <div class="col">
         <div class="card card-body bg-light">
             <ul class="nav nav-tabs" role="tablist">
-                <li class="active"><a href="#about" role="tab" data-toggle="tab">About</a></li>
-                {% comment %}
-                <li><a href="#changes" role="tab" data-toggle="tab">Changelog</a></li> {% endcomment %}
+                <li class="nav-item"><a class="nav-link active" id="about-tab" href="#about" role="tab"
+                        data-toggle="tab" aria-controls="about" aria-selected="true">About</a></li>
+                <!-- <li class="nav-item"><a class="nav-link" id="changes-tab" href="#changes" role="tab" data-toggle="tab"
+                        aria-controls="changes" aria-selected="false">Changelog</a></li> -->
             </ul>
 
             <div class="tab-content">
-                <div class="tab-pane active" id="about">
+                <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
                     <div class="row">
-                        <div class="col-md-9">
+                        <div class="col-9">
                             <h4>Welcome to the tuckbox generator.</h4>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col">
                             <div class="text-right">
                                 <div class="btn-group-vertical btn-group-sm" role="group">
                                     <a href="https://github.com/sumpfork/bgtools_web" class="btn btn-default">
                                         <div class="text-right">
-                                            <img src={% static "dominion_dividers/images/GitHub-Mark-32px.png" %}
-                                                width="16"></img>
+                                            Web
+                                            <img src="{{ static_url }}/static/images/GitHub-Mark-32px.png" width="16">
                                         </div>
+                                    </a>
+                                    <a href="https://github.com/sumpfork/tuckboxes" class="btn btn-default">
+                                        Tuckboxes
+                                        <img src="{{ static_url }}/static/images/GitHub-Mark-32px.png" width="16">
                                     </a>
                                 </div>
                             </div>
@@ -95,22 +100,13 @@
                         preserve the aspect ratio of the image
                         used there, and the image fails to cover the entire side or end.
                     <div id="preview_img">
-                        <img alt="Tuckboxes in Action" src={% static "dominion_dividers/images/tuckbox_photo.jpg" %}
-                            class="img-rounded img-responsive"></img>
+                        <img alt="Tuckboxes in Action" src="{{ static_url }}/static/images/tuckbox_photo.jpg"
+                            class="img-rounded img-responsive">
                     </div>
                     </p>
                 </div>
-                <div class="tab-pane" id="changes">
+                <div class="tab-pane fade" id="changes" role="tabpanel" aria-labelledby="changes-tab">
                     to be implemented...
-                </div>
-                <div class="row">
-                    <div class="pull-right">
-                        <a href="https://www.webfaction.com/?aid=41255" class="text-muted plainlink">
-                            <img
-                                src="https://www.webfaction.com/local_media/images/banners/webfaction-24x24-dark-bg.png"></img>
-                            Hosted on WebFaction
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

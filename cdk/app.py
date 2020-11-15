@@ -92,7 +92,7 @@ class BGToolsStack(core.Stack):
             },
             timeout=core.Duration.seconds(60),
             memory_size=512,
-            runtime=lambda_.Runtime.PYTHON_3_7,
+            runtime=lambda_.Runtime.PYTHON_3_8,
         )
         api = apig.LambdaRestApi(
             self, "bgtools-api", handler=flask_app, binary_media_types=["*/*"]
