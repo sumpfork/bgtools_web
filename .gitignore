@@ -97,3 +97,6 @@ libs.json
 
 # visual studio code
 .vscode
+
+# mac
+.DS_Store
