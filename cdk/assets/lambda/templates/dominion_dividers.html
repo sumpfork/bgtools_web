@@ -45,8 +45,8 @@
                             <div id="pageBody" class="collapse" aria-labelledby="pageHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
+                                        {{ form.pagesize.label }}
                                         {{ form.pagesize(class_="form-control") }}
-                                        {{ form.pagesize.label(class_="form-check-label") }}
                                         <div class="form-check">
                                             {{ form.no_footer(class_="form-check-input") }}
                                             {{ form.no_footer.label(class_="form-check-label") }}

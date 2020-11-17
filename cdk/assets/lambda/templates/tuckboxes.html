@@ -3,7 +3,7 @@
 </div>
 <div class="row">
     <div class="col">
-        <form method="POST" action="{{ form_target }}">
+        <form method="POST" action="{{ form_target }}" enctype="multipart/form-data">
             {{ form.csrf_token }}
             <div class="row">
                 <div class="col">
@@ -29,11 +29,11 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         {{ form.width.label }}
-                                        {{ form.width }}
+                                        {{ form.width(class_="form-control") }}
                                         {{ form.height.label }}
-                                        {{ form.height }}
+                                        {{ form.height(class_="form-control") }}
                                         {{ form.depth.label }}
-                                        {{ form.depth }}
+                                        {{ form.depth(class_="form-control") }}
                                     </div>
                                 </div>
                             </div>
@@ -50,6 +50,12 @@
                                     <div class="form-group">
                                         {{ form.front_image.label }}
                                         {{ form.front_image }}
+                                        {{ form.side_image.label }}
+                                        {{ form.side_image }}
+                                        {{ form.back_image.label }}
+                                        {{ form.back_image }}
+                                        {{ form.end_image.label }}
+                                        {{ form.end_image }}
                                     </div>
                                 </div>
                             </div>
@@ -71,7 +77,7 @@
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
                     <div class="row">
-                        <div class="col-9">
+                        <div class="col-8">
                             <h4>Welcome to the tuckbox generator.</h4>
                         </div>
                         <div class="col">

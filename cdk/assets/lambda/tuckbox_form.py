@@ -7,16 +7,19 @@ import wtforms.fields as wtf_fields
 from wtforms import validators
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField as FlaskFileField, FileAllowed
-from flask_uploads import UploadSet, IMAGES
+from flask_uploads import UploadSet, IMAGES, configure_uploads
 from tuckboxes.tuckboxes import TuckBoxGenerator
 
 logger = logging.getLogger("tuckboxes")
 logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
 
-images = UploadSet("images", IMAGES)
-
-
 class TuckboxForm(FlaskForm):
+    images = UploadSet("images", IMAGES)
+
+    @classmethod
+    def init(cls, app):
+        configure_uploads(app, [cls.images])
+
     width = wtf_fields.DecimalField(
         label="Width in cm (1-20)",
         validators=[validators.NumberRange(1.0, 20.0)],
@@ -53,7 +56,7 @@ class TuckboxForm(FlaskForm):
     fill_colour = wtf_fields.StringField(default="#99FF99")
     tag = wtf_fields.HiddenField(default="tuckboxes")
 
-    def generate(self):
+    def generate(self, files):
         buf = BytesIO()
         logger.info(f"fill colour: {self['fill_colour'].data}, {type(self['fill_colour'].data)}")
         fc = re.match("#(\w{2})(\w{2})(\w{2})", self["fill_colour"].data).groups()
@@ -63,6 +66,10 @@ class TuckboxForm(FlaskForm):
             float(self["height"].data),
             float(self["depth"].data),
             buf,
+            fIm=files.get("front_image"),
+            sIm=files.get("side_image"),
+            bIm=files.get("back_image"),
+            eIm=files.get("end_images"),
             fillColour=fc,
             preserveSideAspect=self["preserve_side_aspect"].data,
             preserveEndAspect=self["preserve_end_aspect"].data,

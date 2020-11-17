@@ -99,3 +99,6 @@ hosts
 
 # visual studio code
 .vscode
+
+# mac
+.DS_Store

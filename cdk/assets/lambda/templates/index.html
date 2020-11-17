@@ -81,11 +81,11 @@
             </button>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="navbar-nav">
-                    {% for page in pages %}
-                    {% if page.0 == active %}
-                    <li class="nav-item active"><a class="nav-link" href="#">{{ page.1 }}</a></li>
+                    {% for tag, title in pages.items() %}
+                    {% if tag == active %}
+                    <li class="nav-item active"><a class="nav-link" href="#">{{ title }}</a></li>
                     {% else %}
-                    <li class="nav-item"><a class="nav-link" href="/{{ page.0 }}/">{{ page.1 }}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for(tag) }}">{{ title }}</a></li>
                     {% endif %}
                     {% endfor %}
                 </ul>

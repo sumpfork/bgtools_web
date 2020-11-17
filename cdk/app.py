@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import datetime as dt
+import json
 import os
 import requests
 
@@ -25,6 +26,11 @@ app = core.App()
 class BGToolsStack(core.Stack):
     def __init__(self, app: core.App, id: str) -> None:
         super().__init__(app, id)
+
+        with open("config.json") as f:
+            self.config = json.load(f)
+        assert "SECRET_KEY" in self.config, "Need random SECRET_KEY specified in config.json"
+        assert "CERTIFICATE_ARN" in self.config, "Need CERTIFICATE_ARN specified in config.json"
 
         self.lambda_dir = "assets/lambda"
         os.makedirs(
@@ -88,14 +94,14 @@ class BGToolsStack(core.Stack):
             handler="apig_wsgi_handler",
             environment={
                 "STATIC_WEB_URL": f"https://{cf_static_dist.domain_name}",
-                "FLASK_SECRET_KEY": "",  # fill in console once deployed
+                "FLASK_SECRET_KEY": self.config["SECRET_KEY"],
             },
             timeout=core.Duration.seconds(60),
             memory_size=512,
             runtime=lambda_.Runtime.PYTHON_3_8,
         )
         api = apig.LambdaRestApi(
-            self, "bgtools-api", handler=flask_app, binary_media_types=["*/*"]
+            self, "bgtools-api", handler=flask_app, binary_media_types=["*/*"], minimum_compression_size=10e4
         )
         cloudfront.Distribution(
             self,
@@ -118,7 +124,7 @@ class BGToolsStack(core.Stack):
             certificate=acm.Certificate.from_certificate_arn(
                 self,
                 "cert",
-                "arn:aws:acm:us-east-1:572001094971:certificate/51cbd5c4-62a0-48eb-9459-963fad97fac1",
+                self.config["CERTIFICATE_ARN"],
             ),
         )
 
