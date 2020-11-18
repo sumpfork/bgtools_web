@@ -4,20 +4,23 @@
 #
 #    pip-compile assets/lambda/requirements.in
 #
+--index-url https://aws:eyJ2ZXIiOjEsImlzdSI6MTYwNTY1MDI5NSwiZW5jIjoiQTEyOEdDTSIsInRhZyI6InlUcmo4ZlltMEh4SmhjZms3SDRoLWciLCJleHAiOjE2MDU2OTM0OTUsImFsZyI6IkExMjhHQ01LVyIsIml2IjoiVlphRURveFF0RWNXcFU4eSJ9.YapohLMJaB0A6OB96I8vMA.ET-Cgxyh3HrwlBKL.argt2EOjfM1sNS2s9PAv4bkxJ9XfBzudF_WXyw5ytDVtuawr54seeShYwePBJaXi0mvQnnu8pM25OKW4tnP8wKv_BESpPlCUsV_zZKSHvtSoDGEiGCMxNztzmYOloBsI_LhbuNkkHmOv7oVDS-jD5fXIlbQjd7qd6ElP4s32JtomkVQL5XkHyKnUewfhx9nz6BobbonuM3IJd0shBrgSwSvMLHYr3HaAfJVUmAEWeC9pPoKLMoTQY98sJPtiFggXP9MPMlnkM3B_-Wiotmp5aFLZ7JpqaGfQ5rzDoRNGeUeTp64izp25S9OKBTC80At8gLlC64NNjUuCByg_ts-ubsq7dwMjSeYfxFYYoH_cPgLDzNWkoSUHNvUnHqIMpQHKHNJNDHP3q4qkLa3b9ijWMDoPAaXlRoU-NXu448UvmYV_ifLrslnznSfmayOpz_vFysF4EfkalTUhb30XYAB8OD9vJJfSCUx_FuNgYPPHPaVmSkHrVpyRjjvxY2cIhcIYBuWmwCgEbtYxeI-oyy9zptZt7fnminOTDLpQqUhzrwN_w1_zLF4Zt7_l6E8Bxh7lY3bWePyOX9j1Zuuvump-0JV6Hvou-vtjcA-0K8MfnuM3E_wf53q_57TC3Qbl8dEKi10qwnMhCnvOGxtLjaqVWJZToltOCNOeGz-lCUFR1WfFBUBdsZc68ws5_gJK4PsbA06jMcN3qnAXjejoUdn5avgZiNpy6yayb03Z384Qd8wQXOaWCJhNAj0uYCiR1gmYL8_xOCsUKZvlzAaEQckw3LLy64rRJ2PYnBpJeag9n5FNsYVinETD3oVZ2mgypN7rJfyOxHiid2xz23Pin3Um0aXitIeOiUGFELlAPtwScH8Q1tHp3nAlqCabQG78TNjzt7WYMDd5yesb-3u8jCbrLgVgPMR_ojz24KBJZ3rQjujo_rZTJw.dCeN6PRHDlxDIFVXPNoAPw@da-552569172448.d.codeartifact.us-west-2.amazonaws.com/pypi/da-ai/simple/
+
 apig-wsgi==2.9.2          # via -r assets/lambda/requirements.in
+bootstrap-flask==1.5.1    # via -r assets/lambda/requirements.in
 chitboxes==0.0.1          # via -r assets/lambda/requirements.in
 click==7.1.2              # via flask
 configargparse==1.2.3     # via domdiv
 domdiv==3.11.7            # via -r assets/lambda/requirements.in
 flask-wtf==0.14.3         # via -r assets/lambda/requirements.in
-flask==1.1.2              # via flask-uploads, flask-wtf
+flask==1.1.2              # via bootstrap-flask, flask-uploads, flask-wtf
 git+http://github.com/maxcountryman/flask-uploads.git#egg=Flask_Uploads  # via -r assets/lambda/requirements.in
 itsdangerous==1.1.0       # via flask, flask-wtf
 jinja2==2.11.2            # via flask
 markupsafe==1.1.1         # via jinja2, wtforms
 numpy==1.19.4             # via chitboxes, tuckboxes
 pillow==8.0.1             # via chitboxes, domdiv, reportlab, tuckboxes
-reportlab==3.5.55         # via chitboxes, domdiv, tuckboxes
+reportlab==3.5.49         # via chitboxes, domdiv, tuckboxes
 tuckboxes==0.0.1          # via -r assets/lambda/requirements.in
 werkzeug==1.0.1           # via flask
 wtforms==2.3.3            # via flask-wtf

@@ -1,5 +1,6 @@
 apig-wsgi
 Flask-WTF
+bootstrap-flask
 domdiv
 tuckboxes
 chitboxes
