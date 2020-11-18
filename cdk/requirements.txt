@@ -4,46 +4,48 @@
 #
 #    pip-compile
 #
-attrs==20.2.0             # via cattrs, jsii
-aws-cdk.assets==1.69.0    # via aws-cdk.aws-apigateway, aws-cdk.aws-ec2, aws-cdk.aws-s3-assets
-aws-cdk.aws-apigateway==1.69.0  # via cdk (setup.py)
-aws-cdk.aws-applicationautoscaling==1.69.0  # via aws-cdk.aws-lambda
-aws-cdk.aws-autoscaling-common==1.69.0  # via aws-cdk.aws-applicationautoscaling
-aws-cdk.aws-cloudfront-origins==1.69.0  # via cdk (setup.py)
-aws-cdk.aws-cloudwatch==1.69.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-ec2, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-lambda, aws-cdk.aws-logs, aws-cdk.aws-sqs
-aws-cdk.aws-codeguruprofiler==1.69.0  # via aws-cdk.aws-lambda
-aws-cdk.aws-ec2==1.69.0   # via aws-cdk.aws-apigateway, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-lambda, aws-cdk.aws-lambda-python, aws-cdk.aws-route53
-aws-cdk.aws-efs==1.69.0   # via aws-cdk.aws-lambda
-aws-cdk.aws-elasticloadbalancingv2==1.69.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-cloudfront-origins
-aws-cdk.aws-events==1.69.0  # via aws-cdk.aws-lambda, aws-cdk.aws-s3
-aws-cdk.aws-iam==1.69.0   # via aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-autoscaling-common, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudwatch, aws-cdk.aws-codeguruprofiler, aws-cdk.aws-ec2, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-events, aws-cdk.aws-kms, aws-cdk.aws-lambda, aws-cdk.aws-logs, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, aws-cdk.aws-sqs, aws-cdk.aws-ssm
-aws-cdk.aws-kms==1.69.0   # via aws-cdk.aws-cloudfront, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-sqs, aws-cdk.aws-ssm
-aws-cdk.aws-lambda-python==1.69.0  # via cdk (setup.py)
-aws-cdk.aws-logs==1.69.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-ec2, aws-cdk.aws-lambda, aws-cdk.aws-route53
-aws-cdk.aws-route53==1.69.0  # via aws-cdk.aws-certificatemanager
-aws-cdk.aws-s3-assets==1.69.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-ec2, aws-cdk.aws-lambda, aws-cdk.aws-logs, aws-cdk.aws-s3-deployment
-aws-cdk.aws-s3-deployment==1.69.0  # via cdk (setup.py)
-aws-cdk.aws-sqs==1.69.0   # via aws-cdk.aws-lambda
-aws-cdk.aws-ssm==1.69.0   # via aws-cdk.aws-ec2
-aws-cdk.aws_certificatemanager==1.69.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-cloudfront, aws-cdk.aws-elasticloadbalancingv2, cdk (setup.py)
-aws-cdk.aws_cloudfront==1.69.0  # via aws-cdk.aws-cloudfront-origins, aws-cdk.aws-s3-deployment, cdk (setup.py)
-aws-cdk.aws_lambda==1.69.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-lambda-python, aws-cdk.aws-s3-deployment, cdk (setup.py)
-aws-cdk.aws_s3==1.69.0    # via aws-cdk.aws-apigateway, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudfront-origins, aws-cdk.aws-ec2, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-lambda, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, cdk (setup.py)
-aws-cdk.cloud-assembly-schema==1.69.0  # via aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-route53, aws-cdk.aws-ssm, aws-cdk.core, aws-cdk.cx-api
-aws-cdk.core==1.69.0      # via aws-cdk.assets, aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-autoscaling-common, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudfront-origins, aws-cdk.aws-cloudwatch, aws-cdk.aws-codeguruprofiler, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-events, aws-cdk.aws-iam, aws-cdk.aws-kms, aws-cdk.aws-lambda, aws-cdk.aws-lambda-python, aws-cdk.aws-logs, aws-cdk.aws-route53, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, aws-cdk.aws-sqs, aws-cdk.aws-ssm, cdk (setup.py)
-aws-cdk.cx-api==1.69.0    # via aws-cdk.assets, aws-cdk.aws-apigateway, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-lambda, aws-cdk.aws-s3-assets, aws-cdk.core
-aws-cdk.region-info==1.69.0  # via aws-cdk.aws-ec2, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-iam, aws-cdk.core
-cattrs==1.0.0             # via jsii
-certifi==2020.6.20        # via requests
+--index-url https://aws:eyJ2ZXIiOjEsImlzdSI6MTYwNTY1MDI5NSwiZW5jIjoiQTEyOEdDTSIsInRhZyI6InlUcmo4ZlltMEh4SmhjZms3SDRoLWciLCJleHAiOjE2MDU2OTM0OTUsImFsZyI6IkExMjhHQ01LVyIsIml2IjoiVlphRURveFF0RWNXcFU4eSJ9.YapohLMJaB0A6OB96I8vMA.ET-Cgxyh3HrwlBKL.argt2EOjfM1sNS2s9PAv4bkxJ9XfBzudF_WXyw5ytDVtuawr54seeShYwePBJaXi0mvQnnu8pM25OKW4tnP8wKv_BESpPlCUsV_zZKSHvtSoDGEiGCMxNztzmYOloBsI_LhbuNkkHmOv7oVDS-jD5fXIlbQjd7qd6ElP4s32JtomkVQL5XkHyKnUewfhx9nz6BobbonuM3IJd0shBrgSwSvMLHYr3HaAfJVUmAEWeC9pPoKLMoTQY98sJPtiFggXP9MPMlnkM3B_-Wiotmp5aFLZ7JpqaGfQ5rzDoRNGeUeTp64izp25S9OKBTC80At8gLlC64NNjUuCByg_ts-ubsq7dwMjSeYfxFYYoH_cPgLDzNWkoSUHNvUnHqIMpQHKHNJNDHP3q4qkLa3b9ijWMDoPAaXlRoU-NXu448UvmYV_ifLrslnznSfmayOpz_vFysF4EfkalTUhb30XYAB8OD9vJJfSCUx_FuNgYPPHPaVmSkHrVpyRjjvxY2cIhcIYBuWmwCgEbtYxeI-oyy9zptZt7fnminOTDLpQqUhzrwN_w1_zLF4Zt7_l6E8Bxh7lY3bWePyOX9j1Zuuvump-0JV6Hvou-vtjcA-0K8MfnuM3E_wf53q_57TC3Qbl8dEKi10qwnMhCnvOGxtLjaqVWJZToltOCNOeGz-lCUFR1WfFBUBdsZc68ws5_gJK4PsbA06jMcN3qnAXjejoUdn5avgZiNpy6yayb03Z384Qd8wQXOaWCJhNAj0uYCiR1gmYL8_xOCsUKZvlzAaEQckw3LLy64rRJ2PYnBpJeag9n5FNsYVinETD3oVZ2mgypN7rJfyOxHiid2xz23Pin3Um0aXitIeOiUGFELlAPtwScH8Q1tHp3nAlqCabQG78TNjzt7WYMDd5yesb-3u8jCbrLgVgPMR_ojz24KBJZ3rQjujo_rZTJw.dCeN6PRHDlxDIFVXPNoAPw@da-552569172448.d.codeartifact.us-west-2.amazonaws.com/pypi/da-ai/simple/
+
+attrs==20.3.0             # via cattrs, jsii
+aws-cdk.assets==1.74.0    # via aws-cdk.aws-apigateway, aws-cdk.aws-ec2, aws-cdk.aws-s3-assets
+aws-cdk.aws-apigateway==1.74.0  # via cdk (setup.py)
+aws-cdk.aws-applicationautoscaling==1.74.0  # via aws-cdk.aws-lambda
+aws-cdk.aws-autoscaling-common==1.74.0  # via aws-cdk.aws-applicationautoscaling
+aws-cdk.aws-cloudfront-origins==1.74.0  # via cdk (setup.py)
+aws-cdk.aws-cloudwatch==1.74.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-ec2, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-lambda, aws-cdk.aws-logs, aws-cdk.aws-sqs
+aws-cdk.aws-codeguruprofiler==1.74.0  # via aws-cdk.aws-lambda
+aws-cdk.aws-ec2==1.74.0   # via aws-cdk.aws-apigateway, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-lambda, aws-cdk.aws-lambda-python, aws-cdk.aws-route53
+aws-cdk.aws-efs==1.74.0   # via aws-cdk.aws-lambda
+aws-cdk.aws-elasticloadbalancingv2==1.74.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-cloudfront-origins
+aws-cdk.aws-events==1.74.0  # via aws-cdk.aws-lambda, aws-cdk.aws-s3
+aws-cdk.aws-iam==1.74.0   # via aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-autoscaling-common, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudwatch, aws-cdk.aws-codeguruprofiler, aws-cdk.aws-ec2, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-events, aws-cdk.aws-kms, aws-cdk.aws-lambda, aws-cdk.aws-logs, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, aws-cdk.aws-sqs, aws-cdk.aws-ssm
+aws-cdk.aws-kms==1.74.0   # via aws-cdk.aws-cloudfront, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-logs, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-sqs, aws-cdk.aws-ssm
+aws-cdk.aws-lambda-python==1.74.0  # via cdk (setup.py)
+aws-cdk.aws-logs==1.74.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-ec2, aws-cdk.aws-lambda, aws-cdk.aws-route53
+aws-cdk.aws-route53==1.74.0  # via aws-cdk.aws-certificatemanager
+aws-cdk.aws-s3-assets==1.74.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-ec2, aws-cdk.aws-lambda, aws-cdk.aws-logs, aws-cdk.aws-s3-deployment
+aws-cdk.aws-s3-deployment==1.74.0  # via cdk (setup.py)
+aws-cdk.aws-sqs==1.74.0   # via aws-cdk.aws-lambda
+aws-cdk.aws-ssm==1.74.0   # via aws-cdk.aws-ec2
+aws-cdk.aws_certificatemanager==1.74.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-cloudfront, aws-cdk.aws-elasticloadbalancingv2, cdk (setup.py)
+aws-cdk.aws_cloudfront==1.74.0  # via aws-cdk.aws-cloudfront-origins, aws-cdk.aws-s3-deployment, cdk (setup.py)
+aws-cdk.aws_lambda==1.74.0  # via aws-cdk.aws-apigateway, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-lambda-python, aws-cdk.aws-s3-deployment, cdk (setup.py)
+aws-cdk.aws_s3==1.74.0    # via aws-cdk.aws-apigateway, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudfront-origins, aws-cdk.aws-ec2, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-lambda, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, cdk (setup.py)
+aws-cdk.cloud-assembly-schema==1.74.0  # via aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-route53, aws-cdk.aws-ssm, aws-cdk.core, aws-cdk.cx-api
+aws-cdk.core==1.74.0      # via aws-cdk.assets, aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-autoscaling-common, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudfront-origins, aws-cdk.aws-cloudwatch, aws-cdk.aws-codeguruprofiler, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-events, aws-cdk.aws-iam, aws-cdk.aws-kms, aws-cdk.aws-lambda, aws-cdk.aws-lambda-python, aws-cdk.aws-logs, aws-cdk.aws-route53, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, aws-cdk.aws-sqs, aws-cdk.aws-ssm, cdk (setup.py)
+aws-cdk.cx-api==1.74.0    # via aws-cdk.assets, aws-cdk.aws-apigateway, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-lambda, aws-cdk.aws-s3-assets, aws-cdk.core
+aws-cdk.region-info==1.74.0  # via aws-cdk.aws-ec2, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-iam, aws-cdk.core
+cattrs==1.1.1             # via jsii
+certifi==2020.11.8        # via requests
 chardet==3.0.4            # via requests
-constructs==3.1.2         # via aws-cdk.assets, aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-autoscaling-common, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudfront-origins, aws-cdk.aws-cloudwatch, aws-cdk.aws-codeguruprofiler, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-events, aws-cdk.aws-iam, aws-cdk.aws-kms, aws-cdk.aws-lambda, aws-cdk.aws-lambda-python, aws-cdk.aws-logs, aws-cdk.aws-route53, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, aws-cdk.aws-sqs, aws-cdk.aws-ssm, aws-cdk.core
+constructs==3.2.32        # via aws-cdk.assets, aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-autoscaling-common, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudfront-origins, aws-cdk.aws-cloudwatch, aws-cdk.aws-codeguruprofiler, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-events, aws-cdk.aws-iam, aws-cdk.aws-kms, aws-cdk.aws-lambda, aws-cdk.aws-lambda-python, aws-cdk.aws-logs, aws-cdk.aws-route53, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, aws-cdk.aws-sqs, aws-cdk.aws-ssm, aws-cdk.core
 idna==2.10                # via requests
 jinja2==2.11.2            # via cdk (setup.py)
-jsii==1.13.0              # via aws-cdk.assets, aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-autoscaling-common, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudfront-origins, aws-cdk.aws-cloudwatch, aws-cdk.aws-codeguruprofiler, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-events, aws-cdk.aws-iam, aws-cdk.aws-kms, aws-cdk.aws-lambda, aws-cdk.aws-lambda-python, aws-cdk.aws-logs, aws-cdk.aws-route53, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, aws-cdk.aws-sqs, aws-cdk.aws-ssm, aws-cdk.cloud-assembly-schema, aws-cdk.core, aws-cdk.cx-api, aws-cdk.region-info, constructs
+jsii==1.14.1              # via aws-cdk.assets, aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-autoscaling-common, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudfront-origins, aws-cdk.aws-cloudwatch, aws-cdk.aws-codeguruprofiler, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-events, aws-cdk.aws-iam, aws-cdk.aws-kms, aws-cdk.aws-lambda, aws-cdk.aws-lambda-python, aws-cdk.aws-logs, aws-cdk.aws-route53, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, aws-cdk.aws-sqs, aws-cdk.aws-ssm, aws-cdk.cloud-assembly-schema, aws-cdk.core, aws-cdk.cx-api, aws-cdk.region-info, constructs
 markupsafe==1.1.1         # via jinja2
 publication==0.0.3        # via aws-cdk.assets, aws-cdk.aws-apigateway, aws-cdk.aws-applicationautoscaling, aws-cdk.aws-autoscaling-common, aws-cdk.aws-certificatemanager, aws-cdk.aws-cloudfront, aws-cdk.aws-cloudfront-origins, aws-cdk.aws-cloudwatch, aws-cdk.aws-codeguruprofiler, aws-cdk.aws-ec2, aws-cdk.aws-efs, aws-cdk.aws-elasticloadbalancingv2, aws-cdk.aws-events, aws-cdk.aws-iam, aws-cdk.aws-kms, aws-cdk.aws-lambda, aws-cdk.aws-lambda-python, aws-cdk.aws-logs, aws-cdk.aws-route53, aws-cdk.aws-s3, aws-cdk.aws-s3-assets, aws-cdk.aws-s3-deployment, aws-cdk.aws-sqs, aws-cdk.aws-ssm, aws-cdk.cloud-assembly-schema, aws-cdk.core, aws-cdk.cx-api, aws-cdk.region-info, constructs
 python-dateutil==2.8.1    # via jsii
-requests==2.24.0          # via cdk (setup.py)
+requests==2.25.0          # via cdk (setup.py)
 six==1.15.0               # via python-dateutil
 typing-extensions==3.7.4.3  # via jsii
-urllib3==1.25.11          # via requests
+urllib3==1.26.2           # via requests

@@ -1,3 +1,5 @@
+
+{% from 'bootstrap/form.html' import render_field %}
 <div class="page-header">
     <h2>Tuckbox Generator</h2>
 </div>
@@ -28,12 +30,9 @@
                                 data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.width.label }}
-                                        {{ form.width(class_="form-control") }}
-                                        {{ form.height.label }}
-                                        {{ form.height(class_="form-control") }}
-                                        {{ form.depth.label }}
-                                        {{ form.depth(class_="form-control") }}
+                                        {{ render_field(form.width) }}
+                                        {{ render_field(form.height) }}
+                                        {{ render_field(form.depth) }}
                                     </div>
                                 </div>
                             </div>
@@ -48,14 +47,10 @@
                                 data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.front_image.label }}
-                                        {{ form.front_image }}
-                                        {{ form.side_image.label }}
-                                        {{ form.side_image }}
-                                        {{ form.back_image.label }}
-                                        {{ form.back_image }}
-                                        {{ form.end_image.label }}
-                                        {{ form.end_image }}
+                                        {{ render_field(form.front_image) }}
+                                        {{ render_field(form.side_image) }}
+                                        {{ render_field(form.back_image) }}
+                                        {{ render_field(form.end_image) }}
                                     </div>
                                 </div>
                             </div>

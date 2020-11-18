@@ -1,3 +1,4 @@
+{% from 'bootstrap/form.html' import render_field %}
 <div class="pb-2 mt-4 mb-2 border-bottom">
     <h2>Dominion Divider Generator</h2>
 </div>
@@ -28,10 +29,8 @@
                                 data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.expansions.label }}
-                                        {{ form.expansions(class_="form-control", size="18")}}
-                                        {{ form.fan_expansions.label }}
-                                        {{ form.fan_expansions(class_="form-control", size="2")}}
+                                        {{ render_field(form.expansions, size="20") }}
+                                        {{ render_field(form.fan_expansions, size="2")}}
                                     </div>
                                 </div>
                             </div>
@@ -45,15 +44,10 @@
                             <div id="pageBody" class="collapse" aria-labelledby="pageHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.pagesize.label }}
-                                        {{ form.pagesize(class_="form-control") }}
-                                        <div class="form-check">
-                                            {{ form.no_footer(class_="form-check-input") }}
-                                            {{ form.no_footer.label(class_="form-check-label") }}
-                                        </div>
-                                        {{ form.back_offset.label }} {{ form.back_offset(class_="form-control") }}
-                                        {{ form.back_offset_height.label }}
-                                        {{ form.back_offset_height(class_="form-control") }}
+                                        {{ render_field(form.pagesize) }}
+                                        {{ render_field(form.no_footer) }}
+                                        {{ render_field(form.back_offset) }}
+                                        {{ render_field(form.back_offset_height) }}
                                     </div>
                                 </div>
                             </div>
@@ -67,20 +61,13 @@
                             <div id="styleBody" class="collapse" aria-labelledby="styleHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.orientation.label(class_="form-check-label") }}
-                                        {{ form.orientation(class_="form-control") }}
-                                        <div class="form-check">
-                                            {{ form.wrappers(class_="form-check-input") }}
-                                            {{ form.wrappers.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check" id="div_id_notch">
-                                            {{ form.notch(class_="form-check-input") }}
-                                            {{ form.notch.label(class_="form-check-label") }}
-                                        </div>
-                                        {{ form.linetype.label }} {{ form.linetype(class_="form-control") }}
-                                        {{ form.cardsize.label }} {{ form.cardsize(class_="form-control") }}
-                                        {{ form.horizontal_gap.label }} {{ form.horizontal_gap(class_="form-control") }}
-                                        {{ form.vertical_gap.label }} {{ form.vertical_gap(class_="form-control") }}
+                                        {{ render_field(form.orientation) }}
+                                        {{ render_field(form.wrappers) }}
+                                        {{ render_field(form.notch) }}
+                                        {{ render_field(form.linetype) }}
+                                        {{ render_field(form.cardsize) }}
+                                        {{ render_field(form.horizontal_gap) }}
+                                        {{ render_field(form.vertical_gap) }}
                                     </div>
                                 </div>
                             </div>
@@ -94,20 +81,14 @@
                             <div id="tabBody" class="collapse" aria-labelledby="tabHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.tab_number.label }} {{ form.tab_number(class_="form-control") }}
-                                        {{ form.tab_side.label }} {{ form.tab_side(class_="form-control") }}
-                                        <div class="form-check">
-                                            {{ form.serpentine(class_="form-check-input") }}
-                                            {{ form.serpentine.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check">
-                                            {{ form.reset_tabs(class_="form-check-input") }}
-                                            {{ form.reset_tabs.label(class_="form-check-label") }}
-                                        </div>
-                                        {{ form.tab_name_align.label }} {{ form.tab_name_align(class_="form-control") }}
-                                        {{ form.set_icon.label }} {{ form.set_icon(class_="form-control") }}
-                                        {{ form.cost_icon.label }} {{ form.cost_icon(class_="form-control") }}
-                                        {{ form.black_tabs.label }} {{ form.black_tabs(class_="form-check-input") }}
+                                        {{ render_field(form.tab_number) }}
+                                        {{ render_field(form.tab_side) }}
+                                        {{ render_field(form.serpentine) }}
+                                        {{ render_field(form.reset_tabs) }}
+                                        {{ render_field(form.tab_name_align) }}
+                                        {{ render_field(form.set_icon) }}
+                                        {{ render_field(form.cost_icon) }}
+                                        {{ render_field(form.black_tabs) }}
                                     </div>
                                 </div>
                             </div>
@@ -121,19 +102,11 @@
                             <div id="bodyBody" class="collapse" aria-labelledby="bodyHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        <div class="form-check">
-                                            {{ form.counts(class_="form-check-input") }}
-                                            {{ form.counts.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check">
-                                            {{ form.types(class_="form-check-input") }}
-                                            {{ form.types.label(class_="form-check-label") }}
-                                        </div>
-                                        {{ form.divider_front_text.label }}
-                                        {{ form.divider_front_text(class_="form-control") }}
-                                        {{ form.divider_back_text.label }}
-                                        {{ form.divider_back_text(class_="form-control") }}
-                                        {{ form.language.label }} {{ form.language(class_="form-control") }}
+                                        {{ render_field(form.counts) }}
+                                        {{ render_field(form.types) }}
+                                        {{ render_field(form.divider_front_text) }}
+                                        {{ render_field(form.divider_back_text) }}
+                                        {{ render_field(form.language) }}
                                     </div>
                                 </div>
                             </div>
@@ -147,53 +120,19 @@
                             <div id="orderBody" class="collapse" aria-labelledby="orderHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.order.label }} {{ form.order(class_="form-control") }}
-                                        <div class="form-check">
-                                            {{ form.group_special(class_="form-check-input") }}
-                                            {{ form.group_special.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check">
-                                            {{ form.group_kingdom(class_="form-check-input") }}
-                                            {{ form.group_kingdom.label(class_="form-check-label") }}
-                                        </div>
-                                        {{ form.group_global.label }}
-                                        {{ form.group_global(class_="form-control", size="4")}}
-                                        <div class="form-check">
-                                            {{ form.start_decks(class_="form-check-input") }}
-                                            {{ form.start_decks.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check">
-                                            {{ form.curse10(class_="form-check-input") }}
-                                            {{ form.curse10.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check">
-                                            {{ form.no_trash(class_="form-check-input") }}
-                                            {{ form.no_trash.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check">
-                                            {{ form.base_cards_with_expansion(class_="form-check-input") }}
-                                            {{ form.base_cards_with_expansion.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check">
-                                            {{ form.upgrade_with_expansion(class_="form-check-input") }}
-                                            {{ form.upgrade_with_expansion.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check">
-                                            {{ form.events(class_="form-check-input") }}
-                                            {{ form.events.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check">
-                                            {{ form.expansion_dividers(class_="form-check-input") }}
-                                            {{ form.expansion_dividers.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check" id="div_id_centre_expansion_dividers">
-                                            {{ form.centre_expansion_dividers(class_="form-check-input") }}
-                                            {{ form.centre_expansion_dividers.label(class_="form-check-label") }}
-                                        </div>
-                                        <div class="form-check" id="div_id_expansion_dividers_long_name">
-                                            {{ form.expansion_dividers_long_name(class_="form-check-input") }}
-                                            {{ form.expansion_dividers_long_name.label(class_="form-check-label") }}
-                                        </div>
+                                        {{ render_field(form.order) }}
+                                        {{ render_field(form.group_special) }}
+                                        {{ render_field(form.group_kingdom) }}
+                                        {{ render_field(form.group_global) }}
+                                        {{ render_field(form.start_decks) }}
+                                        {{ render_field(form.curse10) }}
+                                        {{ render_field(form.no_trash) }}
+                                        {{ render_field(form.base_cards_with_expansion) }}
+                                        {{ render_field(form.upgrade_with_expansion) }}
+                                        {{ render_field(form.events) }}
+                                        {{ render_field(form.expansion_dividers) }}
+                                        {{ render_field(form.centre_expansion_dividers) }}
+                                        {{ render_field(form.expansion_dividers_long_name) }}
                                     </div>
                                 </div>
                             </div>
