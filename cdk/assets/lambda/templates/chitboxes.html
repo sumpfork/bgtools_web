@@ -1,3 +1,4 @@
+{% from 'bootstrap/form.html' import render_field %}
 <div class="page-header">
     <h2>Boardgame Bits Box Generator</h2>
 </div>
@@ -28,12 +29,9 @@
                                 data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.width.label }}
-                                        {{ form.width }}
-                                        {{ form.length.label }}
-                                        {{ form.length }}
-                                        {{ form.height.label }}
-                                        {{ form.height }}
+                                        {{ render_field(form.width) }}
+                                        {{ render_field(form.length) }}
+                                        {{ render_field(form.height) }}
                                     </div>
                                 </div>
                             </div>
@@ -48,10 +46,8 @@
                                 data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ form.main_image.label }}
-                                        {{ form.main_image }}
-                                        {{ form.side_image.label }}
-                                        {{ form.side_image }}
+                                        {{ render_field(form.main_image) }}
+                                        {{ render_field(form.side_image) }}
                                     </div>
                                 </div>
                             </div>

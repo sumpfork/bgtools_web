@@ -81,6 +81,7 @@ def dominion_dividers():
         version=domdiv.__version__,
         version_url=f"https://github.com/sumpfork/dominiontabs/releases/tag/v{domdiv.__version__}",
         form_target=url_for("dominion_dividers"),
+        ga_config=os.environ.get("GA_CONFIG", "")
     )
     return r
 
@@ -88,7 +89,8 @@ def dominion_dividers():
 @flask_app.route("/tuckboxes/", methods=["GET", "POST"])
 def tuckboxes():
     form = TuckboxForm(request.form)
-    logger.info("in tuckboxes!")
+    logger.info(f"in tuckboxes, form validates: {form.validate_on_submit()}")
+    logger.info(f"errors: {form.errors}")
     if form.validate_on_submit():
         logger.info(f"tuckbox files: {request.files}")
         buf = form.generate(request.files)
@@ -114,7 +116,8 @@ def tuckboxes():
 @flask_app.route("/chitboxes/", methods=["GET", "POST"])
 def chitboxes():
     form = ChitboxForm(request.form)
-    logger.info("in chitboxes!")
+    logger.info(f"in chitboxes, form validates: {form.validate_on_submit()}")
+    logger.info(f"errors: {form.errors}")
     if form.validate_on_submit():
         logger.info(f"chitbox files: {request.files}")
         buf = form.generate(request.files)
