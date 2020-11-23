@@ -31,6 +31,6 @@ a.plainlink:hover {
 }
 
 #preview>embed {
-    width: 512px;
-    height: 900px;
+    width: 100%;
+    height: 100%;
 }
