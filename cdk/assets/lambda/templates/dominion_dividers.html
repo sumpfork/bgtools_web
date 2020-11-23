@@ -63,7 +63,9 @@
                                     <div class="form-group">
                                         {{ render_field(form.orientation) }}
                                         {{ render_field(form.wrappers) }}
-                                        {{ render_field(form.notch) }}
+                                        <div id="div_id_notch">
+                                            {{ render_field(form.notch) }}
+                                        </div>
                                         {{ render_field(form.linetype) }}
                                         {{ render_field(form.cardsize) }}
                                         {{ render_field(form.horizontal_gap) }}
@@ -131,8 +133,12 @@
                                         {{ render_field(form.upgrade_with_expansion) }}
                                         {{ render_field(form.events) }}
                                         {{ render_field(form.expansion_dividers) }}
-                                        {{ render_field(form.centre_expansion_dividers) }}
-                                        {{ render_field(form.expansion_dividers_long_name) }}
+                                        <div id="div_id_centre_expansion_dividers">
+                                            {{ render_field(form.centre_expansion_dividers) }}
+                                        </div>
+                                        <div id="div_id_expansion_dividers_long_name">
+                                            {{ render_field(form.expansion_dividers_long_name) }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -147,6 +153,8 @@
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item"><a class="nav-link active" id="about-tab" href="#about" role="tab"
                         data-toggle="tab" aria-controls="about" aria-selected="true">About</a></li>
+                <li class="nav-item"><a class="nav-link" id="preview-tab" href="#preview-pane" role="tab"
+                        data-toggle="tab" aria-controls="preview-pane" aria-selected="false">Preview</a></li>
                 <li class="nav-item"><a class="nav-link" id="changes-tab" href="#changes" role="tab" data-toggle="tab"
                         aria-controls="changes" aria-selected="false">Changelog</a></li>
             </ul>
@@ -175,10 +183,8 @@
                         </div>
                     </div>
                     <p>
-                    <div id="preview_img">
                         <img alt="Dividers in Action" src="{{ static_url }}/static/images/divider_photo.jpg"
                             class="img-rounded img-responsive">
-                    </div>
                     </p>
                     <p>Quite a while ago, I converted my base Dominion box into a <a
                             href="http://boardgamegeek.com/thread/576889/original-box-modded-for-base-intrigue-seaside-pros">storage
@@ -212,6 +218,12 @@
                                 href="https://boardgamegeek.com/user/nickv2002">bgg</a>/<a
                                 href="https://github.com/nickv2002">github</a>) without whom I would have no chance to
                             stay up-to-date with this project.</b></p>
+                </div>
+                <div class="tab-pane fade" id="preview-pane" role="tabpanel" aria-labelledby="preview-tab">
+                    <div id="previewContainer">
+                        <div id="preview" width="512" height="900"></div>
+                    </div>
+                    <!-- <canvas id="pdfpreview" width="512" height="900"></canvas> -->
                 </div>
                 <div class="tab-pane fade" id="changes" role="tabpanel" aria-labelledby="changes-tab">
                     {% include "version_template.html" %}
@@ -256,7 +268,7 @@
     $(function () {
         $("#div_id_notch").hide();
         $("form input[name='wrappers']").click(function () {
-            if (document.getElementById('id_wrappers').checked) {
+            if (document.getElementById('wrappers').checked) {
                 $("#div_id_notch").show();
             } else {
                 $("#div_id_notch").hide();
@@ -266,7 +278,7 @@
         $("#div_id_centre_expansion_dividers").hide();
         $("#div_id_expansion_dividers_long_name").hide();
         $("form input[name='expansion_dividers']").click(function () {
-            if (document.getElementById('id_expansion_dividers').checked) {
+            if (document.getElementById('expansion_dividers').checked) {
                 $("#div_id_centre_expansion_dividers").show();
                 $("#div_id_expansion_dividers_long_name").show();
             } else {

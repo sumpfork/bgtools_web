@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+{% from 'bootstrap/utils.html' import render_messages %}
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-93GYFQZNK5"></script>
@@ -22,48 +23,20 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <title>sumpfork's Dominion Divider Generator</title>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 
-    <style>
-        .asteriskField {
-            display: none;
-        }
-
-        a.plainlink:hover {
-            text-decoration: none;
-        }
-
-        .accordion-menu>button {
-            display: block;
-            position: relative;
-        }
-
-        .accordion-menu>button:after {
-            display: inline-block;
-            content: "";
-            background-repeat: no-repeat;
-            background-size: 1rem 1rem;
-            position: absolute;
-            right: 0;
-            width: 16px;
-            height: 16px;
-        }
-
-        .accordion-menu>button[aria-expanded="false"]:after {
-            background-image: url("data:image/svg+xml,<svg width='1em' height='1em' viewBox='0 0 16 16' class='bi bi-chevron-down' fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>");
-        }
-
-        .accordion-menu>button[aria-expanded="true"]:after {
-            background-image: url("data:image/svg+xml,<svg width='1em' height='1em' viewBox='0 0 16 16' class='bi bi-chevron-up' fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z'/></svg>");
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/pdfobject@2.2.4/pdfobject.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf_viewer.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf_viewer.min.css"> -->
 
     <link rel="apple-touch-icon" sizes="180x180" href="{{ static_url }}/static/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ static_url }}/static/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ static_url }}/static/images/favicon-16x16.png">
     <link rel="manifest" href="{{ static_url }}/static/images/site.webmanifest">
+
+    <link rel="stylesheet" href="{{ static_url }}/static/css/domdiv.css">
 </head>
 
 <body>
@@ -87,33 +60,88 @@
                 </ul>
             </div>
         </nav>
+        {{ render_messages() }}
         {% with subpage = "{}.html".format(active) %}
         {% include subpage %}
         {% endwith %}
     </div>
     <script>
-        previewUpdate = function () {
-            var spinner = new spin.Spinner().spin()
-            $('#preview_img').append(spinner.el);
-            var formData = get_form_data();
-            $.ajax({
-                type: 'POST',
-                url: '/preview/',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function (data) {
-                    spinner.stop();
-                    var src = '"data:image/png;base64,' + data['preview_data'] + '"'
-                    $('#preview_img').html('<img class="img-rounded img-responsive" src=' + src + '></img>');
-                    $('#preview_img').zoom();
-                }
-            });
-        };
         $(function () {
+            // var container = document.getElementById("previewContainer");
+            // var eventBus = new pdfjsViewer.EventBus();
+            // var pdfViewer = new pdfjsViewer.PDFViewer({
+            //     container: container,
+            //     eventBus: eventBus
+            // });
+
+            // eventBus.on("pagesinit", function () {
+            //     pdfViewer.currentScaleValue = "page-width";
+            // });
+            previewUpdate = function () {
+                //var spinner = new spin.Spinner().spin()
+                //$('#preview').append(spinner.el);
+                var formData = get_form_data();
+                $.ajax({
+                    type: 'POST',
+                    url: '/preview/',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        //spinner.stop();
+                        // var pdfjsLib = window['pdfjs-dist/build/pdf'];
+                        // // The workerSrc property shall be specified.
+                        // pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
+                        // // Using DocumentInitParameters object to load binary data.
+
+                        // var loadingTask = pdfjsLib.getDocument({ data: data });
+                        // loadingTask.promise.then(function (pdf) {
+                        //     console.log('PDF loaded');
+
+                        //     // Fetch the first page
+                        //     var pageNumber = 1;
+                        //     pdf.getPage(pageNumber).then(function (page) {
+                        //         console.log('Page loaded');
+                        //         pdfViewer.setDocument(pdf);
+                        //         // var scale = 1.5;
+                        //         // var viewport = page.getViewport({ scale: scale });
+
+                        //         // // Prepare canvas using PDF page dimensions
+                        //         // var canvas = document.getElementById('pdfpreview');
+                        //         // var context = canvas.getContext('2d');
+                        //         // //canvas.height = viewport.height;
+                        //         // //canvas.width = viewport.width;
+
+                        //         // // Render PDF page into canvas context
+                        //         // var renderContext = {
+                        //         //     canvasContext: context,
+                        //         //     viewport: viewport
+                        //         // };
+                        //         // var renderTask = page.render(renderContext);
+                        //         // renderTask.promise.then(function () {
+                        //         //     console.log('Page rendered');
+                        //         // });
+                        //     });
+                        // }, function (reason) {
+                        //     // PDF loading error
+                        //     console.error(reason);
+                        // });
+                        //console.debug(data);
+                        var src = '"data:application/pdf;base64,' + data['preview_pdf'] + '"';
+                        
+                        //console.debug(src);
+                        //src = '"data:application/pdf;base64,' + data['preview_pdf'] + '"';
+                        // PDFObject.embed(src, "#preview")
+                        $('#preview').html('<embed src=' + src + '></embed>')
+                        // $('#preview_img').html('<img class="img-rounded img-responsive" src=' + src + '></img>');
+                        // $('#preview_img').zoom();
+                    }
+                });
+            };
             $('input').change(previewUpdate);
             $('select').change(previewUpdate);
         });
+
     </script>
     <script src="{{ static_url }}/static/js/jquery.zoom.min.js"></script>
     <script src="{{ static_url }}/static/js/spin.js"></script>
