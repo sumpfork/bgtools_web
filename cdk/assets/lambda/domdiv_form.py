@@ -248,7 +248,7 @@ class DomDivForm(FlaskForm):
     )
     tag = wtf_fields.HiddenField(default="domdiv")
 
-    def generate(self):
+    def clean_options(self):
         options = domdiv.main.parse_opts([])
         logger.info(f"options before populate: {options}")
         self.populate_obj(options)
@@ -268,9 +268,21 @@ class DomDivForm(FlaskForm):
         logger.info(f"options after populate: {options}")
         options = domdiv.main.clean_opts(options)
         logger.info(f"options after cleaning: {options}")
+        return options
+
+    def generate(self, num_pages=None):
+        options = self.clean_options()
+        if num_pages is not None:
+            options.num_pages = num_pages
+
         buf = BytesIO()
         options.outfile = buf
         domdiv.main.generate(options)
         logger.info("done generation, returning pdf")
         buf.seek(0)
         return buf
+    
+    def preview(self):
+        options = self.clean_options()
+        preview_img = domdiv.main.generate_sample(options)
+        return preview_img

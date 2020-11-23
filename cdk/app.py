@@ -90,6 +90,28 @@ class BGToolsStack(core.Stack):
             destination_bucket=static_website_bucket,
             destination_key_prefix="static",
         )
+        # print(lambda_.Runtime.PYTHON_3_8.bundling_docker_image.image)
+        # cmd = '''
+        #     curl -L https://github.com/ImageMagick/ImageMagick/archive/7.0.10-39.tar.gz | tar xzv &&
+        #     cd ImageMagick-7.0.10-39/ &&
+        #     ./configure &&
+        #     make
+        # '''
+        # native_layer = (
+        #     lambda_.Function(
+        #         self,
+        #         "NativeLayer",
+        #         code=lambda_.Code.from_asset(
+        #             "tmp/",
+        #             bundling=core.BundlingOptions(
+        #                 image=lambda_.Runtime.PYTHON_3_7.bundling_docker_image,
+        #                 command=['bash', '-c', 'curl -L https://github.com/ImageMagick/ImageMagick/archive/7.0.10-39.tar.gz | tar xzv']
+        #             ),
+        #         ),
+        #         handler="dummy",
+        #         runtime=lambda_.Runtime.PYTHON_3_8,
+        #     ),
+        # )
 
         flask_app = lambda_python.PythonFunction(
             self,
