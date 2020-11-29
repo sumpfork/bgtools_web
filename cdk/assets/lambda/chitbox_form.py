@@ -43,7 +43,10 @@ class ChitboxForm(FlaskForm):
     )
     tag = wtf_fields.HiddenField(default="chitboxes")
 
-    def generate(self, files):
+    def generate(self, files=None, **kwargs):
+        if files is None:
+            files = {}
+
         buf = BytesIO()
         c = ChitBoxGenerator.fromRawData(
             float(self["width"].data),

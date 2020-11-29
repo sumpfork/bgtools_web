@@ -56,7 +56,9 @@ class TuckboxForm(FlaskForm):
     fill_colour = wtf_fields.StringField(default="#99FF99")
     tag = wtf_fields.HiddenField(default="tuckboxes")
 
-    def generate(self, files):
+    def generate(self, files=None, **kwargs):
+        if files is None:
+            files = {}
         buf = BytesIO()
         logger.info(f"fill colour: {self['fill_colour'].data}, {type(self['fill_colour'].data)}")
         fc = re.match("#(\w{2})(\w{2})(\w{2})", self["fill_colour"].data).groups()

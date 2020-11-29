@@ -1,6 +1,8 @@
+import argparse
 from io import BytesIO
 import logging
 import os
+from configargparse import ArgParser
 
 import wtforms.fields as wtf_fields
 from flask_wtf import FlaskForm
@@ -49,7 +51,7 @@ class DomDivForm(FlaskForm):
     expansions = wtf_fields.SelectMultipleField(
         label="Expansions to Include (Cmd/Ctrl click to select multiple)",
         choices=list(zip(choices, choiceNames)),
-        default=["2ndedition"],
+        default=["dominion2ndEdition"],
     )
     # Now Fan expansions
     choices = domdiv.main.FAN_CHOICES
@@ -62,14 +64,14 @@ class DomDivForm(FlaskForm):
                 break
         else:
             choiceNames.append(choice.capitalize())
-    fan_expansions = wtf_fields.SelectMultipleField(
+    fan = wtf_fields.SelectMultipleField(
         choices=list(zip(choices, choiceNames)),
         label="Fan Expansions to Include (Cmd/Ctrl click to select multiple)",
     )
     orientation = wtf_fields.SelectField(
         label="Divider Orientation",
-        choices=["Horizontal", "Vertical"],
-        default="Horizontal",
+        choices=[("horizontal", "Horizontal"), ("vertical", "Vertical")],
+        default="horizontal",
     )
 
     pagesize = wtf_fields.SelectField(
@@ -87,24 +89,24 @@ class DomDivForm(FlaskForm):
     cardsize = wtf_fields.SelectField(
         choices=list(zip(choices, choices)), label="Card Size", default="Unsleeved"
     )
-    tabwidth = wtf_fields.DecimalField(
+    tabwidth = wtf_fields.FloatField(
         label="Width of Tab in centimeters",
         default=4.0,
     )
-    back_offset = wtf_fields.DecimalField(
+    back_offset = wtf_fields.FloatField(
         label="Back page horizontal offset points to shift to the right",
         default=0,
     )
-    back_offset_height = wtf_fields.DecimalField(
+    back_offset_height = wtf_fields.FloatField(
         label="Back page vertical offset points to shift upward",
         default=0,
     )
 
-    horizontal_gap = wtf_fields.DecimalField(
+    horizontal_gap = wtf_fields.FloatField(
         label="Horizontal gap between dividers in centimeters",
         default=0,
     )
-    vertical_gap = wtf_fields.DecimalField(
+    vertical_gap = wtf_fields.FloatField(
         label="Vertical gap between dividers in centimeters",
         default=0,
     )
@@ -131,20 +133,20 @@ class DomDivForm(FlaskForm):
         label="Outline Type",
         default="line",
     )
-    wrappers = wtf_fields.BooleanField(
+    wrapper = wtf_fields.BooleanField(
         label="Slipcases Instead of Dividers", default=False
     )
     notch = wtf_fields.BooleanField(
         label="If Slipcases, add a notch in corners", default=False
     )
-    serpentine = wtf_fields.BooleanField(
+    tab_serpentine = wtf_fields.BooleanField(
         label="For 3 or more tabs, tab location reverses when the end is reached instead of resetting to the start",
         default=False,
     )
-    reset_tabs = wtf_fields.BooleanField(
+    expansion_reset_tabs = wtf_fields.BooleanField(
         label="Restart tab starting location with every expansion.", default=True
     )
-    counts = wtf_fields.BooleanField(
+    count = wtf_fields.BooleanField(
         label="Show number of Cards per Divider", default=False
     )
     types = wtf_fields.BooleanField(
@@ -169,7 +171,6 @@ class DomDivForm(FlaskForm):
         default="left",
     )
 
-    samesidelabels = wtf_fields.BooleanField(label="Same Side Labels", default=False)
     order = wtf_fields.SelectField(
         label="Divider Order",
         choices=list(zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES)),
@@ -215,7 +216,7 @@ class DomDivForm(FlaskForm):
         label="Set Icon Location",
         default="tab",
     )
-    cost_icon = wtf_fields.SelectField(
+    cost = wtf_fields.SelectField(
         choices=list(zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES)),
         label="Cost Icon Location",
         default="tab",
@@ -225,15 +226,15 @@ class DomDivForm(FlaskForm):
         label="Language",
         default="en_us",
     )
-    events = wtf_fields.BooleanField(
+    exclude_events = wtf_fields.BooleanField(
         label="Exclude Individual Events & Landmarks", default=False
     )
-    divider_front_text = wtf_fields.SelectField(
+    text_front = wtf_fields.SelectField(
         label="Front Text",
         choices=list(zip(domdiv.main.TEXT_CHOICES, domdiv.main.TEXT_CHOICES)),
         default="card",
     )
-    divider_back_text = wtf_fields.SelectField(
+    text_back = wtf_fields.SelectField(
         label="Back Text",
         choices=list(
             zip(
@@ -243,34 +244,57 @@ class DomDivForm(FlaskForm):
         ),
         default="rules",
     )
-    no_footer = wtf_fields.BooleanField(
+    no_page_footer = wtf_fields.BooleanField(
         label="Omit the expansion name at the bottom of the page", default=False
     )
     tag = wtf_fields.HiddenField(default="domdiv")
 
     def clean_options(self):
+        form_options = argparse.Namespace()
+        self.populate_obj(form_options)
         options = domdiv.main.parse_opts([])
-        logger.info(f"options before populate: {options}")
-        self.populate_obj(options)
-        options.expansions = [[e] for e in self["expansions"].data]
-        options.fan_expansions = [[e] for e in self["fan_expansions"].data]
-        if self["group_global"].data:
-            options.group_global = [[g] for g in self["group_global"].data]
-        else:
-            options.group_gloal = None
-        options.tab_number = int(options.tab_number)
-        options.tabwidth = float(options.tabwidth)
-        options.vertical_gap = float(options.vertical_gap)
-        options.horizontal_gap = float(options.horizontal_gap)
-        options.back_offset = float(options.back_offset)
-        options.back_offset_height = float(options.back_offset_height)
+        logger.info(f"valid options: {sorted(list(vars(options).keys()))}")
+        is_label = False
+        for option, value in vars(form_options).items():
+            # option = option.replace('_', '-')
+            logger.info(f"option {option} ({type(option)}): {value}")
+            if option == "tab_number":
+                value = int(value)
+            if option in ["expansions", "fan"]:
+                value = [[v] for v in value]
+            if option == "cardsize":
+                logger.info("handling cardsize")
+                options.size = "unsleeved" if "Unsleeved" in value else "sleeved"
+                options.sleeved_thick = "Thick" in option
+                options.sleeved_thin = "Thin" in option
+            elif option == "pagesize":
+                logger.info("handling pagesize")
+                if value in PAPER_SIZES:
+                    options.papersize = value
+                    options.label_name = None
+                else:
+                    options.label_name = value
+                    options.papersize = "letter"
+                    options.wrapper = False
+                    options.notch = False
+                    options.cropmarks = False
+                    is_label = True
+            elif option == "tag":
+                continue
+            else:
+                assert hasattr(options, option), f"{option} is not a script option"
+                if is_label and option in ["wrapper", "notch", "cropmarks"]:
+                    logger.info(f"skipping {option} because we're printing labels")
+                    continue
+                logger.info(f"{option} --> {value}")
+                options.__setattr__(option, value)
 
         logger.info(f"options after populate: {options}")
         options = domdiv.main.clean_opts(options)
         logger.info(f"options after cleaning: {options}")
         return options
 
-    def generate(self, num_pages=None):
+    def generate(self, num_pages=None, **kwargs):
         options = self.clean_options()
         if num_pages is not None:
             options.num_pages = num_pages
@@ -281,8 +305,3 @@ class DomDivForm(FlaskForm):
         logger.info("done generation, returning pdf")
         buf.seek(0)
         return buf
-    
-    def preview(self):
-        options = self.clean_options()
-        preview_img = domdiv.main.generate_sample(options)
-        return preview_img
