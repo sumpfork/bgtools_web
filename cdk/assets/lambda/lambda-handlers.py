@@ -9,6 +9,7 @@ import domdiv
 from flask import Flask, request, send_file, url_for, jsonify, abort
 from flask import render_template
 from flask_bootstrap import Bootstrap
+from flask_uploads import IMAGES
 
 # from flask_wtf.csrf import CSRFProtect
 from domdiv_form import DomDivForm
@@ -28,9 +29,7 @@ secret_key = os.environ["FLASK_SECRET_KEY"]
 assert secret_key, "Need secret key specified in env"
 flask_app.config["SECRET_KEY"] = secret_key
 flask_app.config["UPLOADS_DEFAULT_DEST"] = "/tmp"
-
-TuckboxForm.init(flask_app)
-ChitboxForm.init(flask_app)
+flask_app.config["UPLOADED_FILES_ALLOW"] = IMAGES
 
 logger = logging.getLogger("bgtools_logger")
 logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
@@ -57,7 +56,7 @@ def dominion_dividers():
     logger.info(f"root call, request is {request}, form is {request.form}")
     # logger.info(f"session: {session} {session.get('csrf_token')}")
     logger.info(request)
-    form = DomDivForm(request.form)
+    form = DomDivForm()
     logger.info(f"{form} - validate: {form.validate_on_submit()}")
     logger.info(f"submitted: {form.is_submitted()}")
     logger.info(f"validates: {form.validate()}")
@@ -94,9 +93,14 @@ def dominion_dividers():
 
 @flask_app.route("/tuckboxes/", methods=["GET", "POST"])
 def tuckboxes():
-    form = TuckboxForm(request.form)
+    form = TuckboxForm()
     logger.info(f"in tuckboxes, form validates: {form.validate_on_submit()}")
     logger.info(f"errors: {form.errors}")
+
+    logger.info(f"file: {form.front_image} {type(form.front_image)}")
+    logger.info(f"file data: {form.front_image.data} {type(form.front_image.data)}")
+    if form.front_image.data:
+        logger.info(f"file data: {form.front_image.data.filename}")
     if form.validate_on_submit():
         logger.info(f"tuckbox files: {request.files}")
         buf = form.generate(files=request.files)
@@ -121,7 +125,7 @@ def tuckboxes():
 
 @flask_app.route("/chitboxes/", methods=["GET", "POST"])
 def chitboxes():
-    form = ChitboxForm(request.form)
+    form = ChitboxForm()
     logger.info(f"in chitboxes, form validates: {form.validate_on_submit()}")
     logger.info(f"errors: {form.errors}")
     if form.validate_on_submit():
