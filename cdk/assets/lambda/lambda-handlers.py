@@ -6,7 +6,7 @@ import os
 
 import apig_wsgi
 import domdiv
-from flask import Flask, request, send_file, url_for, jsonify, flash
+from flask import Flask, request, send_file, url_for, jsonify, abort
 from flask import render_template
 from flask_bootstrap import Bootstrap
 
@@ -64,7 +64,7 @@ def dominion_dividers():
     logger.info(f"errors: {form.errors}")
 
     if form.validate_on_submit():
-        buf = form.generate(num_pages=1)
+        buf = form.generate()
         r = send_file(
             buf,
             mimetype="application/pdf",
@@ -74,9 +74,9 @@ def dominion_dividers():
         logger.info(f"response: {r}")
         return r
 
-    logger.info(f"expansion data is: {form.expansions.data}")
-    form.expansions.data = ["2ndedition"]
-    logger.info(f"set expansion data is: {form.expansions.data}")
+    # setting the default doesn't seem to work, so override here
+    form.expansions.data = ["dominion2ndEdition"]
+    form.process()
 
     r = render_template(
         "index.html",
@@ -99,7 +99,7 @@ def tuckboxes():
     logger.info(f"errors: {form.errors}")
     if form.validate_on_submit():
         logger.info(f"tuckbox files: {request.files}")
-        buf = form.generate(request.files)
+        buf = form.generate(files=request.files)
         r = send_file(
             buf,
             mimetype="application/pdf",
@@ -126,7 +126,7 @@ def chitboxes():
     logger.info(f"errors: {form.errors}")
     if form.validate_on_submit():
         logger.info(f"chitbox files: {request.files}")
-        buf = form.generate(request.files)
+        buf = form.generate(files=request.files)
         r = send_file(
             buf,
             mimetype="application/pdf",
@@ -145,26 +145,30 @@ def chitboxes():
     )
     return r
 
-@flask_app.route("/preview/", methods=["POST"])
-def domdiv_preview():
-    logger.info(f"domdiv preview call, request is {request}, form is {request.form}")
-    # logger.info(f"session: {session} {session.get('csrf_token')}")
-    logger.info(request)
-    form = DomDivForm(request.form)
-    logger.info(f"{form} - validate: {form.validate_on_submit()}")
+@flask_app.route("/preview/<string:tag>/", methods=["POST"])
+def preview(tag):
+    logger.info(f"preview call for {tag}, request is {request}, form is {request.form}")
+    if tag == 'dominion_dividers':
+        form = DomDivForm(request.form)
+    elif tag == 'chitboxes':
+        form = ChitboxForm(request.form)
+    elif tag == 'tuckboxes':
+        form = TuckboxForm(request.form)
+    else:
+        abort(404)
     logger.info(f"submitted: {form.is_submitted()}")
     logger.info(f"validates: {form.validate()}")
     logger.info(f"errors: {form.errors}")
-
     if form.validate():
-        buf = form.generate(num_pages=1)
+        buf = form.generate(num_pages=1, files=request.files)
         buf = base64.b64encode(buf.getvalue()).decode('ascii')
-        #buf = io.BytesIO(buf)
-        #r = send_file(buf, mimetype="text/html")
         r = jsonify({'preview_pdf': buf})
         logger.info(f"reponse: {r}")
         return r
-    return None
+    return jsonify({'error': 'Invalid Form Entries'})
+
+def tuckbox_preview():
+    pass
 
 if __name__ == "__main__":
     flask_app.run(debug=True)

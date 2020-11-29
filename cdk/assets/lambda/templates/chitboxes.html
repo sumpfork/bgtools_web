@@ -4,7 +4,7 @@
 </div>
 <div class="row">
     <div class="col">
-        <form method="POST" action="{{ form_target }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ form_target }}" enctype="multipart/form-data" id="id-tabgenoptions">
             {{ form.csrf_token }}
             <div class="row">
                 <div class="col">
@@ -62,6 +62,8 @@
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item"><a class="nav-link active" id="about-tab" href="#about" role="tab"
                         data-toggle="tab" aria-controls="about" aria-selected="true">About</a></li>
+                <li class="nav-item"><a class="nav-link" id="preview-tab" href="#preview-pane" role="tab"
+                        data-toggle="tab" aria-controls="preview-pane" aria-selected="false">Preview</a></li>
                 <li class="nav-item"><a class="nav-link" id="instructions-tab" href="#instructions" role="tab"
                         data-toggle="tab" aria-controls="instructions" aria-selected="false">Instructions</a></li>
             </ul>
@@ -96,16 +98,18 @@
                         can make
                         similar boxes for any game. He was nice enough to give me permission to publish the
                         generator here
-                        and provide his great instructions. Note: preview only renders image
-                        placeholders, full pdf will have the specified images in their place instead.
+                        and provide his great instructions.
                     </p>
                     <p>
                         Sorry, the image is of a quick paper mockup I made.
-                    <div id="preview_img">
                         <img alt="Boardgame Bits Boxes in Action" src="{{ static_url }}/static/images/chitbox_photo.jpg"
                             class="img-rounded img-responsive" style="width: 512px;">
-                    </div>
                     </p>
+                </div>
+                <div class="tab-pane fade" id="preview-pane" role="tabpanel" aria-labelledby="preview-tab">
+                    <div id="previewContainer">
+                        <div id="preview" width="512" height="900"></div>
+                    </div>
                 </div>
                 <div class="tab-pane fade" id="instructions" role="tabpanel" aria-labelledby="instructions-tab">
                     <p>

@@ -30,7 +30,7 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         {{ render_field(form.expansions, size="20") }}
-                                        {{ render_field(form.fan_expansions, size="2")}}
+                                        {{ render_field(form.fan, size="2")}}
                                     </div>
                                 </div>
                             </div>
@@ -45,7 +45,7 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         {{ render_field(form.pagesize) }}
-                                        {{ render_field(form.no_footer) }}
+                                        {{ render_field(form.no_page_footer) }}
                                         {{ render_field(form.back_offset) }}
                                         {{ render_field(form.back_offset_height) }}
                                     </div>
@@ -62,7 +62,7 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         {{ render_field(form.orientation) }}
-                                        {{ render_field(form.wrappers) }}
+                                        {{ render_field(form.wrapper) }}
                                         <div id="div_id_notch">
                                             {{ render_field(form.notch) }}
                                         </div>
@@ -85,11 +85,11 @@
                                     <div class="form-group">
                                         {{ render_field(form.tab_number) }}
                                         {{ render_field(form.tab_side) }}
-                                        {{ render_field(form.serpentine) }}
-                                        {{ render_field(form.reset_tabs) }}
+                                        {{ render_field(form.tab_serpentine) }}
+                                        {{ render_field(form.expansion_reset_tabs) }}
                                         {{ render_field(form.tab_name_align) }}
                                         {{ render_field(form.set_icon) }}
-                                        {{ render_field(form.cost_icon) }}
+                                        {{ render_field(form.cost) }}
                                         {{ render_field(form.black_tabs) }}
                                     </div>
                                 </div>
@@ -104,10 +104,10 @@
                             <div id="bodyBody" class="collapse" aria-labelledby="bodyHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        {{ render_field(form.counts) }}
+                                        {{ render_field(form.count) }}
                                         {{ render_field(form.types) }}
-                                        {{ render_field(form.divider_front_text) }}
-                                        {{ render_field(form.divider_back_text) }}
+                                        {{ render_field(form.text_front) }}
+                                        {{ render_field(form.text_back) }}
                                         {{ render_field(form.language) }}
                                     </div>
                                 </div>
@@ -131,7 +131,7 @@
                                         {{ render_field(form.no_trash) }}
                                         {{ render_field(form.base_cards_with_expansion) }}
                                         {{ render_field(form.upgrade_with_expansion) }}
-                                        {{ render_field(form.events) }}
+                                        {{ render_field(form.exclude_events) }}
                                         {{ render_field(form.expansion_dividers) }}
                                         <div id="div_id_centre_expansion_dividers">
                                             {{ render_field(form.centre_expansion_dividers) }}
@@ -149,7 +149,7 @@
         </form>
     </div>
     <div class="col">
-        <div class="card card-body bg-light">
+        <div class="card card-body bg-light right-pane">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item"><a class="nav-link active" id="about-tab" href="#about" role="tab"
                         data-toggle="tab" aria-controls="about" aria-selected="true">About</a></li>
@@ -267,8 +267,8 @@
 <script type="text/javascript">
     $(function () {
         $("#div_id_notch").hide();
-        $("form input[name='wrappers']").click(function () {
-            if (document.getElementById('wrappers').checked) {
+        $("form input[name='wrapper']").click(function () {
+            if (document.getElementById('wrapper').checked) {
                 $("#div_id_notch").show();
             } else {
                 $("#div_id_notch").hide();
