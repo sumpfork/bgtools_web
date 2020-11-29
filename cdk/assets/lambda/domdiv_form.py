@@ -247,7 +247,6 @@ class DomDivForm(FlaskForm):
     no_page_footer = wtf_fields.BooleanField(
         label="Omit the expansion name at the bottom of the page", default=False
     )
-    tag = wtf_fields.HiddenField(default="domdiv")
 
     def clean_options(self):
         form_options = argparse.Namespace()
@@ -279,8 +278,6 @@ class DomDivForm(FlaskForm):
                     options.notch = False
                     options.cropmarks = False
                     is_label = True
-            elif option == "tag":
-                continue
             else:
                 assert hasattr(options, option), f"{option} is not a script option"
                 if is_label and option in ["wrapper", "notch", "cropmarks"]:
