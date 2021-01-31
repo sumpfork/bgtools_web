@@ -114,6 +114,10 @@ class DomDivForm(FlaskForm):
     black_tabs = wtf_fields.BooleanField(
         label="Black tab background",
     )
+    tabwidth = wtf_fields.FloatField(
+        label="Width of Tab in centimeters",
+        default=4.0
+    )
     base_cards_with_expansion = wtf_fields.BooleanField(
         label="Include Base cards with the expansion", default=False
     )
@@ -123,7 +127,7 @@ class DomDivForm(FlaskForm):
     edition = wtf_fields.SelectField(
         choices=list(zip(domdiv.main.EDITION_CHOICES, domdiv.main.EDITION_CHOICES)),
         label="Edition",
-        default="latest",
+        default="all",
     )
     cropmarks = wtf_fields.BooleanField(
         label="Cropmarks Instead of Outlines", default=False
@@ -180,7 +184,7 @@ class DomDivForm(FlaskForm):
         label="Group Special Cards (e.g. Prizes with Tournament)", default=True
     )
     group_kingdom = wtf_fields.BooleanField(
-        label="Group cards without randomizers separately"
+        label="Group cards without randomizers separately", default=False
     )
     # global grouping
     choices = domdiv.main.GROUP_GLOBAL_CHOICES
@@ -285,6 +289,9 @@ class DomDivForm(FlaskForm):
                     continue
                 logger.info(f"{option} --> {value}")
                 options.__setattr__(option, value)
+
+            if not options.group_global:
+                options.group_global = None
 
         logger.info(f"options after populate: {options}")
         options = domdiv.main.clean_opts(options)
