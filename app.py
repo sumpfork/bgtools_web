@@ -4,6 +4,7 @@ import datetime as dt
 import json
 import os
 import requests
+import shutil
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -61,8 +62,12 @@ class BGToolsStack(core.Stack):
             loader=FileSystemLoader("templates"), autoescape=select_autoescape(["html"])
         )
         t = env.get_template("changelog.html.j2")
+        generated_template_path = os.path.join(self.lambda_dir, "templates", "generated")
+        shutil.rmtree(generated_template_path)
+        os.mkdir(generated_template_path)
+
         with open(
-            os.path.join(self.lambda_dir, "templates", "generated", "changelog.html"),
+            os.path.join(generated_template_path, "changelog.html"),
             "w",
         ) as f:
             f.write(t.render(changelog=changelog))
@@ -70,9 +75,6 @@ class BGToolsStack(core.Stack):
         static_website_bucket = s3.Bucket(
             self,
             "Dominion Divider Generator Site",
-            # website_index_document="index.html",
-            # website_error_document="error.html",
-            # public_read_access=True,
         )
 
         cf_static_dist = cloudfront.Distribution(
@@ -90,28 +92,6 @@ class BGToolsStack(core.Stack):
             destination_bucket=static_website_bucket,
             destination_key_prefix="static",
         )
-        # print(lambda_.Runtime.PYTHON_3_8.bundling_docker_image.image)
-        # cmd = '''
-        #     curl -L https://github.com/ImageMagick/ImageMagick/archive/7.0.10-39.tar.gz | tar xzv &&
-        #     cd ImageMagick-7.0.10-39/ &&
-        #     ./configure &&
-        #     make
-        # '''
-        # native_layer = (
-        #     lambda_.Function(
-        #         self,
-        #         "NativeLayer",
-        #         code=lambda_.Code.from_asset(
-        #             "tmp/",
-        #             bundling=core.BundlingOptions(
-        #                 image=lambda_.Runtime.PYTHON_3_7.bundling_docker_image,
-        #                 command=['bash', '-c', 'curl -L https://github.com/ImageMagick/ImageMagick/archive/7.0.10-39.tar.gz | tar xzv']
-        #             ),
-        #         ),
-        #         handler="dummy",
-        #         runtime=lambda_.Runtime.PYTHON_3_8,
-        #     ),
-        # )
 
         flask_app = lambda_python.PythonFunction(
             self,
