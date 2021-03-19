@@ -295,5 +295,5 @@ six==1.15.0
     # via python-dateutil
 typing-extensions==3.7.4.3
     # via jsii
-urllib3==1.26.2
+urllib3==1.26.3
     # via requests
