@@ -221,7 +221,7 @@ constructs==3.2.32
     #   aws-cdk.core
 idna==2.10
     # via requests
-jinja2==2.11.2
+jinja2==2.11.3
     # via cdk (setup.py)
 jsii==1.14.1
     # via
