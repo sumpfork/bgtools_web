@@ -6,4 +6,4 @@ __pycache__/
 cdk.out
 .cdk.staging
 config.json
-
+generated/
