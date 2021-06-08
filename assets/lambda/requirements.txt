@@ -4,22 +4,55 @@
 #
 #    pip-compile assets/lambda/requirements.in
 #
-apig-wsgi==2.9.2          # via -r assets/lambda/requirements.in
-bootstrap-flask==1.5.1    # via -r assets/lambda/requirements.in
-chitboxes==0.0.1          # via -r assets/lambda/requirements.in
-click==7.1.2              # via flask
-configargparse==1.2.3     # via domdiv
-domdiv==3.11.7            # via -r assets/lambda/requirements.in
-flask-wtf==0.14.3         # via -r assets/lambda/requirements.in
-flask==1.1.2              # via bootstrap-flask, flask-uploads, flask-wtf
-git+http://github.com/maxcountryman/flask-uploads.git#egg=Flask_Uploads  # via -r assets/lambda/requirements.in
-itsdangerous==1.1.0       # via flask, flask-wtf
-jinja2==2.11.2            # via flask
-markupsafe==1.1.1         # via jinja2, wtforms
-numpy==1.19.4             # via chitboxes, tuckboxes
-pillow==8.0.1             # via chitboxes, domdiv, reportlab, tuckboxes
-reportlab==3.5.55         # via chitboxes, domdiv, tuckboxes
-tuckboxes==0.0.1          # via -r assets/lambda/requirements.in
-wand==0.6.4               # via -r assets/lambda/requirements.in
-werkzeug==1.0.1           # via flask
-wtforms==2.3.3            # via flask-wtf
+apig-wsgi==2.9.2
+    # via -r requirements.in
+bootstrap-flask==1.5.1
+    # via -r requirements.in
+chitboxes==0.0.1
+    # via -r requirements.in
+click==7.1.2
+    # via flask
+configargparse==1.2.3
+    # via domdiv
+domdiv==3.11.7
+    # via -r requirements.in
+flask-wtf==0.14.3
+    # via -r requirements.in
+flask==1.1.2
+    # via
+    #   bootstrap-flask
+    #   flask-uploads
+    #   flask-wtf
+git+http://github.com/maxcountryman/flask-uploads.git#egg=Flask_Uploads
+    # via -r requirements.in
+itsdangerous==1.1.0
+    # via
+    #   flask
+    #   flask-wtf
+jinja2==2.11.3
+    # via flask
+markupsafe==1.1.1
+    # via
+    #   jinja2
+    #   wtforms
+numpy==1.19.4
+    # via
+    #   chitboxes
+    #   tuckboxes
+pillow==8.0.1
+    # via
+    #   chitboxes
+    #   domdiv
+    #   reportlab
+    #   tuckboxes
+reportlab==3.5.55
+    # via
+    #   chitboxes
+    #   domdiv
+    #   tuckboxes
+tuckboxes==0.0.1
+    # via -r requirements.in
+werkzeug==1.0.1
+    # via flask
+wtforms==2.3.3
+    # via flask-wtf
