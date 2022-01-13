@@ -10,14 +10,14 @@ chitboxes==0.0.1
 click==7.1.2
 configargparse==1.4
 domdiv==3.14.0
-flask-wtf==0.14.3
 flask==1.1.2
-git+http://github.com/maxcountryman/flask-uploads.git#egg=Flask_Uploads
+flask-uploads @ git+http://github.com/maxcountryman/flask-uploads.git
+flask-wtf==0.14.3
 itsdangerous==1.1.0
 jinja2==2.11.3
 markupsafe==1.1.1
 numpy==1.20.2
-pillow==8.2.0
+pillow==9.0.0
 reportlab==3.5.67
 tuckboxes==0.0.1
 werkzeug==1.0.1
