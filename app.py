@@ -8,25 +8,25 @@ import shutil
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+import aws_cdk
 from aws_cdk import (
     aws_certificatemanager as acm,
     aws_cloudwatch,
     aws_lambda as lambda_,
-    aws_lambda_python as lambda_python,
+    aws_lambda_python_alpha as lambda_python,
     aws_apigateway as apig,
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as cloudfront_origins,
     aws_s3 as s3,
     aws_s3_deployment as s3_deployment,
-    core,
 )
 from aws_cdk.aws_apigateway import DomainNameOptions
 
-app = core.App()
+app = aws_cdk.App()
 
 
-class BGToolsStack(core.Stack):
-    def __init__(self, app: core.App, id: str) -> None:
+class BGToolsStack(aws_cdk.Stack):
+    def __init__(self, app: aws_cdk.App, id: str) -> None:
         super().__init__(app, id)
 
         with open("config.json") as f:
@@ -104,7 +104,7 @@ class BGToolsStack(core.Stack):
                 "FLASK_SECRET_KEY": self.config["SECRET_KEY"],
                 "GA_CONFIG": self.config.get("GA_CONFIG", ""),
             },
-            timeout=core.Duration.seconds(60),
+            timeout=aws_cdk.Duration.seconds(60),
             memory_size=512,
             runtime=lambda_.Runtime.PYTHON_3_8,
         )
@@ -127,9 +127,9 @@ class BGToolsStack(core.Stack):
             "BGToolsCloudfrontDist",
             default_behavior=cloudfront.BehaviorOptions(
                 origin=cloudfront_origins.HttpOrigin(
-                    core.Fn.select(2, core.Fn.split("/", api.url)),
-                    origin_path=core.Fn.join(
-                        "", ["/", core.Fn.select(3, core.Fn.split("/", api.url))]
+                    aws_cdk.Fn.select(2, aws_cdk.Fn.split("/", api.url)),
+                    origin_path=aws_cdk.Fn.join(
+                        "", ["/", aws_cdk.Fn.select(3, aws_cdk.Fn.split("/", api.url))]
                     ),
                 ),
                 origin_request_policy=cloudfront.OriginRequestPolicy(
@@ -163,33 +163,33 @@ class BGToolsStack(core.Stack):
                     aws_cloudwatch.Metric(
                         namespace="AWS/ApiGateway",
                         metric_name="5XXError",
-                        dimensions={
+                        dimensions_map={
                             "ApiName": "bgtools-api",
                             "Stage": api.deployment_stage.stage_name,
                         },
-                        period=core.Duration.minutes(amount=30),
+                        period=aws_cdk.Duration.minutes(amount=30),
                         statistic="Sum",
                         color="#d62728",
                     ),
                     aws_cloudwatch.Metric(
                         namespace="AWS/ApiGateway",
                         metric_name="4XXError",
-                        dimensions={
+                        dimensions_map={
                             "ApiName": "bgtools-api",
                             "Stage": api.deployment_stage.stage_name,
                         },
-                        period=core.Duration.minutes(amount=30),
+                        period=aws_cdk.Duration.minutes(amount=30),
                         statistic="Sum",
                         color="#8c564b",
                     ),
                     aws_cloudwatch.Metric(
                         namespace="AWS/ApiGateway",
                         metric_name="Count",
-                        dimensions={
+                        dimensions_map={
                             "ApiName": "bgtools-api",
                             "Stage": api.deployment_stage.stage_name,
                         },
-                        period=core.Duration.minutes(amount=30),
+                        period=aws_cdk.Duration.minutes(amount=30),
                         statistic="Sum",
                         color="#2ca02c",
                     ),
@@ -203,21 +203,21 @@ class BGToolsStack(core.Stack):
                     aws_cloudwatch.Metric(
                         namespace="AWS/ApiGateway",
                         metric_name="Latency",
-                        dimensions={
+                        dimensions_map={
                             "ApiName": "bgtools-api",
                             "Stage": api.deployment_stage.stage_name,
                         },
-                        period=core.Duration.minutes(amount=30),
+                        period=aws_cdk.Duration.minutes(amount=30),
                         statistic="Average",
                     ),
                     aws_cloudwatch.Metric(
                         namespace="AWS/ApiGateway",
                         metric_name="IntegrationLatency",
-                        dimensions={
+                        dimensions_map={
                             "ApiName": "bgtools-api",
                             "Stage": api.deployment_stage.stage_name,
                         },
-                        period=core.Duration.minutes(amount=30),
+                        period=aws_cdk.Duration.minutes(amount=30),
                         statistic="Average",
                     ),
                 ],
