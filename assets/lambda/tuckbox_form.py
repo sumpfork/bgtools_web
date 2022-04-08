@@ -57,7 +57,7 @@ class TuckboxForm(FlaskForm):
         logger.info(
             f"fill colour: {self['fill_colour'].data}, {type(self['fill_colour'].data)}"
         )
-        fc = re.match("#(\w{2})(\w{2})(\w{2})", self["fill_colour"].data).groups()
+        fc = re.match(r"#(\w{2})(\w{2})(\w{2})", self["fill_colour"].data).groups()
         fc = tuple(int(p, 16) / 255.0 for p in fc)
         c = TuckBoxGenerator.fromRawData(
             float(self["width"].data),

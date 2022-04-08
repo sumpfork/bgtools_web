@@ -1,11 +1,11 @@
 import base64
-import io
 import json
 import logging
 import os
 
 import apig_wsgi
 import domdiv
+import domdiv.main
 from flask import Flask, request, send_file, url_for, jsonify, abort
 from flask import render_template
 from flask_bootstrap import Bootstrap
@@ -62,6 +62,8 @@ def dominion_dividers():
     logger.info(f"validates: {form.validate()}")
     logger.info(f"errors: {form.errors}")
 
+    logger.info(f"domdiv version: {domdiv.__version__}")
+    logger.info(f"expansion choices: {domdiv.main.EXPANSION_CHOICES}")
     if form.validate_on_submit():
         buf = form.generate()
         r = send_file(
@@ -86,7 +88,7 @@ def dominion_dividers():
         version=domdiv.__version__,
         version_url=f"https://github.com/sumpfork/dominiontabs/releases/tag/v{domdiv.__version__}",
         form_target=url_for("dominion_dividers"),
-        ga_config=os.environ.get("GA_CONFIG", "")
+        ga_config=os.environ.get("GA_CONFIG", ""),
     )
     return r
 
@@ -149,14 +151,15 @@ def chitboxes():
     )
     return r
 
+
 @flask_app.route("/preview/<string:tag>/", methods=["POST"])
 def preview(tag):
     logger.info(f"preview call for {tag}, request is {request}, form is {request.form}")
-    if tag == 'dominion_dividers':
+    if tag == "dominion_dividers":
         form = DomDivForm(request.form)
-    elif tag == 'chitboxes':
+    elif tag == "chitboxes":
         form = ChitboxForm(request.form)
-    elif tag == 'tuckboxes':
+    elif tag == "tuckboxes":
         form = TuckboxForm(request.form)
     else:
         abort(404)
@@ -165,14 +168,12 @@ def preview(tag):
     logger.info(f"errors: {form.errors}")
     if form.validate():
         buf = form.generate(num_pages=1, files=request.files)
-        buf = base64.b64encode(buf.getvalue()).decode('ascii')
-        r = jsonify({'preview_pdf': buf})
+        buf = base64.b64encode(buf.getvalue()).decode("ascii")
+        r = jsonify({"preview_pdf": buf})
         logger.info(f"reponse: {r}")
         return r
-    return jsonify({'error': 'Invalid Form Entries'})
+    return jsonify({"error": "Invalid Form Entries"})
 
-def tuckbox_preview():
-    pass
 
 if __name__ == "__main__":
     flask_app.run(debug=True)

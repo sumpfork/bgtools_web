@@ -2,7 +2,6 @@ import argparse
 from io import BytesIO
 import logging
 import os
-from configargparse import ArgParser
 
 import wtforms.fields as wtf_fields
 from flask_wtf import FlaskForm
@@ -114,10 +113,7 @@ class DomDivForm(FlaskForm):
     black_tabs = wtf_fields.BooleanField(
         label="Black tab background",
     )
-    tabwidth = wtf_fields.FloatField(
-        label="Width of Tab in centimeters",
-        default=4.0
-    )
+    tabwidth = wtf_fields.FloatField(label="Width of Tab in centimeters", default=4.0)
     base_cards_with_expansion = wtf_fields.BooleanField(
         label="Include Base cards with the expansion", default=False
     )
@@ -264,6 +260,8 @@ class DomDivForm(FlaskForm):
             if option == "tab_number":
                 value = int(value)
             if option in ["expansions", "fan"]:
+                if option == "expansions" and not value:
+                    value = domdiv.main.EXPANSION_CHOICES
                 value = [[v] for v in value]
             if option == "cardsize":
                 logger.info("handling cardsize")

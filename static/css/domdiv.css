@@ -38,3 +38,7 @@ a.plainlink:hover {
     width: 100%;
     min-height: 700px;
 }
+
+.preformatted {
+    white-space: pre;
+}

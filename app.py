@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import datetime as dt
-import json
 import os
 import requests
 import shutil
+
+import yaml
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -20,7 +21,6 @@ from aws_cdk import (
     aws_s3 as s3,
     aws_s3_deployment as s3_deployment,
 )
-from aws_cdk.aws_apigateway import DomainNameOptions
 
 app = aws_cdk.App()
 
@@ -29,8 +29,8 @@ class BGToolsStack(aws_cdk.Stack):
     def __init__(self, app: aws_cdk.App, id: str) -> None:
         super().__init__(app, id)
 
-        with open("config.json") as f:
-            self.config = json.load(f)
+        with open("config.yaml") as f:
+            self.config = yaml.safe_load(f)
         assert (
             "SECRET_KEY" in self.config
         ), "Need random SECRET_KEY specified in config.json"
@@ -62,7 +62,9 @@ class BGToolsStack(aws_cdk.Stack):
             loader=FileSystemLoader("templates"), autoescape=select_autoescape(["html"])
         )
         t = env.get_template("changelog.html.j2")
-        generated_template_path = os.path.join(self.lambda_dir, "templates", "generated")
+        generated_template_path = os.path.join(
+            self.lambda_dir, "templates", "generated"
+        )
         shutil.rmtree(generated_template_path)
         os.mkdir(generated_template_path)
 
@@ -149,8 +151,8 @@ class BGToolsStack(aws_cdk.Stack):
 
         dashboard = aws_cloudwatch.Dashboard(
             self,
-            f"bgtools-dashboard",
-            dashboard_name=f"bgtools-prod",
+            "bgtools-dashboard",
+            dashboard_name="bgtools-prod",
             start="-P1D",
             period_override=aws_cloudwatch.PeriodOverride.INHERIT,
         )

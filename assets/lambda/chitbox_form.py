@@ -1,7 +1,6 @@
 from io import BytesIO
 import logging
 import os
-import re
 
 import wtforms.fields as wtf_fields
 from wtforms import validators
@@ -12,6 +11,7 @@ from chitboxes.chitboxes import ChitBoxGenerator
 
 logger = logging.getLogger("chitboxes")
 logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
+
 
 class ChitboxForm(FlaskForm):
     width = wtf_fields.DecimalField(
@@ -47,7 +47,7 @@ class ChitboxForm(FlaskForm):
             float(self["height"].data),
             buf,
             files.get("main_image"),
-            files.get("side_image")
+            files.get("side_image"),
         )
         c.generate()
         buf.seek(0)

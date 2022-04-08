@@ -1,0 +1,6 @@
+aws-cdk-lib
+aws-cdk.aws-lambda-python-alpha
+requests
+jinja2
+pre-commit
+pyyaml
