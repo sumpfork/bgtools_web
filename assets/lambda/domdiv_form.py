@@ -37,6 +37,7 @@ class DomDivForm(FlaskForm):
     choiceNames = []
     replacements = {
         "1stedition": "1st Edition",
+        "1steditionremoved": "cards removed in 2nd edition",
         "2ndeditionupgrade": "2nd Edition Upgrade",
         "2ndedition": "2nd Edition",
     }

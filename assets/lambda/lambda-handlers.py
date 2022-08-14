@@ -11,7 +11,7 @@ from flask import render_template
 from flask_bootstrap import Bootstrap
 from flask_uploads import IMAGES
 
-# from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect
 from domdiv_form import DomDivForm
 from tuckbox_form import TuckboxForm
 from chitbox_form import ChitboxForm
@@ -23,6 +23,7 @@ PAGES = {
 }
 
 flask_app = Flask(__name__)
+# csrf = CSRFProtect(flask_app)
 bootstrap = Bootstrap(flask_app)
 
 secret_key = os.environ["FLASK_SECRET_KEY"]
@@ -30,6 +31,7 @@ assert secret_key, "Need secret key specified in env"
 flask_app.config["SECRET_KEY"] = secret_key
 flask_app.config["UPLOADS_DEFAULT_DEST"] = "/tmp"
 flask_app.config["UPLOADED_FILES_ALLOW"] = IMAGES
+flask_app.config["WTF_CSRF_ENABLED"] = False
 
 logger = logging.getLogger("bgtools_logger")
 logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))

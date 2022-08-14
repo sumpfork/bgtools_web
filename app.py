@@ -26,17 +26,25 @@ app = aws_cdk.App()
 
 
 class BGToolsStack(aws_cdk.Stack):
-    def __init__(self, app: aws_cdk.App, id: str) -> None:
-        super().__init__(app, id)
-
+    def __init__(self, scope, id_, **kwargs):
         with open("config.yaml") as f:
             self.config = yaml.safe_load(f)
+
+        # protect production stacks from accidental deletion
+        kwargs["termination_protection"] = self.config.get("TERMINATION_PROTECTION")
+
         assert (
             "SECRET_KEY" in self.config
         ), "Need random SECRET_KEY specified in config.json"
         assert (
             "CERTIFICATE_ARN" in self.config
         ), "Need CERTIFICATE_ARN specified in config.json"
+
+        self.stage = self.config["STAGE"]
+        self.stackname = f"{id_}-{self.stage}"
+        self.domain = self.config["DOMAIN"]
+
+        super().__init__(scope, self.stackname, **kwargs)
 
         self.lambda_dir = "assets/lambda"
         os.makedirs(
@@ -121,7 +129,8 @@ class BGToolsStack(aws_cdk.Stack):
                     "/*/*": apig.MethodDeploymentOptions(
                         throttling_rate_limit=10, throttling_burst_limit=20
                     )
-                }
+                },
+                "stage_name": self.stage,
             },
         )
         cloudfront.Distribution(
@@ -141,7 +150,7 @@ class BGToolsStack(aws_cdk.Stack):
                 ),
                 allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
             ),
-            domain_names=["domdiv.bgtools.net"],
+            domain_names=[self.domain],
             certificate=acm.Certificate.from_certificate_arn(
                 self,
                 "cert",
@@ -152,7 +161,7 @@ class BGToolsStack(aws_cdk.Stack):
         dashboard = aws_cloudwatch.Dashboard(
             self,
             "bgtools-dashboard",
-            dashboard_name="bgtools-prod",
+            dashboard_name=f"bgtools-{self.stage}",
             start="-P1D",
             period_override=aws_cloudwatch.PeriodOverride.INHERIT,
         )
@@ -227,5 +236,12 @@ class BGToolsStack(aws_cdk.Stack):
         )
 
 
-BGToolsStack(app, "bgtools")
+BGToolsStack(
+    app,
+    "bgtools",
+    env={
+        "account": os.environ["CDK_DEFAULT_ACCOUNT"],
+        "region": os.environ["CDK_DEFAULT_REGION"],
+    },
+)
 app.synth()
