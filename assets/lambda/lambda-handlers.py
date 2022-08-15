@@ -72,7 +72,7 @@ def dominion_dividers():
             buf,
             mimetype="application/pdf",
             as_attachment=True,
-            attachment_filename="sumpfork_dominion_dividers.pdf",
+            download_name="sumpfork_dominion_dividers.pdf",
         )
         logger.info(f"response: {r}")
         return r
@@ -112,7 +112,7 @@ def tuckboxes():
             buf,
             mimetype="application/pdf",
             as_attachment=True,
-            attachment_filename="sumpfork_tuckbox.pdf",
+            download_name="sumpfork_tuckbox.pdf",
         )
         logger.info(f"response: {r}")
         return r
@@ -139,7 +139,7 @@ def chitboxes():
             buf,
             mimetype="application/pdf",
             as_attachment=True,
-            attachment_filename="sumpfork_chitbox.pdf",
+            download_name="sumpfork_chitbox.pdf",
         )
         logger.info(f"response: {r}")
         return r
