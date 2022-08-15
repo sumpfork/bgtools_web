@@ -5,5 +5,5 @@ __pycache__/
 
 cdk.out
 .cdk.staging
-config.yaml
+*config.yaml
 generated/
