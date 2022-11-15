@@ -25,8 +25,6 @@ flask_uploads @ git+http://github.com/maxcountryman/flask-uploads.git
     # via -r requirements.in
 flask-wtf==1.0.1
     # via -r requirements.in
-importlib-metadata==4.12.0
-    # via flask
 itsdangerous==2.1.2
     # via
     #   flask
@@ -42,7 +40,7 @@ numpy==1.23.2
     # via
     #   chitboxes
     #   tuckboxes
-pillow==9.2.0
+pillow==9.3.0
     # via
     #   chitboxes
     #   domdiv
@@ -61,5 +59,3 @@ wtforms==3.0.1
     # via
     #   bootstrap-flask
     #   flask-wtf
-zipp==3.8.1
-    # via importlib-metadata
