@@ -145,7 +145,7 @@ class BGToolsStack(aws_cdk.Stack):
                 ),
                 origin_request_policy=cloudfront.OriginRequestPolicy(
                     self,
-                    "OriginRequestPolicy",
+                    f"OriginRequestPolicy-{self.stackname}",
                     cookie_behavior=cloudfront.OriginRequestCookieBehavior.all(),
                 ),
                 allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,

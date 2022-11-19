@@ -11,7 +11,6 @@ from flask import render_template
 from flask_bootstrap import Bootstrap
 from flask_uploads import IMAGES
 
-from flask_wtf.csrf import CSRFProtect
 from domdiv_form import DomDivForm
 from tuckbox_form import TuckboxForm
 from chitbox_form import ChitboxForm
@@ -23,7 +22,6 @@ PAGES = {
 }
 
 flask_app = Flask(__name__)
-# csrf = CSRFProtect(flask_app)
 bootstrap = Bootstrap(flask_app)
 
 secret_key = os.environ["FLASK_SECRET_KEY"]
