@@ -16,7 +16,7 @@ aws-cdk-lib==2.27.0
     #   aws-cdk-aws-lambda-python-alpha
 cattrs==22.1.0
     # via jsii
-certifi==2022.5.18.1
+certifi==2022.12.7
     # via requests
 cfgv==3.3.1
     # via pre-commit
@@ -28,8 +28,6 @@ constructs==10.1.36
     #   aws-cdk-lib
 distlib==0.3.4
     # via virtualenv
-exceptiongroup==1.0.0rc8
-    # via cattrs
 filelock==3.7.1
     # via virtualenv
 identify==2.5.1
