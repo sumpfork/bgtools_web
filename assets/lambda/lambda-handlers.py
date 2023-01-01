@@ -63,7 +63,7 @@ def dominion_dividers():
     logger.info(f"errors: {form.errors}")
 
     logger.info(f"domdiv version: {domdiv.__version__}")
-    logger.info(f"expansion choices: {domdiv.main.EXPANSION_CHOICES}")
+    logger.info(f"expansion choices: {domdiv.main.get_expansions()}")
     if form.validate_on_submit():
         buf = form.generate()
         r = send_file(

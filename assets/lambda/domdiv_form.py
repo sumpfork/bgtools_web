@@ -32,7 +32,11 @@ logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
 
 class DomDivForm(FlaskForm):
     # Expansions
-    choices = domdiv.main.EXPANSION_CHOICES
+    expansion_choices, fan_choices = domdiv.main.get_expansions()
+
+    expansion_choices = [
+        choice for choice in expansion_choices if choice.lower() != "extras"
+    ]
     # make pretty names for the expansion choices
     choiceNames = []
     replacements = {
@@ -41,7 +45,7 @@ class DomDivForm(FlaskForm):
         "2ndeditionupgrade": "2nd Edition Upgrade",
         "2ndedition": "2nd Edition",
     }
-    for choice in choices:
+    for choice in expansion_choices:
         for s, r in replacements.items():
             if choice.lower().endswith(s):
                 choiceNames.append("{} {}".format(choice[: -len(s)].capitalize(), r))
@@ -50,14 +54,13 @@ class DomDivForm(FlaskForm):
             choiceNames.append(choice.capitalize())
     expansions = wtf_fields.SelectMultipleField(
         label="Expansions to Include (Cmd/Ctrl click to select multiple)",
-        choices=list(zip(choices, choiceNames)),
+        choices=list(zip(expansion_choices, choiceNames)),
         default=["dominion2ndEdition"],
     )
     # Now Fan expansions
-    choices = domdiv.main.FAN_CHOICES
     # make pretty names for the expansion choices
     choiceNames = []
-    for choice in choices:
+    for choice in fan_choices:
         for s, r in replacements.items():
             if choice.lower().endswith(s):
                 choiceNames.append("{} {}".format(choice[: -len(s)].capitalize(), r))
@@ -65,7 +68,7 @@ class DomDivForm(FlaskForm):
         else:
             choiceNames.append(choice.capitalize())
     fan = wtf_fields.SelectMultipleField(
-        choices=list(zip(choices, choiceNames)),
+        choices=list(zip(fan_choices, choiceNames)),
         label="Fan Expansions to Include (Cmd/Ctrl click to select multiple)",
     )
     orientation = wtf_fields.SelectField(
@@ -74,20 +77,23 @@ class DomDivForm(FlaskForm):
         default="horizontal",
     )
 
+    _, label_keys, label_selections, _ = domdiv.main.get_label_data()
     pagesize = wtf_fields.SelectField(
         label="Paper Size",
         choices=list(
             zip(
-                PAPER_SIZES + domdiv.main.LABEL_KEYS,
-                PAPER_SIZES + domdiv.main.LABEL_SELECTIONS,
+                PAPER_SIZES + label_keys,
+                PAPER_SIZES + label_selections,
             )
         ),
         default="Letter",
     )
 
-    choices = ["Sleeved - Thin", "Sleeved - Thick", "Unsleeved"]
+    cardsize_choices = ["Sleeved - Thin", "Sleeved - Thick", "Unsleeved"]
     cardsize = wtf_fields.SelectField(
-        choices=list(zip(choices, choices)), label="Card Size", default="Unsleeved"
+        choices=list(zip(cardsize_choices, cardsize_choices)),
+        label="Card Size",
+        default="Unsleeved",
     )
     tabwidth = wtf_fields.FloatField(
         label="Width of Tab in centimeters",
@@ -184,13 +190,13 @@ class DomDivForm(FlaskForm):
         label="Group cards without randomizers separately", default=False
     )
     # global grouping
-    choices = domdiv.main.GROUP_GLOBAL_CHOICES
+    group_global_choices, _ = domdiv.main.get_global_groups()
     # make pretty names for the global group choices
     choiceNames = []
-    for choice in choices:
+    for choice in group_global_choices:
         choiceNames.append(choice.capitalize())
     group_global = wtf_fields.SelectMultipleField(
-        choices=list(zip(choices, choiceNames)),
+        choices=list(zip(group_global_choices, choiceNames)),
         label="Group these card types globally (Cmd/Ctrl click to select multiple)",
         default="",
     )
@@ -222,8 +228,9 @@ class DomDivForm(FlaskForm):
         label="Cost Icon Location",
         default="tab",
     )
+    language_choices = domdiv.main.get_languages()
     language = wtf_fields.SelectField(
-        choices=list(zip(domdiv.main.LANGUAGE_CHOICES, domdiv.main.LANGUAGE_CHOICES)),
+        choices=list(zip(language_choices, language_choices)),
         label="Language",
         default="en_us",
     )
@@ -260,10 +267,12 @@ class DomDivForm(FlaskForm):
             logger.info(f"option {option} ({type(option)}): {value}")
             if option == "tab_number":
                 value = int(value)
-            if option in ["expansions", "fan"]:
+
+            if option in ["expansions", "fan", "group_global"]:
                 if option == "expansions" and not value:
-                    value = domdiv.main.EXPANSION_CHOICES
+                    value = self.expansion_choices
                 value = [[v] for v in value]
+
             if option == "cardsize":
                 logger.info("handling cardsize")
                 options.size = "unsleeved" if "Unsleeved" in value else "sleeved"
@@ -282,6 +291,9 @@ class DomDivForm(FlaskForm):
                     options.cropmarks = False
                     is_label = True
             else:
+                if option == "wrapper" and hasattr(options, "wrapper_meta"):
+                    # option name has changed, accept both for now
+                    option = "wrapper_meta"
                 assert hasattr(options, option), f"{option} is not a script option"
                 if is_label and option in ["wrapper", "notch", "cropmarks"]:
                     logger.info(f"skipping {option} because we're printing labels")
@@ -289,8 +301,10 @@ class DomDivForm(FlaskForm):
                 logger.info(f"{option} --> {value}")
                 options.__setattr__(option, value)
 
-            if not options.group_global:
-                options.group_global = None
+        if not options.group_global:
+            options.group_global = None
+        if options.group_global or options.include_blanks:
+            options.expansions += [["extras"]]
 
         logger.info(f"options after populate: {options}")
         options = domdiv.main.clean_opts(options)
