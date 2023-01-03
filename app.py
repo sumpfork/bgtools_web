@@ -46,6 +46,9 @@ class BGToolsStack(aws_cdk.Stack):
 
         super().__init__(scope, self.stackname, **kwargs)
 
+        aws_cdk.Tags.of(self).add("id", id_)
+        aws_cdk.Tags.of(self).add("stackname", self.stackname)
+
         self.lambda_dir = "assets/lambda"
         os.makedirs(
             os.path.join(self.lambda_dir, "templates", "generated"), exist_ok=True

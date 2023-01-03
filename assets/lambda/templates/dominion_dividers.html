@@ -22,7 +22,8 @@
                                 <h5 class="mb-0 accordion-menu">
                                     <button class="btn btn-link btn-block text-left" type="button"
                                         data-toggle="collapse" data-target="#expansionBody" aria-expanded="true"
-                                        aria-controls="collapseOne">Expansions</button></h5>
+                                        aria-controls="collapseOne">Expansions</button>
+                                </h5>
                             </div>
                             <div id="expansionBody" class="collapse show" aria-labelledby="expansionHeader"
                                 data-parent="#accordion">
@@ -38,7 +39,8 @@
                                 <h5 class="mb-0 accordion-menu">
                                     <button class="btn btn-link btn-block text-left" type="button"
                                         data-toggle="collapse" data-target="#pageBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Page</button></h5>
+                                        aria-controls="collapseOne">Page</button>
+                                </h5>
                             </div>
                             <div id="pageBody" class="collapse" aria-labelledby="pageHeader" data-parent="#accordion">
                                 <div class="card-body">
@@ -55,13 +57,14 @@
                                 <h5 class="mb-0 accordion-menu">
                                     <button class="btn btn-link btn-block text-left" type="button"
                                         data-toggle="collapse" data-target="#styleBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Style</button></h5>
+                                        aria-controls="collapseOne">Style</button>
+                                </h5>
                             </div>
                             <div id="styleBody" class="collapse" aria-labelledby="styleHeader" data-parent="#accordion">
                                 <div class="card-body">
                                     <div class="form-group">
                                         {{ render_field(form.orientation) }}
-                                        {{ render_field(form.wrapper) }}
+                                        {{ render_field(form.wrappers) }}
                                         <div id="div_id_notch">
                                             {{ render_field(form.notch) }}
                                         </div>
@@ -78,7 +81,8 @@
                                 <h5 class="mb-0 accordion-menu">
                                     <button class="btn btn-link btn-block text-left" type="button"
                                         data-toggle="collapse" data-target="#tabBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Tab</button></h5>
+                                        aria-controls="collapseOne">Tab</button>
+                                </h5>
                             </div>
                             <div id="tabBody" class="collapse" aria-labelledby="tabHeader" data-parent="#accordion">
                                 <div class="card-body">
@@ -99,7 +103,8 @@
                                 <h5 class="mb-0 accordion-menu">
                                     <button class="btn btn-link btn-block text-left" type="button"
                                         data-toggle="collapse" data-target="#bodyBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Body</button></h5>
+                                        aria-controls="collapseOne">Body</button>
+                                </h5>
                             </div>
                             <div id="bodyBody" class="collapse" aria-labelledby="bodyHeader" data-parent="#accordion">
                                 <div class="card-body">
@@ -117,7 +122,8 @@
                                 <h5 class="mb-0 accordion-menu">
                                     <button class="btn btn-link btn-block text-left" type="button"
                                         data-toggle="collapse" data-target="#orderBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Order, Groups and Extras</button></h5>
+                                        aria-controls="collapseOne">Order, Groups and Extras</button>
+                                </h5>
                             </div>
                             <div id="orderBody" class="collapse" aria-labelledby="orderHeader" data-parent="#accordion">
                                 <div class="card-body">
@@ -266,8 +272,8 @@
 <script type="text/javascript">
     $(function () {
         $("#div_id_notch").hide();
-        $("form input[name='wrapper']").click(function () {
-            if (document.getElementById('wrapper').checked) {
+        $("form input[name='wrappers']").click(function () {
+            if (document.getElementById('wrappers-1').checked || document.getElementById('wrappers-2').checked) {
                 $("#div_id_notch").show();
             } else {
                 $("#div_id_notch").hide();

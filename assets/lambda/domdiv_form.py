@@ -140,11 +140,15 @@ class DomDivForm(FlaskForm):
         label="Outline Type",
         default="line",
     )
-    wrapper = wtf_fields.BooleanField(
-        label="Slipcases Instead of Dividers", default=False
+
+    wrapper_choices = ["Dividers", "Slipcases", "PullTabs", "Tents"]
+    wrappers = wtf_fields.RadioField(
+        label="Folded Slipcases?",
+        choices=list(zip(wrapper_choices, wrapper_choices)),
+        default="Dividers",
     )
     notch = wtf_fields.BooleanField(
-        label="If Slipcases, add a notch in corners", default=False
+        label="Add a notch in corners", default=False
     )
     tab_serpentine = wtf_fields.BooleanField(
         label="For 3 or more tabs, tab location reverses when the end is reached instead of resetting to the start",
@@ -286,14 +290,22 @@ class DomDivForm(FlaskForm):
                 else:
                     options.label_name = value
                     options.papersize = "letter"
-                    options.wrapper = False
+                    options.wrapper_meta = False
                     options.notch = False
                     options.cropmarks = False
                     is_label = True
+            elif option == "wrappers":
+                value = value.lower()
+
+                if value == "slipcases":
+                    options.wrapper_meta = True
+                elif value == "pulltabs":
+                    options.pull_tab_meta = True
+                elif value == "tents":
+                    options.tent_meta = True
+                else:
+                    assert value == "dividers"
             else:
-                if option == "wrapper" and hasattr(options, "wrapper_meta"):
-                    # option name has changed, accept both for now
-                    option = "wrapper_meta"
                 assert hasattr(options, option), f"{option} is not a script option"
                 if is_label and option in ["wrapper", "notch", "cropmarks"]:
                     logger.info(f"skipping {option} because we're printing labels")
