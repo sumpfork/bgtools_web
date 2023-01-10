@@ -118,7 +118,7 @@ class BGToolsStack(aws_cdk.Stack):
                 "GA_CONFIG": self.config.get("GA_CONFIG", ""),
             },
             timeout=aws_cdk.Duration.seconds(60),
-            memory_size=512,
+            memory_size=1024,
             runtime=lambda_.Runtime.PYTHON_3_8,
         )
         api = apig.LambdaRestApi(
