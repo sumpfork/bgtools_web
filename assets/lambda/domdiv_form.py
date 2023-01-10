@@ -44,6 +44,7 @@ class DomDivForm(FlaskForm):
         "1steditionremoved": "cards removed in 2nd edition",
         "2ndeditionupgrade": "2nd Edition Upgrade",
         "2ndedition": "2nd Edition",
+        "-bigbox2-de": "(Deutsche Big Box v2)",
     }
     for choice in expansion_choices:
         for s, r in replacements.items():
@@ -147,9 +148,7 @@ class DomDivForm(FlaskForm):
         choices=list(zip(wrapper_choices, wrapper_choices)),
         default="Dividers",
     )
-    notch = wtf_fields.BooleanField(
-        label="Add a notch in corners", default=False
-    )
+    notch = wtf_fields.BooleanField(label="Add a notch in corners", default=False)
     tab_serpentine = wtf_fields.BooleanField(
         label="For 3 or more tabs, tab location reverses when the end is reached instead of resetting to the start",
         default=False,
@@ -317,6 +316,9 @@ class DomDivForm(FlaskForm):
             options.group_global = None
         if options.group_global or options.include_blanks:
             options.expansions += [["extras"]]
+
+        # force dpi due to lambda return size constraints
+        options.tab_artwork_resolution = 300
 
         logger.info(f"options after populate: {options}")
         options = domdiv.main.clean_opts(options)
