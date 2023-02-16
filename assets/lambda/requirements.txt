@@ -21,12 +21,10 @@ flask==2.2.2
     #   bootstrap-flask
     #   flask-uploads
     #   flask-wtf
-flask-uploads @ git+http://github.com/maxcountryman/flask-uploads.git
+flask_uploads @ git+http://github.com/maxcountryman/flask-uploads.git
     # via -r requirements.in
 flask-wtf==1.0.1
     # via -r requirements.in
-importlib-metadata==6.0.0
-    # via flask
 itsdangerous==2.1.2
     # via
     #   flask
@@ -55,11 +53,9 @@ reportlab==3.6.12
     #   tuckboxes
 tuckboxes==0.0.1
     # via -r requirements.in
-werkzeug==2.2.2
+werkzeug==2.2.3
     # via flask
 wtforms==3.0.1
     # via
     #   bootstrap-flask
     #   flask-wtf
-zipp==3.11.0
-    # via importlib-metadata
