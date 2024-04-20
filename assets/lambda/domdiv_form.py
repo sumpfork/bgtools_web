@@ -1,10 +1,7 @@
 import argparse
 from io import BytesIO
-import logging
-import os
-import sys
 
-import loguru
+from loguru import logger
 import wtforms.fields as wtf_fields
 from flask_wtf import FlaskForm
 import domdiv.main
@@ -27,9 +24,6 @@ TAB_NUMBER_SELECTION = {
     4: "4",
     5: "5",
 }
-
-logger = logging.getLogger("domdivform")
-logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
 
 
 class DomDivForm(FlaskForm):
@@ -261,6 +255,10 @@ class DomDivForm(FlaskForm):
         label="Omit the expansion name at the bottom of the page", default=False
     )
 
+    def __init__(self, *args, font_dir=None, **kwargs):
+        super(DomDivForm, self).__init__(*args, **kwargs)
+        self.font_dir = font_dir
+
     def clean_options(self):
         form_options = argparse.Namespace()
         self.populate_obj(form_options)
@@ -322,10 +320,8 @@ class DomDivForm(FlaskForm):
         # force dpi due to lambda return size constraints
         options.tab_artwork_resolution = 300
 
-        options.font_dir = "local_fonts"
-
-        loguru.logger.remove()
-        loguru.logger.add(sys.stderr, level="TRACE")
+        if self.font_dir:
+            options.font_dir = self.font_dir
 
         logger.info(f"options after populate: {options}")
         options = domdiv.main.clean_opts(options)

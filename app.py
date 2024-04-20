@@ -12,9 +12,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import aws_cdk
 from aws_cdk import (
     aws_certificatemanager as acm,
-    aws_cloudwatch,
     aws_lambda as lambda_,
-    aws_lambda_python_alpha as lambda_python,
     aws_apigateway as apig,
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as cloudfront_origins,
@@ -138,6 +136,8 @@ class BGToolsStack(aws_cdk.Stack):
                 "STATIC_WEB_URL": f"https://{cf_static_dist.domain_name}",
                 "FLASK_SECRET_KEY": self.config["SECRET_KEY"],
                 "GA_CONFIG": self.config.get("GA_CONFIG", ""),
+                "LOG_LEVEL": self.config.get("LOG_LEVEL", "INFO"),
+                "FONT_DIR": self.config.get("FONT_DIR", ""),
             },
             timeout=aws_cdk.Duration.seconds(60),
             memory_size=1024,

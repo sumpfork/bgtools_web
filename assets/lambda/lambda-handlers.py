@@ -1,8 +1,9 @@
 import base64
 import json
-import logging
 import os
+import sys
 
+from loguru import logger
 import apig_wsgi
 import domdiv
 import domdiv.main
@@ -31,8 +32,8 @@ flask_app.config["UPLOADS_DEFAULT_DEST"] = "/tmp"
 flask_app.config["UPLOADED_FILES_ALLOW"] = IMAGES
 flask_app.config["WTF_CSRF_ENABLED"] = False
 
-logger = logging.getLogger("bgtools_logger")
-logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
+logger.remove()
+logger.add(sys.stderr, level=os.environ.get("LOG_LEVEL", "INFO"))
 
 apig_wsgi_handler = apig_wsgi.make_lambda_handler(flask_app, binary_support=True)
 
@@ -56,7 +57,7 @@ def dominion_dividers():
     logger.info(f"root call, request is {request}, form is {request.form}")
     # logger.info(f"session: {session} {session.get('csrf_token')}")
     logger.info(request)
-    form = DomDivForm()
+    form = DomDivForm(font_dir=os.environ.get("FONT_DIR"))
     logger.info(f"{form} - validate: {form.validate_on_submit()}")
     logger.info(f"submitted: {form.is_submitted()}")
     logger.info(f"validates: {form.validate()}")
