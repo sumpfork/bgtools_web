@@ -4,3 +4,4 @@ requests
 jinja2
 pre-commit
 pyyaml
+cdk-monitoring-constructs

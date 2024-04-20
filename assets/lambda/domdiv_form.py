@@ -2,7 +2,9 @@ import argparse
 from io import BytesIO
 import logging
 import os
+import sys
 
+import loguru
 import wtforms.fields as wtf_fields
 from flask_wtf import FlaskForm
 import domdiv.main
@@ -319,6 +321,11 @@ class DomDivForm(FlaskForm):
 
         # force dpi due to lambda return size constraints
         options.tab_artwork_resolution = 300
+
+        options.font_dir = "local_fonts"
+
+        loguru.logger.remove()
+        loguru.logger.add(sys.stderr, level="TRACE")
 
         logger.info(f"options after populate: {options}")
         options = domdiv.main.clean_opts(options)

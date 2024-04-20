@@ -8,7 +8,7 @@ import domdiv
 import domdiv.main
 from flask import Flask, request, send_file, url_for, jsonify, abort
 from flask import render_template
-from flask_bootstrap import Bootstrap
+from flask_bootstrap import Bootstrap4
 from flask_uploads import IMAGES
 
 from domdiv_form import DomDivForm
@@ -22,7 +22,7 @@ PAGES = {
 }
 
 flask_app = Flask(__name__)
-bootstrap = Bootstrap(flask_app)
+bootstrap = Bootstrap4(flask_app)
 
 secret_key = os.environ["FLASK_SECRET_KEY"]
 assert secret_key, "Need secret key specified in env"
