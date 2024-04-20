@@ -1,17 +1,13 @@
 from io import BytesIO
-import logging
-import os
 import re
 
+from loguru import logger
 import wtforms.fields as wtf_fields
 from wtforms import validators
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField as FlaskFileField, FileAllowed
 from flask_uploads import IMAGES
 from tuckboxes.tuckboxes import TuckBoxGenerator
-
-logger = logging.getLogger("tuckboxes")
-logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
 
 
 class TuckboxForm(FlaskForm):

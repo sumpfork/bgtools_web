@@ -7,3 +7,4 @@ cdk.out
 .cdk.staging
 *config.yaml
 generated/
+local_fonts/

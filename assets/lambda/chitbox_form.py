@@ -1,6 +1,4 @@
 from io import BytesIO
-import logging
-import os
 
 import wtforms.fields as wtf_fields
 from wtforms import validators
@@ -8,9 +6,6 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField as FlaskFileField, FileAllowed
 from flask_uploads import IMAGES
 from chitboxes.chitboxes import ChitBoxGenerator
-
-logger = logging.getLogger("chitboxes")
-logger.setLevel(int(os.environ.get("LOG_LEVEL", logging.INFO)))
 
 
 class ChitboxForm(FlaskForm):

@@ -12,15 +12,14 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import aws_cdk
 from aws_cdk import (
     aws_certificatemanager as acm,
-    aws_cloudwatch,
     aws_lambda as lambda_,
-    aws_lambda_python_alpha as lambda_python,
     aws_apigateway as apig,
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as cloudfront_origins,
     aws_s3 as s3,
     aws_s3_deployment as s3_deployment,
 )
+import cdk_monitoring_constructs
 
 app = aws_cdk.App()
 
@@ -49,10 +48,31 @@ class BGToolsStack(aws_cdk.Stack):
         aws_cdk.Tags.of(self).add("id", id_)
         aws_cdk.Tags.of(self).add("stackname", self.stackname)
 
+        monitoring_facade = cdk_monitoring_constructs.MonitoringFacade(
+            self,
+            "BGToolsMonitoringFacade",
+            dashboard_factory=cdk_monitoring_constructs.DefaultDashboardFactory(
+                self,
+                "DashboardFactory",
+                dashboard_name_prefix=f"{self.stackname}",
+            ),
+        )
+
         self.lambda_dir = "assets/lambda"
         os.makedirs(
             os.path.join(self.lambda_dir, "templates", "generated"), exist_ok=True
         )
+
+        local_fonts = self.config.get(
+            "FONT_DIR",
+        )
+        if local_fonts:
+            print(f"Copying local fonts in {local_fonts} to lambda directory")
+            shutil.copytree(
+                local_fonts,
+                os.path.join(self.lambda_dir, "local_fonts"),
+                dirs_exist_ok=True,
+            )
 
         r = requests.get("https://api.github.com/repos/sumpfork/dominiontabs/releases")
         changelog = r.json()
@@ -89,6 +109,7 @@ class BGToolsStack(aws_cdk.Stack):
             self,
             "Dominion Divider Generator Site",
         )
+        monitoring_facade.monitor_s3_bucket(bucket=static_website_bucket)
 
         cf_static_dist = cloudfront.Distribution(
             self,
@@ -97,6 +118,7 @@ class BGToolsStack(aws_cdk.Stack):
                 origin=cloudfront_origins.S3Origin(static_website_bucket)
             ),
         )
+        monitoring_facade.monitor_cloud_front_distribution(distribution=cf_static_dist)
 
         s3_deployment.BucketDeployment(
             self,
@@ -106,27 +128,28 @@ class BGToolsStack(aws_cdk.Stack):
             destination_key_prefix="static",
         )
 
-        flask_app = lambda_python.PythonFunction(
+        flask_app = lambda_.DockerImageFunction(
             self,
             "DominionDividersFlaskApp",
-            entry=self.lambda_dir,
-            index="lambda-handlers.py",
-            handler="apig_wsgi_handler",
+            code=lambda_.DockerImageCode.from_image_asset("assets/lambda"),
             environment={
                 "STATIC_WEB_URL": f"https://{cf_static_dist.domain_name}",
                 "FLASK_SECRET_KEY": self.config["SECRET_KEY"],
                 "GA_CONFIG": self.config.get("GA_CONFIG", ""),
+                "LOG_LEVEL": self.config.get("LOG_LEVEL", "INFO"),
+                "FONT_DIR": self.config.get("FONT_DIR", ""),
             },
             timeout=aws_cdk.Duration.seconds(60),
-            memory_size=512,
-            runtime=lambda_.Runtime.PYTHON_3_8,
+            memory_size=1024,
         )
+        monitoring_facade.monitor_lambda_function(lambda_function=flask_app)
+
         api = apig.LambdaRestApi(
             self,
             "bgtools-api",
             handler=flask_app,
             binary_media_types=["*/*"],
-            minimum_compression_size=10e4,
+            min_compression_size=aws_cdk.Size.bytes(10e4),
             deploy_options={
                 "method_options": {
                     "/*/*": apig.MethodDeploymentOptions(
@@ -136,7 +159,9 @@ class BGToolsStack(aws_cdk.Stack):
                 "stage_name": self.stage,
             },
         )
-        cloudfront.Distribution(
+        monitoring_facade.monitor_api_gateway(api=api)
+
+        cloudfront_distribution = cloudfront.Distribution(
             self,
             "BGToolsCloudfrontDist",
             default_behavior=cloudfront.BehaviorOptions(
@@ -160,82 +185,8 @@ class BGToolsStack(aws_cdk.Stack):
                 self.config["CERTIFICATE_ARN"],
             ),
         )
-
-        dashboard = aws_cloudwatch.Dashboard(
-            self,
-            "bgtools-dashboard",
-            dashboard_name=f"bgtools-{self.stage}",
-            start="-P1D",
-            period_override=aws_cloudwatch.PeriodOverride.INHERIT,
-        )
-        dashboard.add_widgets(
-            aws_cloudwatch.GraphWidget(
-                title="API Gateway Counts",
-                width=6,
-                height=6,
-                left=[
-                    aws_cloudwatch.Metric(
-                        namespace="AWS/ApiGateway",
-                        metric_name="5XXError",
-                        dimensions_map={
-                            "ApiName": "bgtools-api",
-                            "Stage": api.deployment_stage.stage_name,
-                        },
-                        period=aws_cdk.Duration.minutes(amount=30),
-                        statistic="Sum",
-                        color="#d62728",
-                    ),
-                    aws_cloudwatch.Metric(
-                        namespace="AWS/ApiGateway",
-                        metric_name="4XXError",
-                        dimensions_map={
-                            "ApiName": "bgtools-api",
-                            "Stage": api.deployment_stage.stage_name,
-                        },
-                        period=aws_cdk.Duration.minutes(amount=30),
-                        statistic="Sum",
-                        color="#8c564b",
-                    ),
-                    aws_cloudwatch.Metric(
-                        namespace="AWS/ApiGateway",
-                        metric_name="Count",
-                        dimensions_map={
-                            "ApiName": "bgtools-api",
-                            "Stage": api.deployment_stage.stage_name,
-                        },
-                        period=aws_cdk.Duration.minutes(amount=30),
-                        statistic="Sum",
-                        color="#2ca02c",
-                    ),
-                ],
-            ),
-            aws_cloudwatch.GraphWidget(
-                title="API Gateway Latencies",
-                width=6,
-                height=6,
-                left=[
-                    aws_cloudwatch.Metric(
-                        namespace="AWS/ApiGateway",
-                        metric_name="Latency",
-                        dimensions_map={
-                            "ApiName": "bgtools-api",
-                            "Stage": api.deployment_stage.stage_name,
-                        },
-                        period=aws_cdk.Duration.minutes(amount=30),
-                        statistic="Average",
-                    ),
-                    aws_cloudwatch.Metric(
-                        namespace="AWS/ApiGateway",
-                        metric_name="IntegrationLatency",
-                        dimensions_map={
-                            "ApiName": "bgtools-api",
-                            "Stage": api.deployment_stage.stage_name,
-                        },
-                        period=aws_cdk.Duration.minutes(amount=30),
-                        statistic="Average",
-                    ),
-                ],
-            ),
+        monitoring_facade.monitor_cloud_front_distribution(
+            distribution=cloudfront_distribution
         )
 
 
