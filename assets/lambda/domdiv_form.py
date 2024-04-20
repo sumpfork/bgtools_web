@@ -256,6 +256,7 @@ class DomDivForm(FlaskForm):
     )
 
     def __init__(self, *args, font_dir=None, **kwargs):
+        logger.info(f"initializing form with font dir: {font_dir}")
         super(DomDivForm, self).__init__(*args, **kwargs)
         self.font_dir = font_dir
 
@@ -321,7 +322,10 @@ class DomDivForm(FlaskForm):
         options.tab_artwork_resolution = 300
 
         if self.font_dir:
+            logger.info(f"setting font dir to {self.font_dir}")
             options.font_dir = self.font_dir
+        else:
+            logger.warning("no local font dir")
 
         logger.info(f"options after populate: {options}")
         options = domdiv.main.clean_opts(options)

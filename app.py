@@ -54,7 +54,7 @@ class BGToolsStack(aws_cdk.Stack):
             dashboard_factory=cdk_monitoring_constructs.DefaultDashboardFactory(
                 self,
                 "DashboardFactory",
-                dashboard_name_prefix=f"{self.stackname}",
+                dashboard_name_prefix=f"{self.stackname}-dashboard",
             ),
         )
 
@@ -130,7 +130,7 @@ class BGToolsStack(aws_cdk.Stack):
 
         flask_app = lambda_.DockerImageFunction(
             self,
-            "DominionDividersFlaskApp",
+            "DominionDividersDockerFlaskApp",
             code=lambda_.DockerImageCode.from_image_asset("assets/lambda"),
             environment={
                 "STATIC_WEB_URL": f"https://{cf_static_dist.domain_name}",

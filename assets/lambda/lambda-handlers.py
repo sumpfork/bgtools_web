@@ -56,7 +56,7 @@ def get_pages():
 def dominion_dividers():
     logger.info(f"root call, request is {request}, form is {request.form}")
     # logger.info(f"session: {session} {session.get('csrf_token')}")
-    logger.info(request)
+    logger.info(f"env is: {os.environ}")
     form = DomDivForm(font_dir=os.environ.get("FONT_DIR"))
     logger.info(f"{form} - validate: {form.validate_on_submit()}")
     logger.info(f"submitted: {form.is_submitted()}")
@@ -157,7 +157,7 @@ def chitboxes():
 def preview(tag):
     logger.info(f"preview call for {tag}, request is {request}, form is {request.form}")
     if tag == "dominion_dividers":
-        form = DomDivForm(request.form)
+        form = DomDivForm(request.form, font_dir=os.environ.get("FONT_DIR"))
     elif tag == "chitboxes":
         form = ChitboxForm(request.form)
     elif tag == "tuckboxes":
