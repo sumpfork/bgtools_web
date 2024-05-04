@@ -1,8 +1,14 @@
 import base64
+import binascii
+import functools
+import io
 import json
 import os
+import random
+import string
 import sys
 
+import boto3
 from loguru import logger
 import apig_wsgi
 import domdiv
@@ -37,6 +43,12 @@ logger.add(sys.stderr, level=os.environ.get("LOG_LEVEL", "INFO"))
 
 apig_wsgi_handler = apig_wsgi.make_lambda_handler(flask_app, binary_support=True)
 
+
+@functools.lru_cache(maxsize=1)
+def get_client(c):
+    return boto3.client(c)
+
+
 if os.environ.get("DEBUG"):
     apig_wsgi_handler_helper = apig_wsgi_handler
 
@@ -50,6 +62,19 @@ if os.environ.get("DEBUG"):
 
 def get_pages():
     return {url_for(p): n for p, n in PAGES.items()}
+
+
+def upload_to_s3(buf):
+    s3 = get_client("s3")
+    tag = "".join(random.choice(string.ascii_letters) for i in range(6))
+    fname = f"dominion_dividers_{tag}.pdf"
+    key = f"{os.environ['OUTPUT_PREFIX'].strip('/')}/{fname}"
+    s3.upload_fileobj(
+        buf,
+        os.environ["OUTPUT_BUCKET"],
+        key,
+    )
+    return fname
 
 
 @flask_app.route("/", methods=["GET", "POST"])
@@ -67,8 +92,12 @@ def dominion_dividers():
     logger.info(f"expansion choices: {domdiv.main.get_expansions()}")
     if form.validate_on_submit():
         buf = form.generate()
+        # boto3 seems to close the fileobj, so make a view that prevents that
+        buf_view = io.BytesIO(buf.getvalue())
+        upload_to_s3(buf_view)
+
         r = send_file(
-            buf,
+            buf_view,
             mimetype="application/pdf",
             as_attachment=True,
             download_name="sumpfork_dominion_dividers.pdf",
@@ -107,6 +136,13 @@ def tuckboxes():
     if form.validate_on_submit():
         logger.info(f"tuckbox files: {request.files}")
         buf = form.generate(files=request.files)
+        s3 = get_client("s3")
+        s3.upload_fileobj(
+            buf,
+            os.environ["OUTPUT_BUCKET"],
+            f"tuckbox_generated/tuckbox_{binascii.b2a_base64(os.urandom(6), newline=False)}.pdf",
+        )
+
         r = send_file(
             buf,
             mimetype="application/pdf",
@@ -134,6 +170,13 @@ def chitboxes():
     if form.validate_on_submit():
         logger.info(f"chitbox files: {request.files}")
         buf = form.generate(files=request.files)
+        s3 = get_client("s3")
+        s3.upload_fileobj(
+            buf,
+            os.environ["OUTPUT_BUCKET"],
+            f"chitbox_generated/chitbox_{binascii.b2a_base64(os.urandom(6), newline=False)}.pdf",
+        )
+
         r = send_file(
             buf,
             mimetype="application/pdf",

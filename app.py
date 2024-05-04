@@ -108,6 +108,13 @@ class BGToolsStack(aws_cdk.Stack):
         static_website_bucket = s3.Bucket(
             self,
             "Dominion Divider Generator Site",
+            removal_policy=aws_cdk.RemovalPolicy.DESTROY,
+            auto_delete_objects=True,
+            lifecycle_rules=[
+                s3.LifecycleRule(
+                    expiration=aws_cdk.Duration.days(1), prefix="generated/"
+                )
+            ],
         )
         monitoring_facade.monitor_s3_bucket(bucket=static_website_bucket)
 
@@ -138,10 +145,14 @@ class BGToolsStack(aws_cdk.Stack):
                 "GA_CONFIG": self.config.get("GA_CONFIG", ""),
                 "LOG_LEVEL": self.config.get("LOG_LEVEL", "INFO"),
                 "FONT_DIR": self.config.get("FONT_DIR", ""),
+                "OUTPUT_BUCKET": static_website_bucket.bucket_name,
+                "OUTPUT_PREFIX": "generated/",
+                "OUTPUT_URL_PREFIX": f"{static_website_bucket.s3_url_for_object('generated/')}",
             },
             timeout=aws_cdk.Duration.seconds(60),
-            memory_size=1024,
+            memory_size=4096,
         )
+        static_website_bucket.grant_write(flask_app)
         monitoring_facade.monitor_lambda_function(lambda_function=flask_app)
 
         api = apig.LambdaRestApi(
