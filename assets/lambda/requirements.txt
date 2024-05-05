@@ -5,13 +5,13 @@
 #    pip-compile --no-annotate --no-emit-index-url
 #
 apig-wsgi==2.18.0
-blinker==1.7.0
+blinker==1.8.1
 bootstrap-flask==2.4.0
 chardet==5.2.0
 chitboxes==0.0.1
 click==8.1.7
 configargparse==1.7
-domdiv==4.5.2
+domdiv==4.6.0
 flask==3.0.3
 flask-uploads @ git+http://github.com/maxcountryman/flask-uploads.git
 flask-wtf==1.2.1

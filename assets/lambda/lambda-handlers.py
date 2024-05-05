@@ -7,6 +7,7 @@ from loguru import logger
 import apig_wsgi
 import domdiv
 import domdiv.main
+import domdiv.db
 from flask import Flask, request, send_file, url_for, jsonify, abort
 from flask import render_template
 from flask_bootstrap import Bootstrap4
@@ -64,7 +65,7 @@ def dominion_dividers():
     logger.info(f"errors: {form.errors}")
 
     logger.info(f"domdiv version: {domdiv.__version__}")
-    logger.info(f"expansion choices: {domdiv.main.get_expansions()}")
+    logger.info(f"expansion choices: {domdiv.db.get_expansions()}")
     if form.validate_on_submit():
         buf = form.generate()
         r = send_file(

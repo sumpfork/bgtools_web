@@ -140,7 +140,7 @@ class BGToolsStack(aws_cdk.Stack):
                 "FONT_DIR": self.config.get("FONT_DIR", ""),
             },
             timeout=aws_cdk.Duration.seconds(60),
-            memory_size=1024,
+            memory_size=self.config.get("LAMBDA_MEMORY_SIZE", 1024),
         )
         monitoring_facade.monitor_lambda_function(lambda_function=flask_app)
 

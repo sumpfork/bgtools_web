@@ -5,6 +5,7 @@ from loguru import logger
 import wtforms.fields as wtf_fields
 from flask_wtf import FlaskForm
 import domdiv.main
+from domdiv import db, config_options
 
 PAPER_SIZES = ["Letter", "Legal", "A4", "A3"]
 TAB_SIDE_SELECTION = {
@@ -28,7 +29,7 @@ TAB_NUMBER_SELECTION = {
 
 class DomDivForm(FlaskForm):
     # Expansions
-    expansion_choices, fan_choices = domdiv.main.get_expansions()
+    expansion_choices, fan_choices = db.get_expansions()
 
     expansion_choices = [
         choice for choice in expansion_choices if choice.lower() != "extras"
@@ -39,6 +40,7 @@ class DomDivForm(FlaskForm):
         "1stedition": "1st Edition",
         "1steditionremoved": "cards removed in 2nd edition",
         "2ndeditionupgrade": "2nd Edition Upgrade",
+        "andguilds2ndedition": "and Guilds 2nd Edition",
         "2ndedition": "2nd Edition",
         "-bigbox2-de": "(Deutsche Big Box v2)",
     }
@@ -74,7 +76,7 @@ class DomDivForm(FlaskForm):
         default="horizontal",
     )
 
-    _, label_keys, label_selections, _ = domdiv.main.get_label_data()
+    _, label_keys, label_selections, _ = db.get_label_data()
     pagesize = wtf_fields.SelectField(
         label="Paper Size",
         choices=list(
@@ -125,7 +127,9 @@ class DomDivForm(FlaskForm):
         label="Include upgrade cards with the expansion being upgraded", default=False
     )
     edition = wtf_fields.SelectField(
-        choices=list(zip(domdiv.main.EDITION_CHOICES, domdiv.main.EDITION_CHOICES)),
+        choices=list(
+            zip(config_options.EDITION_CHOICES, config_options.EDITION_CHOICES)
+        ),
         label="Edition",
         default="all",
     )
@@ -133,7 +137,7 @@ class DomDivForm(FlaskForm):
         label="Cropmarks Instead of Outlines", default=False
     )
     linetype = wtf_fields.SelectField(
-        choices=list(zip(domdiv.main.LINE_CHOICES, domdiv.main.LINE_CHOICES)),
+        choices=list(zip(config_options.LINE_CHOICES, config_options.LINE_CHOICES)),
         label="Outline Type",
         default="line",
     )
@@ -160,15 +164,15 @@ class DomDivForm(FlaskForm):
     )
     tab_name_align = wtf_fields.SelectField(
         choices=list(
-            zip(domdiv.main.NAME_ALIGN_CHOICES, domdiv.main.NAME_ALIGN_CHOICES)
+            zip(config_options.NAME_ALIGN_CHOICES, config_options.NAME_ALIGN_CHOICES)
         ),
-        default=domdiv.main.NAME_ALIGN_CHOICES[0],
+        default=config_options.NAME_ALIGN_CHOICES[0],
     )
     tab_number = wtf_fields.SelectField(
         choices=list(TAB_NUMBER_SELECTION.items()), label="Number of tabs", default=1
     )
 
-    for x in domdiv.main.TAB_SIDE_CHOICES:
+    for x in config_options.TAB_SIDE_CHOICES:
         if x not in TAB_SIDE_SELECTION:
             TAB_SIDE_SELECTION[x] = x.title()
     tab_side = wtf_fields.SelectField(
@@ -179,8 +183,8 @@ class DomDivForm(FlaskForm):
 
     order = wtf_fields.SelectField(
         label="Divider Order",
-        choices=list(zip(domdiv.main.ORDER_CHOICES, domdiv.main.ORDER_CHOICES)),
-        default=domdiv.main.ORDER_CHOICES[0],
+        choices=list(zip(config_options.ORDER_CHOICES, config_options.ORDER_CHOICES)),
+        default=config_options.ORDER_CHOICES[0],
     )
     group_special = wtf_fields.BooleanField(
         label="Group Special Cards (e.g. Prizes with Tournament)", default=True
@@ -189,7 +193,7 @@ class DomDivForm(FlaskForm):
         label="Group cards without randomizers separately", default=False
     )
     # global grouping
-    group_global_choices, _ = domdiv.main.get_global_groups()
+    group_global_choices, _ = db.get_global_groups()
     # make pretty names for the global group choices
     choiceNames = []
     for choice in group_global_choices:
@@ -218,16 +222,20 @@ class DomDivForm(FlaskForm):
         default=False,
     )
     set_icon = wtf_fields.SelectField(
-        choices=list(zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES)),
+        choices=list(
+            zip(config_options.LOCATION_CHOICES, config_options.LOCATION_CHOICES)
+        ),
         label="Set Icon Location",
         default="tab",
     )
     cost = wtf_fields.SelectField(
-        choices=list(zip(domdiv.main.LOCATION_CHOICES, domdiv.main.LOCATION_CHOICES)),
+        choices=list(
+            zip(config_options.LOCATION_CHOICES, config_options.LOCATION_CHOICES)
+        ),
         label="Cost Icon Location",
         default="tab",
     )
-    language_choices = domdiv.main.get_languages()
+    language_choices = db.get_languages()
     language = wtf_fields.SelectField(
         choices=list(zip(language_choices, language_choices)),
         label="Language",
@@ -238,15 +246,15 @@ class DomDivForm(FlaskForm):
     )
     text_front = wtf_fields.SelectField(
         label="Front Text",
-        choices=list(zip(domdiv.main.TEXT_CHOICES, domdiv.main.TEXT_CHOICES)),
+        choices=list(zip(config_options.TEXT_CHOICES, config_options.TEXT_CHOICES)),
         default="card",
     )
     text_back = wtf_fields.SelectField(
         label="Back Text",
         choices=list(
             zip(
-                domdiv.main.TEXT_CHOICES + ["none"],
-                domdiv.main.TEXT_CHOICES + ["no back page"],
+                config_options.TEXT_CHOICES + ["none"],
+                config_options.TEXT_CHOICES + ["no back page"],
             )
         ),
         default="rules",
@@ -263,7 +271,7 @@ class DomDivForm(FlaskForm):
     def clean_options(self):
         form_options = argparse.Namespace()
         self.populate_obj(form_options)
-        options = domdiv.main.parse_opts([])
+        options = config_options.parse_opts([])
         logger.info(f"valid options: {sorted(list(vars(options).keys()))}")
         is_label = False
         for option, value in vars(form_options).items():
@@ -328,7 +336,7 @@ class DomDivForm(FlaskForm):
             logger.warning("no local font dir")
 
         logger.info(f"options after populate: {options}")
-        options = domdiv.main.clean_opts(options)
+        options = config_options.clean_opts(options)
         logger.info(f"options after cleaning: {options}")
         return options
 
