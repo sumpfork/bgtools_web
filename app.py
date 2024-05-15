@@ -4,6 +4,7 @@ import datetime as dt
 import os
 import requests
 import shutil
+import time
 
 import yaml
 
@@ -12,6 +13,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import aws_cdk
 from aws_cdk import (
     aws_certificatemanager as acm,
+    aws_iam,
     aws_lambda as lambda_,
     aws_apigateway as apig,
     aws_cloudfront as cloudfront,
@@ -20,6 +22,29 @@ from aws_cdk import (
     aws_s3_deployment as s3_deployment,
 )
 import cdk_monitoring_constructs
+
+
+invalidation_code = """
+import os
+import boto3
+
+def invalidate_cloudfront_distribution(_, _2):
+   client = boto3.client('cloudfront')
+
+   response = client.create_invalidation(
+       DistributionId=os.environ['DISTRIBUTION_ID'],
+       InvalidationBatch={{
+           'Paths': {{
+               'Quantity': 1,
+               'Items': ['/*']
+           }},
+           'CallerReference': "{t}"
+       }}
+   )
+
+""".format(
+    t=time.time()
+)
 
 app = aws_cdk.App()
 
@@ -126,12 +151,19 @@ class BGToolsStack(aws_cdk.Stack):
             sources=[s3_deployment.Source.asset("./static")],
             destination_bucket=static_website_bucket,
             destination_key_prefix="static",
+            distribution=cf_static_dist,
+            distribution_paths=["/*"],
         )
+
+        ca_token = self.config.get("CA_TOKEN")
 
         flask_app = lambda_.DockerImageFunction(
             self,
             "DominionDividersDockerFlaskApp",
-            code=lambda_.DockerImageCode.from_image_asset("assets/lambda"),
+            code=lambda_.DockerImageCode.from_image_asset(
+                "assets/lambda",
+                build_args={"CA_TOKEN": ca_token} if ca_token else None,
+            ),
             environment={
                 "STATIC_WEB_URL": f"https://{cf_static_dist.domain_name}",
                 "FLASK_SECRET_KEY": self.config["SECRET_KEY"],
@@ -187,6 +219,30 @@ class BGToolsStack(aws_cdk.Stack):
         )
         monitoring_facade.monitor_cloud_front_distribution(
             distribution=cloudfront_distribution
+        )
+        invalidation_trigger = aws_cdk.triggers.TriggerFunction(
+            self,
+            "InvalidationTrigger",
+            runtime=lambda_.Runtime.PYTHON_3_11,
+            handler="index.invalidate_cloudfront_distribution",
+            code=lambda_.InlineCode(invalidation_code),
+            environment={"DISTRIBUTION_ID": cloudfront_distribution.distribution_id},
+        )
+        invalidation_trigger.execute_after(cloudfront_distribution)
+        invalidation_trigger.role.add_to_policy(
+            aws_iam.PolicyStatement(
+                resources=[
+                    self.format_arn(
+                        service="cloudfront",
+                        resource="distribution",
+                        region="",
+                        resource_name=cloudfront_distribution.distribution_id,
+                    ),
+                ],
+                actions=[
+                    "cloudfront:CreateInvalidation",
+                ],
+            )
         )
 
 

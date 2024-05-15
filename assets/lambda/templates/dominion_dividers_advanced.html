@@ -1,0 +1,50 @@
+{% from 'bootstrap4/form.html' import render_field %}
+<div class="pb-2 mt-4 mb-2 border-bottom">
+    <h2>Dominion Divider Generator</h2>
+</div>
+<div class="row">
+    <div class="col">
+        <form method="POST" action="{{ form_target }}" id="id-tabgenoptions">
+            <div class="row">
+                <div class="col">
+                    <div class="clearfix">
+                        <h3 class="float-left">Generation Options</h3>
+                        <button type="submit" class="btn btn-primary float-right">Generate</button>
+                    </div>
+                </div>
+            </div>
+            <div id="tag" class="row">
+                <div class="col">
+                    <div class="accordion" id="accordion">
+                        {% for field in form %}
+                        {% if field.type == "FormField" %}
+                        <div class="card">
+                            <div class="card-header" id="{{ field.id }}_label">
+                                <h5 class="mb-0 accordion-menu">
+                                    <button class="btn btn-link btn-block text-left {{ 'collapsed' if not loop.first }}" type="button"
+                                        data-toggle="collapse" data-target="#{{ field.id}}_body"
+                                        aria-expanded={{ 'true' if loop.first else 'false' }}
+                                        aria-controls="collapseOne">{{ field.label }}</button>
+                                </h5>
+                            </div>
+                            <div id="{{ field.id}}_body" class="collapse {{ 'show' if loop.first }}" aria-labelledby="{{ field.id }}_label"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        {% for subfield in field %}
+                                        {{render_field(subfield) }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        {{ render_field(field) }}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

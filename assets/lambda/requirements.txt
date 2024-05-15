@@ -11,7 +11,7 @@ chardet==5.2.0
 chitboxes==0.0.1
 click==8.1.7
 configargparse==1.7
-domdiv==4.6.0
+domdiv==4.6.1.dev0+gc5b7c21.d20240507
 flask==3.0.3
 flask-uploads @ git+http://github.com/maxcountryman/flask-uploads.git
 flask-wtf==1.2.1
