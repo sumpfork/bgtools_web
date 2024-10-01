@@ -11,7 +11,7 @@ chardet==5.2.0
 chitboxes==0.0.1
 click==8.1.7
 configargparse==1.7
-domdiv==4.7.2
+domdiv==4.8.0
 flask==3.0.3
 flask-uploads @ git+http://github.com/maxcountryman/flask-uploads.git
 flask-wtf==1.2.1
@@ -19,9 +19,9 @@ itsdangerous==2.2.0
 jinja2==3.1.4
 loguru==0.7.2
 markupsafe==2.1.5
-numpy==2.1.0
+numpy==2.1.1
 pillow==10.4.0
-reportlab==4.2.2
+reportlab==4.2.5
 tuckboxes==0.0.1
 werkzeug==3.0.4
 wtforms==3.1.2
