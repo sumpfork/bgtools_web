@@ -1,11 +1,11 @@
 import argparse
 from io import BytesIO
 
-from loguru import logger
-import wtforms.fields as wtf_fields
-from flask_wtf import FlaskForm
 import domdiv.main
-from domdiv import db, config_options
+import wtforms.fields as wtf_fields
+from domdiv import config_options, db
+from flask_wtf import FlaskForm
+from loguru import logger
 
 PAPER_SIZES = ["Letter", "Legal", "A4", "A3"]
 TAB_SIDE_SELECTION = {
@@ -43,6 +43,7 @@ class DomDivForm(FlaskForm):
         "andguilds2ndedition": "and Guilds 2nd Edition",
         "2ndedition": "2nd Edition",
         "-bigbox2-de": "(Deutsche Big Box v2)",
+        "risingsun": "Rising Sun",
     }
     for choice in expansion_choices:
         for s, r in replacements.items():

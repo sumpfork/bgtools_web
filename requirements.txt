@@ -4,31 +4,30 @@
 #
 #    pip-compile --no-emit-index-url
 #
-attrs==23.2.0
+attrs==24.2.0
     # via
     #   cattrs
     #   jsii
-aws-cdk-asset-awscli-v1==2.2.202
+aws-cdk-asset-awscli-v1==2.2.205
     # via aws-cdk-lib
 aws-cdk-asset-kubectl-v20==2.1.2
     # via aws-cdk-lib
-aws-cdk-asset-node-proxy-agent-v6==2.0.3
+aws-cdk-asset-node-proxy-agent-v6==2.1.0
     # via aws-cdk-lib
-aws-cdk-aws-lambda-python-alpha==2.136.1a0
+aws-cdk-aws-lambda-python-alpha==2.160.0a0
     # via -r requirements.in
-aws-cdk-aws-redshift-alpha==2.136.1a0
-    # via cdk-monitoring-constructs
-aws-cdk-lib==2.136.1
+aws-cdk-cloud-assembly-schema==38.0.1
+    # via aws-cdk-lib
+aws-cdk-lib==2.160.0
     # via
     #   -r requirements.in
     #   aws-cdk-aws-lambda-python-alpha
-    #   aws-cdk-aws-redshift-alpha
     #   cdk-monitoring-constructs
 cattrs==23.2.3
     # via jsii
-cdk-monitoring-constructs==7.8.0
+cdk-monitoring-constructs==8.3.1
     # via -r requirements.in
-certifi==2024.2.2
+certifi==2024.8.30
     # via requests
 cfgv==3.4.0
     # via pre-commit
@@ -37,38 +36,37 @@ charset-normalizer==3.3.2
 constructs==10.3.0
     # via
     #   aws-cdk-aws-lambda-python-alpha
-    #   aws-cdk-aws-redshift-alpha
     #   aws-cdk-lib
     #   cdk-monitoring-constructs
 distlib==0.3.8
     # via virtualenv
-filelock==3.13.4
+filelock==3.16.1
     # via virtualenv
-identify==2.5.35
+identify==2.6.1
     # via pre-commit
-idna==3.6
+idna==3.10
     # via requests
-importlib-resources==6.4.0
+importlib-resources==6.4.5
     # via jsii
-jinja2==3.1.3
+jinja2==3.1.4
     # via -r requirements.in
-jsii==1.97.0
+jsii==1.103.1
     # via
     #   aws-cdk-asset-awscli-v1
     #   aws-cdk-asset-kubectl-v20
     #   aws-cdk-asset-node-proxy-agent-v6
     #   aws-cdk-aws-lambda-python-alpha
-    #   aws-cdk-aws-redshift-alpha
+    #   aws-cdk-cloud-assembly-schema
     #   aws-cdk-lib
     #   cdk-monitoring-constructs
     #   constructs
 markupsafe==2.1.5
     # via jinja2
-nodeenv==1.8.0
+nodeenv==1.9.1
     # via pre-commit
-platformdirs==4.2.0
+platformdirs==4.3.6
     # via virtualenv
-pre-commit==3.7.0
+pre-commit==3.8.0
     # via -r requirements.in
 publication==0.0.3
     # via
@@ -76,18 +74,18 @@ publication==0.0.3
     #   aws-cdk-asset-kubectl-v20
     #   aws-cdk-asset-node-proxy-agent-v6
     #   aws-cdk-aws-lambda-python-alpha
-    #   aws-cdk-aws-redshift-alpha
+    #   aws-cdk-cloud-assembly-schema
     #   aws-cdk-lib
     #   cdk-monitoring-constructs
     #   constructs
     #   jsii
 python-dateutil==2.9.0.post0
     # via jsii
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via
     #   -r requirements.in
     #   pre-commit
-requests==2.31.0
+requests==2.32.3
     # via -r requirements.in
 six==1.16.0
     # via python-dateutil
@@ -97,17 +95,14 @@ typeguard==2.13.3
     #   aws-cdk-asset-kubectl-v20
     #   aws-cdk-asset-node-proxy-agent-v6
     #   aws-cdk-aws-lambda-python-alpha
-    #   aws-cdk-aws-redshift-alpha
+    #   aws-cdk-cloud-assembly-schema
     #   aws-cdk-lib
     #   cdk-monitoring-constructs
     #   constructs
     #   jsii
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via jsii
-urllib3==2.2.1
+urllib3==2.2.3
     # via requests
-virtualenv==20.25.1
+virtualenv==20.26.6
     # via pre-commit
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
