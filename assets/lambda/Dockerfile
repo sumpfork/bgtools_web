@@ -12,7 +12,7 @@ RUN uv pip install --system -r requirements.txt
 
 RUN uv pip install --system pyicu
 
-COPY lambda-handlers.py .
+COPY . .
 
 # Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
 CMD [ "lambda-handlers.apig_wsgi_handler" ]
