@@ -12,10 +12,18 @@ import apig_wsgi
 import boto3
 import domdiv
 import domdiv.db
-import domdiv.main
 from chitbox_form import ChitboxForm
 from domdiv_form import DomDivForm
-from flask import Flask, abort, jsonify, render_template, request, send_file, url_for
+from flask import (
+    Flask,
+    abort,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    url_for,
+)
 from flask_bootstrap import Bootstrap4
 from flask_uploads import IMAGES
 from loguru import logger
@@ -63,17 +71,28 @@ def get_pages():
     return {url_for(p): n for p, n in PAGES.items()}
 
 
-def upload_to_s3(buf):
+def upload_pdf_to_s3(buf, file_type):
+    """Upload PDF to S3 and return CloudFront URL"""
     s3 = get_client("s3")
     tag = "".join(random.choice(string.ascii_letters) for i in range(6))
-    fname = f"dominion_dividers_{tag}.pdf"
+    fname = f"{file_type}_{tag}.pdf"
     key = f"{os.environ['OUTPUT_PREFIX'].strip('/')}/{fname}"
+
     s3.upload_fileobj(
         buf,
         os.environ["OUTPUT_BUCKET"],
         key,
+        ExtraArgs={
+            "ContentType": "application/pdf",
+            "ContentDisposition": f'attachment; filename="{fname}"',
+        },
     )
-    return fname
+
+    # Generate the CloudFront URL for download
+    static_url = os.environ["STATIC_WEB_URL"].rstrip("/")
+    output_prefix = os.environ["OUTPUT_PREFIX"].strip("/")
+    download_url = f"{static_url}/{output_prefix}/{fname}"
+    return download_url
 
 
 @flask_app.route("/", methods=["GET", "POST"])
@@ -91,18 +110,13 @@ def dominion_dividers():
     logger.info(f"expansion choices: {domdiv.db.get_expansions()}")
     if form.validate_on_submit():
         buf = form.generate()
-        # boto3 seems to close the fileobj, so make a view that prevents that
-        buf_view = io.BytesIO(buf.getvalue())
-        upload_to_s3(buf_view)
+        # Create a copy of the buffer data for S3 upload
+        buf_data = buf.getvalue()
+        buf_copy = io.BytesIO(buf_data)
+        download_url = upload_pdf_to_s3(buf_copy, "dominion_dividers")
 
-        r = send_file(
-            buf_view,
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name="sumpfork_dominion_dividers.pdf",
-        )
-        logger.info(f"response: {r}")
-        return r
+        logger.info(f"redirecting to: {download_url}")
+        return redirect(download_url)
 
     # setting the default doesn't seem to work, so override here
     form.expansions.data = ["dominion2ndEdition"]
@@ -135,21 +149,13 @@ def tuckboxes():
     if form.validate_on_submit():
         logger.info(f"tuckbox files: {request.files}")
         buf = form.generate(files=request.files)
-        s3 = get_client("s3")
-        s3.upload_fileobj(
-            buf,
-            os.environ["OUTPUT_BUCKET"],
-            f"tuckbox_generated/tuckbox_{binascii.b2a_base64(os.urandom(6), newline=False)}.pdf",
-        )
+        # Create a copy of the buffer data for S3 upload
+        buf_data = buf.getvalue()
+        buf_copy = io.BytesIO(buf_data)
+        download_url = upload_pdf_to_s3(buf_copy, "tuckbox")
 
-        r = send_file(
-            buf,
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name="sumpfork_tuckbox.pdf",
-        )
-        logger.info(f"response: {r}")
-        return r
+        logger.info(f"redirecting to: {download_url}")
+        return redirect(download_url)
     r = render_template(
         "index.html",
         pages=PAGES,
@@ -169,21 +175,13 @@ def chitboxes():
     if form.validate_on_submit():
         logger.info(f"chitbox files: {request.files}")
         buf = form.generate(files=request.files)
-        s3 = get_client("s3")
-        s3.upload_fileobj(
-            buf,
-            os.environ["OUTPUT_BUCKET"],
-            f"chitbox_generated/chitbox_{binascii.b2a_base64(os.urandom(6), newline=False)}.pdf",
-        )
+        # Create a copy of the buffer data for S3 upload
+        buf_data = buf.getvalue()
+        buf_copy = io.BytesIO(buf_data)
+        download_url = upload_pdf_to_s3(buf_copy, "chitbox")
 
-        r = send_file(
-            buf,
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name="sumpfork_chitbox.pdf",
-        )
-        logger.info(f"response: {r}")
-        return r
+        logger.info(f"redirecting to: {download_url}")
+        return redirect(download_url)
     r = render_template(
         "index.html",
         pages=PAGES,

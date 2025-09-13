@@ -55,6 +55,8 @@ def invalidate_cloudfront_distribution(_, _2):
 
 """.format(t=time.time())
 
+S3_GENERATED_PREFIX = "generated/"
+
 app = aws_cdk.App()
 
 
@@ -146,7 +148,7 @@ class BGToolsStack(aws_cdk.Stack):
             auto_delete_objects=True,
             lifecycle_rules=[
                 s3.LifecycleRule(
-                    expiration=aws_cdk.Duration.days(1), prefix="generated/"
+                    expiration=aws_cdk.Duration.days(1), prefix=S3_GENERATED_PREFIX
                 )
             ],
         )
@@ -187,7 +189,7 @@ class BGToolsStack(aws_cdk.Stack):
                 "LOG_LEVEL": self.config.get("LOG_LEVEL", "INFO"),
                 "FONT_DIR": self.config.get("FONT_DIR", ""),
                 "OUTPUT_BUCKET": static_website_bucket.bucket_name,
-                "OUTPUT_PREFIX": "generated/",
+                "OUTPUT_PREFIX": S3_GENERATED_PREFIX,
                 "OUTPUT_URL_PREFIX": f"{static_website_bucket.s3_url_for_object('generated/')}",
             },
             timeout=aws_cdk.Duration.seconds(60),
