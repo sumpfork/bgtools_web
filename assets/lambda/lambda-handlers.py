@@ -8,19 +8,18 @@ import random
 import string
 import sys
 
-import boto3
-from loguru import logger
 import apig_wsgi
+import boto3
 import domdiv
+import domdiv.db
 import domdiv.main
-from flask import Flask, request, send_file, url_for, jsonify, abort
-from flask import render_template
+from chitbox_form import ChitboxForm
+from domdiv_form import DomDivForm
+from flask import Flask, abort, jsonify, render_template, request, send_file, url_for
 from flask_bootstrap import Bootstrap4
 from flask_uploads import IMAGES
-
-from domdiv_form import DomDivForm
+from loguru import logger
 from tuckbox_form import TuckboxForm
-from chitbox_form import ChitboxForm
 
 PAGES = {
     "dominion_dividers": "Dominion Dividers",
@@ -89,7 +88,7 @@ def dominion_dividers():
     logger.info(f"errors: {form.errors}")
 
     logger.info(f"domdiv version: {domdiv.__version__}")
-    logger.info(f"expansion choices: {domdiv.main.get_expansions()}")
+    logger.info(f"expansion choices: {domdiv.db.get_expansions()}")
     if form.validate_on_submit():
         buf = form.generate()
         # boto3 seems to close the fileobj, so make a view that prevents that
