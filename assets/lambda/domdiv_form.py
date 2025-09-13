@@ -220,7 +220,7 @@ class DomDivForm(FlaskForm):
         default=False,
     )
     expansion_dividers_long_name = wtf_fields.BooleanField(
-        label=("If Expansion Dividers, use edition " "on expansion dividers names"),
+        label=("If Expansion Dividers, use edition on expansion dividers names"),
         default=False,
     )
     set_icon = wtf_fields.SelectField(

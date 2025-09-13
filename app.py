@@ -68,12 +68,12 @@ class BGToolsStack(aws_cdk.Stack):
         # protect production stacks from accidental deletion
         kwargs["termination_protection"] = self.config.get("TERMINATION_PROTECTION")
 
-        assert (
-            "SECRET_KEY" in self.config
-        ), "Need random SECRET_KEY specified in config.json"
-        assert (
-            "CERTIFICATE_ARN" in self.config
-        ), "Need CERTIFICATE_ARN specified in config.json"
+        assert "SECRET_KEY" in self.config, (
+            "Need random SECRET_KEY specified in config.json"
+        )
+        assert "CERTIFICATE_ARN" in self.config, (
+            "Need CERTIFICATE_ARN specified in config.json"
+        )
 
         self.stage = self.config["STAGE"]
         self.stackname = f"{id_}-{self.stage}"

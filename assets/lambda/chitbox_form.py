@@ -1,11 +1,12 @@
 from io import BytesIO
 
 import wtforms.fields as wtf_fields
-from wtforms import validators
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileField as FlaskFileField, FileAllowed
-from flask_uploads import IMAGES
 from chitboxes.chitboxes import ChitBoxGenerator
+from flask_uploads import IMAGES
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed
+from flask_wtf.file import FileField as FlaskFileField
+from wtforms import validators
 
 
 class ChitboxForm(FlaskForm):
