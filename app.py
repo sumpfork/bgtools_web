@@ -55,6 +55,8 @@ def invalidate_cloudfront_distribution(_, _2):
 
 """.format(t=time.time())
 
+S3_GENERATED_PREFIX = "generated/"
+
 app = aws_cdk.App()
 
 
@@ -66,12 +68,12 @@ class BGToolsStack(aws_cdk.Stack):
         # protect production stacks from accidental deletion
         kwargs["termination_protection"] = self.config.get("TERMINATION_PROTECTION")
 
-        assert (
-            "SECRET_KEY" in self.config
-        ), "Need random SECRET_KEY specified in config.json"
-        assert (
-            "CERTIFICATE_ARN" in self.config
-        ), "Need CERTIFICATE_ARN specified in config.json"
+        assert "SECRET_KEY" in self.config, (
+            "Need random SECRET_KEY specified in config.json"
+        )
+        assert "CERTIFICATE_ARN" in self.config, (
+            "Need CERTIFICATE_ARN specified in config.json"
+        )
 
         self.stage = self.config["STAGE"]
         self.stackname = f"{id_}-{self.stage}"
@@ -142,6 +144,13 @@ class BGToolsStack(aws_cdk.Stack):
         static_website_bucket = s3.Bucket(
             self,
             "Dominion Divider Generator Site",
+            removal_policy=aws_cdk.RemovalPolicy.DESTROY,
+            auto_delete_objects=True,
+            lifecycle_rules=[
+                s3.LifecycleRule(
+                    expiration=aws_cdk.Duration.days(1), prefix=S3_GENERATED_PREFIX
+                )
+            ],
         )
         monitoring_facade.monitor_s3_bucket(bucket=static_website_bucket)
 
@@ -179,10 +188,14 @@ class BGToolsStack(aws_cdk.Stack):
                 "GA_CONFIG": self.config.get("GA_CONFIG", ""),
                 "LOG_LEVEL": self.config.get("LOG_LEVEL", "INFO"),
                 "FONT_DIR": self.config.get("FONT_DIR", ""),
+                "OUTPUT_BUCKET": static_website_bucket.bucket_name,
+                "OUTPUT_PREFIX": S3_GENERATED_PREFIX,
+                "OUTPUT_URL_PREFIX": f"{static_website_bucket.s3_url_for_object('generated/')}",
             },
             timeout=aws_cdk.Duration.seconds(60),
-            memory_size=self.config.get("LAMBDA_MEMORY_SIZE", 1024),
+            memory_size=self.config.get("LAMBDA_MEMORY_SIZE", 4096),
         )
+        static_website_bucket.grant_write(flask_app)
         monitoring_facade.monitor_lambda_function(lambda_function=flask_app)
 
         api = apig.LambdaRestApi(

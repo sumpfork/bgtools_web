@@ -1,13 +1,14 @@
-from io import BytesIO
 import re
+from io import BytesIO
 
-from loguru import logger
 import wtforms.fields as wtf_fields
-from wtforms import validators
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileField as FlaskFileField, FileAllowed
 from flask_uploads import IMAGES
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed
+from flask_wtf.file import FileField as FlaskFileField
+from loguru import logger
 from tuckboxes.tuckboxes import TuckBoxGenerator
+from wtforms import validators
 
 
 class TuckboxForm(FlaskForm):

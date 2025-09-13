@@ -43,6 +43,7 @@ class DomDivForm(FlaskForm):
         "andguilds2ndedition": "and Guilds 2nd Edition",
         "2ndedition": "2nd Edition",
         "-bigbox2-de": "(Deutsche Big Box v2)",
+        # next shouldn't be needed anymore, test and take out
         "risingsun": "Rising Sun",
     }
     for choice in expansion_choices:
@@ -219,7 +220,7 @@ class DomDivForm(FlaskForm):
         default=False,
     )
     expansion_dividers_long_name = wtf_fields.BooleanField(
-        label=("If Expansion Dividers, use edition " "on expansion dividers names"),
+        label=("If Expansion Dividers, use edition on expansion dividers names"),
         default=False,
     )
     set_icon = wtf_fields.SelectField(

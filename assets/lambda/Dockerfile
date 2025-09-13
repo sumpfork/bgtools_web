@@ -1,8 +1,8 @@
-FROM public.ecr.aws/lambda/python:3.11-x86_64
+FROM public.ecr.aws/lambda/python:3.13-x86_64
 
-COPY --from=ghcr.io/astral-sh/uv:0.7.12 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.8.17 /uv /uvx /bin/
 
-RUN yum update -y && yum install -y git libicu-devel gcc gcc-c++
+RUN dnf update -y && dnf install -y git libicu-devel gcc gcc-c++
 
 # Copy requirements.txt
 COPY requirements.txt .
@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN uv pip install --system -r requirements.txt
 
 # Lots of trouble with newer pyicus on Amazon Linux
-RUN uv pip install --system "pyicu<2.9"
+RUN uv pip install --system "pyicu"
 
 COPY . .
 
