@@ -110,10 +110,7 @@ def dominion_dividers():
     logger.info(f"expansion choices: {domdiv.db.get_expansions()}")
     if form.validate_on_submit():
         buf = form.generate()
-        # Create a copy of the buffer data for S3 upload
-        buf_data = buf.getvalue()
-        buf_copy = io.BytesIO(buf_data)
-        download_url = upload_pdf_to_s3(buf_copy, "dominion_dividers")
+        download_url = upload_pdf_to_s3(buf, "dominion_dividers")
 
         logger.info(f"redirecting to: {download_url}")
         return redirect(download_url)
@@ -149,10 +146,7 @@ def tuckboxes():
     if form.validate_on_submit():
         logger.info(f"tuckbox files: {request.files}")
         buf = form.generate(files=request.files)
-        # Create a copy of the buffer data for S3 upload
-        buf_data = buf.getvalue()
-        buf_copy = io.BytesIO(buf_data)
-        download_url = upload_pdf_to_s3(buf_copy, "tuckbox")
+        download_url = upload_pdf_to_s3(buf, "tuckbox")
 
         logger.info(f"redirecting to: {download_url}")
         return redirect(download_url)
@@ -175,10 +169,7 @@ def chitboxes():
     if form.validate_on_submit():
         logger.info(f"chitbox files: {request.files}")
         buf = form.generate(files=request.files)
-        # Create a copy of the buffer data for S3 upload
-        buf_data = buf.getvalue()
-        buf_copy = io.BytesIO(buf_data)
-        download_url = upload_pdf_to_s3(buf_copy, "chitbox")
+        download_url = upload_pdf_to_s3(buf, "chitbox")
 
         logger.info(f"redirecting to: {download_url}")
         return redirect(download_url)
