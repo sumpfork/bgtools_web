@@ -1,21 +1,33 @@
 import base64
+import binascii
+import functools
+import io
 import json
 import os
+import random
+import string
 import sys
 
-from loguru import logger
 import apig_wsgi
+import boto3
 import domdiv
-import domdiv.main
 import domdiv.db
-from flask import Flask, request, send_file, url_for, jsonify, abort
-from flask import render_template
+from chitbox_form import ChitboxForm
+from domdiv_form import DomDivForm
+from flask import (
+    Flask,
+    abort,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    url_for,
+)
 from flask_bootstrap import Bootstrap4
 from flask_uploads import IMAGES
-
-from domdiv_form import DomDivForm
+from loguru import logger
 from tuckbox_form import TuckboxForm
-from chitbox_form import ChitboxForm
 
 PAGES = {
     "dominion_dividers": "Dominion Dividers",
@@ -38,6 +50,12 @@ logger.add(sys.stderr, level=os.environ.get("LOG_LEVEL", "INFO"))
 
 apig_wsgi_handler = apig_wsgi.make_lambda_handler(flask_app, binary_support=True)
 
+
+@functools.lru_cache(maxsize=1)
+def get_client(c):
+    return boto3.client(c)
+
+
 if os.environ.get("DEBUG"):
     apig_wsgi_handler_helper = apig_wsgi_handler
 
@@ -51,6 +69,30 @@ if os.environ.get("DEBUG"):
 
 def get_pages():
     return {url_for(p): n for p, n in PAGES.items()}
+
+
+def upload_pdf_to_s3(buf, file_type):
+    """Upload PDF to S3 and return CloudFront URL"""
+    s3 = get_client("s3")
+    tag = "".join(random.choice(string.ascii_letters) for i in range(6))
+    fname = f"{file_type}_{tag}.pdf"
+    key = f"{os.environ['OUTPUT_PREFIX'].strip('/')}/{fname}"
+
+    s3.upload_fileobj(
+        buf,
+        os.environ["OUTPUT_BUCKET"],
+        key,
+        ExtraArgs={
+            "ContentType": "application/pdf",
+            "ContentDisposition": f'attachment; filename="{fname}"',
+        },
+    )
+
+    # Generate the CloudFront URL for download
+    static_url = os.environ["STATIC_WEB_URL"].rstrip("/")
+    output_prefix = os.environ["OUTPUT_PREFIX"].strip("/")
+    download_url = f"{static_url}/{output_prefix}/{fname}"
+    return download_url
 
 
 @flask_app.route("/", methods=["GET", "POST"])
@@ -68,14 +110,10 @@ def dominion_dividers():
     logger.info(f"expansion choices: {domdiv.db.get_expansions()}")
     if form.validate_on_submit():
         buf = form.generate()
-        r = send_file(
-            buf,
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name="sumpfork_dominion_dividers.pdf",
-        )
-        logger.info(f"response: {r}")
-        return r
+        download_url = upload_pdf_to_s3(buf, "dominion_dividers")
+
+        logger.info(f"redirecting to: {download_url}")
+        return redirect(download_url)
 
     # setting the default doesn't seem to work, so override here
     form.expansions.data = ["dominion2ndEdition"]
@@ -108,14 +146,10 @@ def tuckboxes():
     if form.validate_on_submit():
         logger.info(f"tuckbox files: {request.files}")
         buf = form.generate(files=request.files)
-        r = send_file(
-            buf,
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name="sumpfork_tuckbox.pdf",
-        )
-        logger.info(f"response: {r}")
-        return r
+        download_url = upload_pdf_to_s3(buf, "tuckbox")
+
+        logger.info(f"redirecting to: {download_url}")
+        return redirect(download_url)
     r = render_template(
         "index.html",
         pages=PAGES,
@@ -135,14 +169,10 @@ def chitboxes():
     if form.validate_on_submit():
         logger.info(f"chitbox files: {request.files}")
         buf = form.generate(files=request.files)
-        r = send_file(
-            buf,
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name="sumpfork_chitbox.pdf",
-        )
-        logger.info(f"response: {r}")
-        return r
+        download_url = upload_pdf_to_s3(buf, "chitbox")
+
+        logger.info(f"redirecting to: {download_url}")
+        return redirect(download_url)
     r = render_template(
         "index.html",
         pages=PAGES,
