@@ -59,16 +59,16 @@
                     {% endif %}
                     {% endfor %}
                 </ul>
+                <div class="ml-auto">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="copy-settings-link">Copy link to these settings</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="reset-settings">Reset to defaults</button>
+                </div>
             </div>
         </nav>
         {{ render_messages() }}
         {% with subpage = "{}.html".format(active) %}
         {% include subpage %}
         {% endwith %}
-        <div class="my-3">
-            <button type="button" class="btn btn-sm btn-outline-secondary" id="copy-settings-link">Copy link to these settings</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary" id="reset-settings">Reset to defaults</button>
-        </div>
     </div>
     <script type="text/javascript">
         // Settings live in localStorage (never sent to the server) and in share links as a query string.
