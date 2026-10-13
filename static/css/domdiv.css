@@ -42,14 +42,3 @@ a.plainlink:hover {
 .preformatted {
     white-space: pre;
 }
-
-#changes {
-    max-height: 900px;
-    overflow-y: auto;
-}
-
-#changes h2 {
-    font-size: 1rem;
-    font-weight: bold;
-    margin-top: 0.5rem;
-}
