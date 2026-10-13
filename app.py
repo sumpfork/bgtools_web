@@ -110,7 +110,11 @@ class BGToolsStack(aws_cdk.Stack):
                 dirs_exist_ok=True,
             )
 
-        r = requests.get("https://api.github.com/repos/sumpfork/dominiontabs/releases")
+        # ask for release notes rendered (and sanitized) as HTML by github
+        r = requests.get(
+            "https://api.github.com/repos/sumpfork/dominiontabs/releases",
+            headers={"Accept": "application/vnd.github.html+json"},
+        )
         changelog = r.json()
         changelog = [
             {
@@ -120,7 +124,7 @@ class BGToolsStack(aws_cdk.Stack):
                 ).date(),
                 "name": ch["name"],
                 "tag": ch["tag_name"],
-                "description": ch["body"],
+                "description": ch["body_html"],
             }
             for ch in changelog
         ]
