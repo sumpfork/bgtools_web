@@ -6,6 +6,7 @@ import wtforms.fields as wtf_fields
 from domdiv import config_options, db
 from flask_wtf import FlaskForm
 from loguru import logger
+from wtforms.validators import NumberRange
 
 PAPER_SIZES = ["Letter", "Legal", "A4", "A3"]
 TAB_SIDE_SELECTION = {
@@ -98,22 +99,27 @@ class DomDivForm(FlaskForm):
     )
     tabwidth = wtf_fields.FloatField(
         label="Width of Tab in centimeters",
+        validators=[NumberRange(0.5, 30)],
         default=4.0,
     )
     back_offset = wtf_fields.FloatField(
+        validators=[NumberRange(-500, 500)],
         label="Back page horizontal offset points to shift to the right",
         default=0,
     )
     back_offset_height = wtf_fields.FloatField(
+        validators=[NumberRange(-500, 500)],
         label="Back page vertical offset points to shift upward",
         default=0,
     )
 
     horizontal_gap = wtf_fields.FloatField(
+        validators=[NumberRange(0, 10)],
         label="Horizontal gap between dividers in centimeters",
         default=0,
     )
     vertical_gap = wtf_fields.FloatField(
+        validators=[NumberRange(0, 10)],
         label="Vertical gap between dividers in centimeters",
         default=0,
     )
@@ -121,7 +127,6 @@ class DomDivForm(FlaskForm):
     black_tabs = wtf_fields.BooleanField(
         label="Black tab background",
     )
-    tabwidth = wtf_fields.FloatField(label="Width of Tab in centimeters", default=4.0)
     base_cards_with_expansion = wtf_fields.BooleanField(
         label="Include Base cards with the expansion", default=False
     )

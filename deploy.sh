@@ -17,4 +17,4 @@ fi
 
 cp "$1_config.yaml" config.yaml
 
-npx aws-cdk@latest deploy
+npx "aws-cdk@^2.1032.0" deploy

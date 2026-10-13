@@ -1,4 +1,17 @@
 {% from 'bootstrap/form.html' import render_field %}
+<style>
+    /* inline rather than in static domdiv.css so it ships with the changelog html it styles */
+    #changes {
+        max-height: 900px;
+        overflow-y: auto;
+    }
+
+    #changes h2 {
+        font-size: 1rem;
+        font-weight: bold;
+        margin-top: 0.5rem;
+    }
+</style>
 <div class="pb-2 mt-4 mb-2 border-bottom">
     <h2>Dominion Divider Generator</h2>
 </div>
@@ -272,7 +285,7 @@
 <script type="text/javascript">
     $(function () {
         $("#div_id_notch").hide();
-        $("form input[name='wrappers']").click(function () {
+        $("form input[name='wrappers']").change(function () {
             if (document.getElementById('wrappers-1').checked || document.getElementById('wrappers-2').checked) {
                 $("#div_id_notch").show();
             } else {
@@ -282,7 +295,7 @@
 
         $("#div_id_centre_expansion_dividers").hide();
         $("#div_id_expansion_dividers_long_name").hide();
-        $("form input[name='expansion_dividers']").click(function () {
+        $("form input[name='expansion_dividers']").change(function () {
             if (document.getElementById('expansion_dividers').checked) {
                 $("#div_id_centre_expansion_dividers").show();
                 $("#div_id_expansion_dividers_long_name").show();
