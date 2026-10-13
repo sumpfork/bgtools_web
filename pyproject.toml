@@ -28,3 +28,8 @@ dependencies = [
 dev = [
     "pre-commit>=4.5.0",
 ]
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
