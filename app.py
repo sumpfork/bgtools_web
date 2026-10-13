@@ -253,6 +253,7 @@ class BGToolsStack(aws_cdk.Stack):
             handler="index.invalidate_cloudfront_distribution",
             code=lambda_.InlineCode(invalidation_code),
             environment={"DISTRIBUTION_ID": cloudfront_distribution.distribution_id},
+            timeout=aws_cdk.Duration.seconds(30),
         )
         invalidation_trigger.execute_after(cloudfront_distribution)
         invalidation_trigger.role.add_to_policy(
