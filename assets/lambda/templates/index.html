@@ -65,8 +65,60 @@
         {% with subpage = "{}.html".format(active) %}
         {% include subpage %}
         {% endwith %}
+        <div class="my-3">
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="copy-settings-link">Copy link to these settings</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="reset-settings">Reset to defaults</button>
+        </div>
     </div>
     <script type="text/javascript">
+        // Settings live in localStorage (never sent to the server) and in share links as a query string.
+        // Restoring only fills in the form; the server still validates everything on submit.
+        $(function () {
+            var KEY = 'settings_{{ active }}';
+            var form = $('#id-tabgenoptions')[0];
+            var settingsString = function () {
+                // file inputs can't be saved or restored, so leave them out
+                return new URLSearchParams([...new FormData(form)].filter(([k, v]) => typeof v === 'string')).toString();
+            };
+            var saveSettings = function () { localStorage.setItem(KEY, settingsString()); };
+            var loadSettings = function (qs) {
+                var params = new URLSearchParams(qs);
+                if (![...params.keys()].length) return;
+                // FormData leaves out unchecked boxes and empty multi-selects, so clear those first
+                $(form).find(':checkbox').prop('checked', false);
+                $(form).find('select[multiple] option').prop('selected', false);
+                for (const [k, v] of params) {
+                    $(form).find('[name="' + CSS.escape(k) + '"]').not(':file').each(function () {
+                        if (this.type === 'checkbox' || this.type === 'radio') {
+                            if (this.value === v) this.checked = true;
+                        } else if (this.tagName === 'SELECT') {
+                            // unknown values are ignored, so the field keeps its default
+                            $(this).find('option').filter((_, o) => o.value === v).prop('selected', true);
+                        } else {
+                            this.value = v;
+                        }
+                    });
+                }
+                $(form).find(':checkbox, :radio').trigger('change'); // update dependent show/hide sections
+            };
+
+            if (location.search) {
+                loadSettings(location.search);
+                saveSettings();
+                history.replaceState(null, '', location.pathname);
+            } else {
+                loadSettings(localStorage.getItem(KEY) || '');
+            }
+            $(form).on('change submit', saveSettings);
+            $('#copy-settings-link').click(function () {
+                navigator.clipboard.writeText(location.origin + location.pathname + '?' + settingsString());
+                $(this).text('Link copied');
+            });
+            $('#reset-settings').click(function () {
+                localStorage.removeItem(KEY);
+                location.href = location.pathname;
+            });
+        });
 
         $(function () {
             previewUpdate = function () {
