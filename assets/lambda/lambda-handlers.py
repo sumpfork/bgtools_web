@@ -24,7 +24,7 @@ from flask import (
     send_file,
     url_for,
 )
-from flask_bootstrap import Bootstrap4
+from flask_bootstrap import Bootstrap5
 from flask_uploads import IMAGES
 from loguru import logger
 from tuckbox_form import TuckboxForm
@@ -36,7 +36,7 @@ PAGES = {
 }
 
 flask_app = Flask(__name__)
-bootstrap = Bootstrap4(flask_app)
+bootstrap = Bootstrap5(flask_app)
 
 secret_key = os.environ["FLASK_SECRET_KEY"]
 assert secret_key, "Need secret key specified in env"

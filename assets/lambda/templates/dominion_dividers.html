@@ -1,4 +1,4 @@
-{% from 'bootstrap/form.html' import render_field %}
+{% from 'bootstrap5/form.html' import render_field %}
 <style>
     /* inline rather than in static domdiv.css so it ships with the changelog html it styles */
     #changes {
@@ -21,143 +21,128 @@
             <div class="row">
                 <div class="col">
                     <div class="clearfix">
-                        <h3 class="float-left">Generation Options</h3>
-                        <button type="submit" class="btn btn-primary float-right">Generate</button>
+                        <h3 class="float-start">Generation Options</h3>
+                        <button type="submit" class="btn btn-primary float-end">Generate</button>
                     </div>
                 </div>
             </div>
             <div id="tag" class="row">
                 <div class="col">
                     <div class="accordion" id="accordion">
-                        <div class="card">
-                            <!-- Expansions -->
-                            <div class="card-header" id="expansionHeader">
-                                <h5 class="mb-0 accordion-menu">
-                                    <button class="btn btn-link btn-block text-left" type="button"
-                                        data-toggle="collapse" data-target="#expansionBody" aria-expanded="true"
-                                        aria-controls="collapseOne">Expansions</button>
-                                </h5>
-                            </div>
-                            <div id="expansionBody" class="collapse show" aria-labelledby="expansionHeader"
-                                data-parent="#accordion">
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        {{ render_field(form.expansions, size="20") }}
-                                        {{ render_field(form.fan, size="2")}}
-                                    </div>
+                        <!-- Expansions -->
+                        <div class="accordion-item">
+                            <h5 class="accordion-header" id="expansionHeader">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#expansionBody" aria-expanded="true" aria-controls="expansionBody">Expansions</button>
+                            </h5>
+                            <div id="expansionBody" class="accordion-collapse collapse show" aria-labelledby="expansionHeader"
+                                data-bs-parent="#accordion">
+                                <div class="accordion-body">
+                                    {{ render_field(form.expansions, size="20") }}
+                                    {{ render_field(form.fan, size="2")}}
                                 </div>
                             </div>
-                            <!-- Page Options -->
-                            <div class="card-header" id="pageHeader">
-                                <h5 class="mb-0 accordion-menu">
-                                    <button class="btn btn-link btn-block text-left" type="button"
-                                        data-toggle="collapse" data-target="#pageBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Page</button>
-                                </h5>
-                            </div>
-                            <div id="pageBody" class="collapse" aria-labelledby="pageHeader" data-parent="#accordion">
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        {{ render_field(form.pagesize) }}
-                                        {{ render_field(form.no_page_footer) }}
-                                        {{ render_field(form.back_offset) }}
-                                        {{ render_field(form.back_offset_height) }}
-                                    </div>
+                        </div>
+                        <!-- Page Options -->
+                        <div class="accordion-item">
+                            <h5 class="accordion-header" id="pageHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#pageBody" aria-expanded="false" aria-controls="pageBody">Page</button>
+                            </h5>
+                            <div id="pageBody" class="accordion-collapse collapse" aria-labelledby="pageHeader"
+                                data-bs-parent="#accordion">
+                                <div class="accordion-body">
+                                    {{ render_field(form.pagesize) }}
+                                    {{ render_field(form.no_page_footer) }}
+                                    {{ render_field(form.back_offset) }}
+                                    {{ render_field(form.back_offset_height) }}
                                 </div>
                             </div>
-                            <!-- Style Options -->
-                            <div class="card-header" id="styleHeader">
-                                <h5 class="mb-0 accordion-menu">
-                                    <button class="btn btn-link btn-block text-left" type="button"
-                                        data-toggle="collapse" data-target="#styleBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Style</button>
-                                </h5>
-                            </div>
-                            <div id="styleBody" class="collapse" aria-labelledby="styleHeader" data-parent="#accordion">
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        {{ render_field(form.orientation) }}
-                                        {{ render_field(form.wrappers) }}
-                                        <div id="div_id_notch">
-                                            {{ render_field(form.notch) }}
-                                        </div>
-                                        {{ render_field(form.linetype) }}
-                                        {{ render_field(form.cardsize) }}
-                                        {{ render_field(form.tabwidth) }}
-                                        {{ render_field(form.horizontal_gap) }}
-                                        {{ render_field(form.vertical_gap) }}
+                        </div>
+                        <!-- Style Options -->
+                        <div class="accordion-item">
+                            <h5 class="accordion-header" id="styleHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#styleBody" aria-expanded="false" aria-controls="styleBody">Style</button>
+                            </h5>
+                            <div id="styleBody" class="accordion-collapse collapse" aria-labelledby="styleHeader"
+                                data-bs-parent="#accordion">
+                                <div class="accordion-body">
+                                    {{ render_field(form.orientation) }}
+                                    {{ render_field(form.wrappers) }}
+                                    <div id="div_id_notch">
+                                        {{ render_field(form.notch) }}
                                     </div>
+                                    {{ render_field(form.linetype) }}
+                                    {{ render_field(form.cardsize) }}
+                                    {{ render_field(form.tabwidth) }}
+                                    {{ render_field(form.horizontal_gap) }}
+                                    {{ render_field(form.vertical_gap) }}
                                 </div>
                             </div>
-                            <!-- Tab Options -->
-                            <div class="card-header" id="tabHeader">
-                                <h5 class="mb-0 accordion-menu">
-                                    <button class="btn btn-link btn-block text-left" type="button"
-                                        data-toggle="collapse" data-target="#tabBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Tab</button>
-                                </h5>
-                            </div>
-                            <div id="tabBody" class="collapse" aria-labelledby="tabHeader" data-parent="#accordion">
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        {{ render_field(form.tab_number) }}
-                                        {{ render_field(form.tab_side) }}
-                                        {{ render_field(form.tab_serpentine) }}
-                                        {{ render_field(form.expansion_reset_tabs) }}
-                                        {{ render_field(form.tab_name_align) }}
-                                        {{ render_field(form.set_icon) }}
-                                        {{ render_field(form.cost) }}
-                                        {{ render_field(form.black_tabs) }}
-                                    </div>
+                        </div>
+                        <!-- Tab Options -->
+                        <div class="accordion-item">
+                            <h5 class="accordion-header" id="tabHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#tabBody" aria-expanded="false" aria-controls="tabBody">Tab</button>
+                            </h5>
+                            <div id="tabBody" class="accordion-collapse collapse" aria-labelledby="tabHeader"
+                                data-bs-parent="#accordion">
+                                <div class="accordion-body">
+                                    {{ render_field(form.tab_number) }}
+                                    {{ render_field(form.tab_side) }}
+                                    {{ render_field(form.tab_serpentine) }}
+                                    {{ render_field(form.expansion_reset_tabs) }}
+                                    {{ render_field(form.tab_name_align) }}
+                                    {{ render_field(form.set_icon) }}
+                                    {{ render_field(form.cost) }}
+                                    {{ render_field(form.black_tabs) }}
                                 </div>
                             </div>
-                            <!-- Body Options -->
-                            <div class="card-header" id="bodyHeader">
-                                <h5 class="mb-0 accordion-menu">
-                                    <button class="btn btn-link btn-block text-left" type="button"
-                                        data-toggle="collapse" data-target="#bodyBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Body</button>
-                                </h5>
-                            </div>
-                            <div id="bodyBody" class="collapse" aria-labelledby="bodyHeader" data-parent="#accordion">
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        {{ render_field(form.count) }}
-                                        {{ render_field(form.types) }}
-                                        {{ render_field(form.text_front) }}
-                                        {{ render_field(form.text_back) }}
-                                        {{ render_field(form.language) }}
-                                    </div>
+                        </div>
+                        <!-- Body Options -->
+                        <div class="accordion-item">
+                            <h5 class="accordion-header" id="bodyHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#bodyBody" aria-expanded="false" aria-controls="bodyBody">Body</button>
+                            </h5>
+                            <div id="bodyBody" class="accordion-collapse collapse" aria-labelledby="bodyHeader"
+                                data-bs-parent="#accordion">
+                                <div class="accordion-body">
+                                    {{ render_field(form.count) }}
+                                    {{ render_field(form.types) }}
+                                    {{ render_field(form.text_front) }}
+                                    {{ render_field(form.text_back) }}
+                                    {{ render_field(form.language) }}
                                 </div>
                             </div>
-                            <!-- Order, Groups and Extras -->
-                            <div class="card-header" id="orderHeader">
-                                <h5 class="mb-0 accordion-menu">
-                                    <button class="btn btn-link btn-block text-left" type="button"
-                                        data-toggle="collapse" data-target="#orderBody" aria-expanded="false"
-                                        aria-controls="collapseOne">Order, Groups and Extras</button>
-                                </h5>
-                            </div>
-                            <div id="orderBody" class="collapse" aria-labelledby="orderHeader" data-parent="#accordion">
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        {{ render_field(form.order) }}
-                                        {{ render_field(form.group_special) }}
-                                        {{ render_field(form.group_kingdom) }}
-                                        {{ render_field(form.group_global) }}
-                                        {{ render_field(form.start_decks) }}
-                                        {{ render_field(form.curse10) }}
-                                        {{ render_field(form.no_trash) }}
-                                        {{ render_field(form.base_cards_with_expansion) }}
-                                        {{ render_field(form.upgrade_with_expansion) }}
-                                        {{ render_field(form.exclude_events) }}
-                                        {{ render_field(form.expansion_dividers) }}
-                                        <div id="div_id_centre_expansion_dividers">
-                                            {{ render_field(form.centre_expansion_dividers) }}
-                                        </div>
-                                        <div id="div_id_expansion_dividers_long_name">
-                                            {{ render_field(form.expansion_dividers_long_name) }}
-                                        </div>
+                        </div>
+                        <!-- Order, Groups and Extras -->
+                        <div class="accordion-item">
+                            <h5 class="accordion-header" id="orderHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#orderBody" aria-expanded="false" aria-controls="orderBody">Order, Groups and Extras</button>
+                            </h5>
+                            <div id="orderBody" class="accordion-collapse collapse" aria-labelledby="orderHeader"
+                                data-bs-parent="#accordion">
+                                <div class="accordion-body">
+                                    {{ render_field(form.order) }}
+                                    {{ render_field(form.group_special) }}
+                                    {{ render_field(form.group_kingdom) }}
+                                    {{ render_field(form.group_global) }}
+                                    {{ render_field(form.start_decks) }}
+                                    {{ render_field(form.curse10) }}
+                                    {{ render_field(form.no_trash) }}
+                                    {{ render_field(form.base_cards_with_expansion) }}
+                                    {{ render_field(form.upgrade_with_expansion) }}
+                                    {{ render_field(form.exclude_events) }}
+                                    {{ render_field(form.expansion_dividers) }}
+                                    <div id="div_id_centre_expansion_dividers">
+                                        {{ render_field(form.centre_expansion_dividers) }}
+                                    </div>
+                                    <div id="div_id_expansion_dividers_long_name">
+                                        {{ render_field(form.expansion_dividers_long_name) }}
                                     </div>
                                 </div>
                             </div>
@@ -171,10 +156,10 @@
         <div class="card card-body bg-light right-pane">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item"><a class="nav-link active" id="about-tab" href="#about" role="tab"
-                        data-toggle="tab" aria-controls="about" aria-selected="true">About</a></li>
+                        data-bs-toggle="tab" aria-controls="about" aria-selected="true">About</a></li>
                 <li class="nav-item"><a class="nav-link" id="preview-tab" href="#preview-pane" role="tab"
-                        data-toggle="tab" aria-controls="preview-pane" aria-selected="false">Preview</a></li>
-                <li class="nav-item"><a class="nav-link" id="changes-tab" href="#changes" role="tab" data-toggle="tab"
+                        data-bs-toggle="tab" aria-controls="preview-pane" aria-selected="false">Preview</a></li>
+                <li class="nav-item"><a class="nav-link" id="changes-tab" href="#changes" role="tab" data-bs-toggle="tab"
                         aria-controls="changes" aria-selected="false">Changelog</a></li>
             </ul>
 
@@ -185,10 +170,10 @@
                             <h4>Welcome to the Dominion divider generator.</h4>
                         </div>
                         <div class="col">
-                            <div class="text-right">
+                            <div class="text-end">
                                 <div class="btn-group-vertical btn-group-sm" role="group">
                                     <a href="https://github.com/sumpfork/bgtools_web" class="btn btn-default">
-                                        <div class="text-right">
+                                        <div class="text-end">
                                             Web
                                             <img src="{{ static_url }}/static/images/GitHub-Mark-32px.png" width="16">
                                         </div>
