@@ -162,7 +162,9 @@ class BGToolsStack(aws_cdk.Stack):
             self,
             "StaticCloudfrontDist",
             default_behavior=cloudfront.BehaviorOptions(
-                origin=cloudfront_origins.S3Origin(static_website_bucket)
+                origin=cloudfront_origins.S3BucketOrigin.with_origin_access_control(
+                    static_website_bucket
+                )
             ),
         )
         monitoring_facade.monitor_cloud_front_distribution(distribution=cf_static_dist)
@@ -185,6 +187,7 @@ class BGToolsStack(aws_cdk.Stack):
             code=lambda_.DockerImageCode.from_image_asset(
                 "assets/lambda",
                 build_args={"CA_TOKEN": ca_token} if ca_token else None,
+                platform=aws_cdk.aws_ecr_assets.Platform.LINUX_ARM64,
             ),
             environment={
                 "STATIC_WEB_URL": f"https://{cf_static_dist.domain_name}",
@@ -197,6 +200,7 @@ class BGToolsStack(aws_cdk.Stack):
                 "OUTPUT_URL_PREFIX": f"{static_website_bucket.s3_url_for_object('generated/')}",
             },
             timeout=aws_cdk.Duration.seconds(60),
+            architecture=lambda_.Architecture.ARM_64,
             memory_size=self.config.get("LAMBDA_MEMORY_SIZE", 4096),
         )
         static_website_bucket.grant_write(flask_app)
@@ -254,6 +258,7 @@ class BGToolsStack(aws_cdk.Stack):
             code=lambda_.InlineCode(invalidation_code),
             environment={"DISTRIBUTION_ID": cloudfront_distribution.distribution_id},
             timeout=aws_cdk.Duration.seconds(30),
+            architecture=lambda_.Architecture.ARM_64,
         )
         invalidation_trigger.execute_after(cloudfront_distribution)
         invalidation_trigger.role.add_to_policy(
